@@ -34,7 +34,7 @@ namespace Axiom.Class.Warrior
         {
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
-            await Spell.Cast("Colossus Smash", onunit);
+            await Spell.Cast("Colossus Smash", onunit, () => Me.RagePercent > 30);
             await Spell.Cast("Mortal Strike", onunit);
             
             return false;
