@@ -252,6 +252,65 @@ namespace Axiom.Helpers
         }
         #endregion
 
+        #region Simplicity Wrappers Int
+        public static Task<bool> Buff(int spell, WoWUnit onunit, string reason = "")
+        {
+            return CastSpell(spell, onunit, () => true, SpellFlags.Buff, reason);
+        }
+        public static Task<bool> Buff(int spell, WoWUnit onunit, Func<bool> req, string reason = "")
+        {
+            return CastSpell(spell, onunit, req, SpellFlags.Buff, reason);
+        }
+        public static Task<bool> FreeBuff(int spell, WoWUnit onunit, string reason = "", bool ignoregcd = false)
+        {
+            return CastSpell(spell, onunit, () => true, SpellFlags.Buff, reason, ignoregcd);
+        }
+        public static Task<bool> FreeBuff(int spell, WoWUnit onunit, Func<bool> req, string reason = "", bool ignoregcd = false)
+        {
+            return CastSpell(spell, onunit, req, SpellFlags.Buff, reason, ignoregcd);
+        }
+        public static Task<bool> SelfBuff(int spell, string reason = "", bool ignoregcd = false)
+        {
+            return CastSpell(spell, Me, () => true, SpellFlags.Buff, reason, ignoregcd);
+        }
+        public static Task<bool> SelfBuff(int spell, Func<bool> req, string reason = "", bool ignoregcd = false)
+        {
+            return CastSpell(spell, Me, req, SpellFlags.Buff, reason, ignoregcd);
+        }
+        public static Task<bool> Heal(int spell, WoWUnit onunit, string reason = "")
+        {
+            return CastSpell(spell, onunit, () => true, SpellFlags.Heal, reason);
+        }
+        public static Task<bool> Heal(int spell, WoWUnit onunit, Func<bool> req, string reason = "")
+        {
+            return CastSpell(spell, onunit, req, SpellFlags.Heal, reason);
+        }
+        public static Task<bool> SelfHeal(int spell, string reason = "", bool ignoregcd = false)
+        {
+            return CastSpell(spell, Me, () => true, SpellFlags.Heal, reason, ignoregcd);
+        }
+        public static Task<bool> SelfHeal(int spell, Func<bool> req, string reason = "", bool ignoregcd = false)
+        {
+            return CastSpell(spell, Me, req, SpellFlags.Heal, reason, ignoregcd);
+        }
+        public static Task<bool> Cast(int spell, WoWUnit onunit, string reason = "", bool ignoregcd = false)
+        {
+            return CastSpell(spell, onunit, () => true, SpellFlags.Normal, reason, ignoregcd);
+        }
+        public static Task<bool> Cast(int spell, WoWUnit onunit, Func<bool> req, string reason = "", bool ignoregcd = false)
+        {
+            return CastSpell(spell, onunit, req, SpellFlags.Normal, reason, ignoregcd);
+        }
+        public static Task<bool> FreeCast(int spell, WoWUnit onunit, string reason = "", bool ignoregcd = false)
+        {
+            return CastSpell(spell, onunit, () => true, SpellFlags.FreeCast, reason, ignoregcd);
+        }
+        public static Task<bool> FreeCast(int spell, WoWUnit onunit, Func<bool> req, string reason = "", bool ignoregcd = false)
+        {
+            return CastSpell(spell, onunit, req, SpellFlags.FreeCast, reason, ignoregcd);
+        }
+        #endregion
+
         #region Properties
         public static bool HaveEnergy(string Name)
         {
