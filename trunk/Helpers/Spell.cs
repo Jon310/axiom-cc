@@ -318,6 +318,26 @@ namespace Axiom.Helpers
             return Lua.GetReturnVal<bool>(lua, 2);
         }
 
+        public static TimeSpan GetCooldownLeft(string spell)
+        {
+            SpellFindResults results;
+            if (SpellManager.FindSpell(spell, out results))
+            {
+                if (results.Override != null)
+                    return results.Override.CooldownTimeLeft;
+                return results.Original.CooldownTimeLeft;
+            }
+            return TimeSpan.MaxValue;
+        }
+        public static bool HasSpell(string spell)
+        {
+            SpellFindResults results;
+            if (SpellManager.FindSpell(spell, out results))
+            {
+                return true;
+            }
+            return false;
+        }
         public static bool IsChanneled(string spell)
         {
             SpellFindResults results;
@@ -328,6 +348,14 @@ namespace Axiom.Helpers
                 return results.Original.AttributesEx == SpellAttributesEx.Channeled1 || results.Original.AttributesEx == SpellAttributesEx.Channeled2;
             }
             return false;
+        }
+        public static float SpellRange(string strspell, WoWUnit unit)
+        {
+            SpellFindResults results;
+            if (!SpellManager.FindSpell(strspell, out results))
+                return 0;
+            WoWSpell spell = results.Override ?? results.Original;
+            return spell.HasRange ? spell.MaxRange : Math.Max(5, Me.CombatReach + 1.3333334f + unit.CombatReach);
         }
 
         public static bool SpellHistoryContainsKey(string spell, WoWGuid unitguid)
@@ -371,5 +399,7 @@ namespace Axiom.Helpers
             }
         }
         #endregion
+
+        
     }
 }
