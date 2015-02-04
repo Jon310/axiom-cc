@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 using Axiom.Helpers;
 using Axiom.Managers;
 using Axiom.Settings;
+using Axiom.Helpers;
 using Styx;
 using Styx.Common;
 using Styx.CommonBot;
 using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
 
-namespace NotNamed.Helpers
+namespace Axiom.Helpers
 {
-    class Spell
+    public class Spell : Axiom
     {
         public static readonly LocalPlayer Me = StyxWoW.Me;
         public static WoWUnit LastCastTarget;
@@ -245,7 +246,19 @@ namespace NotNamed.Helpers
             LastCastSpell LCS = SpellHistory.Where(s => spell == s.SpellName && (s.UnitGUID.IsValid && s.UnitGUID == unitguid) &&
                    DateTime.UtcNow.Subtract(s.CurrentTime).TotalMilliseconds <= s.ExpiryTime).FirstOrDefault();
             return LCS.SpellName != null;
+        }
 
+        public static void UpdateSpellHistory(string spellName, double expiryTime, WoWUnit unit)
+        {
+            if (!TargetManager.IsValid(unit))
+                return;
+            PruneSpellHistory();
+            if (unit != null) SpellHistory.Add(new LastCastSpell(spellName, 0, expiryTime, DateTime.UtcNow, unit.Guid));
+        }
+
+        private static void PruneSpellHistory()
+        {
+            SpellHistory.RemoveAll(s => DateTime.UtcNow.Subtract(s.CurrentTime).TotalMilliseconds >= s.ExpiryTime);
         }
 
         private static List<LastCastSpell> SpellHistory = new List<LastCastSpell>();

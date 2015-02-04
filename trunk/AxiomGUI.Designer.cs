@@ -34,8 +34,8 @@
             this.saveExitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -75,6 +75,7 @@
             this.saveExitToolStripMenuItem.Name = "saveExitToolStripMenuItem";
             this.saveExitToolStripMenuItem.Size = new System.Drawing.Size(168, 24);
             this.saveExitToolStripMenuItem.Text = "Save + Exit";
+            this.saveExitToolStripMenuItem.Click += new System.EventHandler(this.saveExitToolStripMenuItem_Click);
             // 
             // tabControl1
             // 
@@ -97,6 +98,16 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Class";
             // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.HelpBackColor = System.Drawing.SystemColors.ControlDark;
+            this.propertyGrid1.Location = new System.Drawing.Point(7, 7);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(552, 376);
+            this.propertyGrid1.TabIndex = 0;
+            this.propertyGrid1.ToolbarVisible = false;
+            this.propertyGrid1.ViewBackColor = System.Drawing.SystemColors.ControlDark;
+            // 
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.ControlDark;
@@ -107,16 +118,6 @@
             this.tabPage2.Size = new System.Drawing.Size(565, 389);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "General";
-            // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.HelpBackColor = System.Drawing.SystemColors.ControlDark;
-            this.propertyGrid1.Location = new System.Drawing.Point(7, 7);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(552, 376);
-            this.propertyGrid1.TabIndex = 0;
-            this.propertyGrid1.ToolbarVisible = false;
-            this.propertyGrid1.ViewBackColor = System.Drawing.SystemColors.ControlDark;
             // 
             // propertyGrid2
             // 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Axiom.Managers;
 using Axiom.Settings;
 using Buddy.Coroutines;
-using NotNamed.Helpers;
+using Axiom.Helpers;
 using Styx;
 using Styx.Pathing;
 using Styx.WoWInternals.WoWObjects;
