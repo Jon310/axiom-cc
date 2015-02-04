@@ -83,6 +83,37 @@ namespace Axiom.Helpers
             return false;
         }
 
+        public static async Task<bool> CastSpell(int spell, WoWUnit onunit, Func<bool> reqs,
+            SpellFlags type = SpellFlags.Normal, string reason = "", bool ignoregcd = false)
+        {
+            var sp = WoWSpell.FromId(spell);
+            var sname = sp != null ? sp.Name : "#" + spell;
+            if (!reqs())
+            {
+                return false;
+            }
+            CanCastResult CanCastr = CanCast(sname, onunit, type, ignoregcd);
+            if (CanCastr != CanCastResult.Success)
+            {
+                if (GeneralSettings.Instance.LogCanCastResults)
+                    Log.WritetoFile(LogLevel.Diagnostic,
+                        string.Format(
+                            "Cast on " + onunit.safeName() + " Failed For " + sname + " reason: CanCast ({0})",
+                            CanCastr.ToString()));
+                return false;
+            }
+            if (!await Movement.FaceTarget(onunit, type))
+                return false;
+            if (SpellManager.Cast(spell, onunit))
+            {
+                LastCastTarget = onunit;
+                Log.WritetoFile(LogLevel.Diagnostic,
+                    String.Format("Casting {0} => {1}@{2} r: {3}", sname, onunit.safeName(), onunit.Status(), reason));
+                return true;
+            }
+            return false;
+        }
+
         #endregion
 
         #region CanCast
