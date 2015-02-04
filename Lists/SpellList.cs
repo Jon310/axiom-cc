@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NotNamed.Lists
+namespace Axiom.Lists
 {
     class SpellList
     {

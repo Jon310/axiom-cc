@@ -24,8 +24,8 @@ namespace Axiom
         #region Overrides
         public override string Name { get { return "Axiom"; } }
         public override WoWClass Class { get { return WoWClass.None; } }
-        public override bool WantButton { get { return base.WantButton; } }
-        public override void OnButtonPress() { base.OnButtonPress(); }
+        public override bool WantButton { get { return true; } }
+        public override void OnButtonPress() { AxiomGUI GUI = new AxiomGUI(); GUI.ShowDialog(); }
 
         public override Composite HealBehavior
         {
@@ -69,6 +69,7 @@ namespace Axiom
 
         public override void Initialize()
         {
+            GeneralSettings.Instance.Load();
             BotEvents.OnBotStarted += onBotStartEvent;
             BotEvents.OnBotStopped += onBotStopEvent;
         }
@@ -83,11 +84,13 @@ namespace Axiom
         private void onBotStartEvent(object o)
         {
             InitializeOnce();
+            EventLog.AttachCombatLogEvent();
             RegisterHotkeys();
         }
 
         private void onBotStopEvent(object o)
         {
+            EventLog.DetachCombatLogEvent();
             UnregisterHotkeys();
         }
 

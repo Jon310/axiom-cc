@@ -10,7 +10,7 @@ using Styx;
 using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
 
-namespace NotNamed.Helpers
+namespace Axiom.Helpers
 {
     public static class Units
     {

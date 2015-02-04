@@ -31,10 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GreyMagic">
-      <HintPath>..\..\..\..\HBTest\GreyMagic.dll</HintPath>
+      <HintPath>..\..\GreyMagic.dll</HintPath>
     </Reference>
     <Reference Include="Honorbuddy">
-      <HintPath>..\..\..\..\HBTest\Honorbuddy.exe</HintPath>
+      <HintPath>..\..\Honorbuddy.exe</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\Warrior\Arms.cs" />
+    <Compile Include="Helpers\CombatLog.cs" />
+    <Compile Include="Helpers\EventLog.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\Log.cs" />
     <Compile Include="Helpers\Movement.cs" />
@@ -66,6 +68,12 @@
     </Compile>
     <Compile Include="AxiomGUI.Designer.cs">
       <DependentUpon>AxiomGUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Overlay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Overlay.designer.cs">
+      <DependentUpon>Overlay.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\DeathKnight.cs" />
@@ -96,6 +104,9 @@
   <ItemGroup>
     <EmbeddedResource Include="AxiomGUI.resx">
       <DependentUpon>AxiomGUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Overlay.resx">
+      <DependentUpon>Overlay.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

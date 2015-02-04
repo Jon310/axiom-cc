@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Axiom.Helpers;
 using Axiom.Settings;
 using Styx;
 
@@ -17,6 +18,28 @@ namespace Axiom
         public AxiomGUI()
         {
             InitializeComponent();
+        }
+
+        private void On_Load(object sender, EventArgs e)
+        {
+            ClassSettings.Initialize();
+            if (ClassSettings.Settings != null)
+                propertyGrid1.SelectedObject = ClassSettings.Settings;
+            propertyGrid2.SelectedObject = GeneralSettings.Instance;
+        }
+
+        private void On_Exit(object sender, EventArgs e)
+        {
+            Log.WriteLog("Saving Settings");
+            ClassSettings.Settings.Save();
+            ClassSettings.Initialize();
+            GeneralSettings.Instance.Save();
+            this.Close();
+        }
+
+        private void saveExitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            On_Exit(sender, e);
         }
     }
 
