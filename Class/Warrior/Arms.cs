@@ -50,23 +50,23 @@ namespace Axiom.Class.Warrior
 
             await Spell.Cast(Recklessness, onunit, () => Axiom.Burst && (onunit.HasAura("Colossus Smash", true) || Me.HasAura("Bloodbath") || Me.CurrentTarget.HealthPercent < 20));
             await Spell.Cast(Avatar, onunit, () => Axiom.Burst && Me.HasAura("Recklessness"));
-            await Spell.Cast(BloodBath, onunit, () => Axiom.Burst && Spell.GetSpellCooldown("Colossus Smash").TotalSeconds < 5);
+            await Spell.Cast(BloodBath, onunit, () => Axiom.Burst && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds < 5);
 
             await AOE(onunit, Units.EnemyUnitsSub8.Count() >= 2 && Axiom.AOE);
-            await Spell.Cast(Rend, onunit, () => !Me.CurrentTarget.HasMyAura("Rend"));
-            await Spell.CastOnGround(Ravager, onunit, () => Me.CurrentTarget.Location, Spell.GetSpellCooldown("Colossus Smash").TotalSeconds < 4 && Axiom.AOE);
-            await Spell.Cast(Bladestorm, onunit, () => Me.CurrentTarget.IsWithinMeleeRange && SlimAI.AOE);
-            await Spell.Cast(ColossusSmash, onunit, () => Me.CurrentTarget.HasMyAura("Rend"));
-            await Spell.Cast(MortalStrike, onunit, () => Me.CurrentTarget.HealthPercent > 20 && Spell.GetSpellCooldown("Colossus Smash").TotalSeconds > 1);
-            await Spell.Cast(StormBolt, onunit, () => (Me.CurrentTarget.HasMyAura("Colossus Smash") || Spell.GetSpellCooldown("Colossus Smash").TotalSeconds > 4) && Me.CurrentRage < 90);
+            await Spell.Cast(Rend, onunit, () => !Me.CurrentTarget.HasAura("Rend", true));
+            await Spell.CastOnGround(Ravager, onunit, () => Me.CurrentTarget.Location, Spell.GetCooldownLeft("Colossus Smash").TotalSeconds < 4 && Axiom.AOE);
+            await Spell.Cast(Bladestorm, onunit, () => Me.CurrentTarget.IsWithinMeleeRange && Axiom.AOE);
+            await Spell.Cast(ColossusSmash, onunit, () => Me.CurrentTarget.HasAura("Rend", true));
+            await Spell.Cast(MortalStrike, onunit, () => Me.CurrentTarget.HealthPercent > 20 && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1);
+            await Spell.Cast(StormBolt, onunit, () => (Me.CurrentTarget.HasAura("Colossus Smash", true) || Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 4) && Me.CurrentRage < 90);
             await Spell.Cast(Siegebreaker, onunit);
-            await Spell.Cast(DragonRoar, onunit, () => !Me.CurrentTarget.HasMyAura("Colossus Smash") && Me.CurrentTarget.Distance <= 8);
-            await Spell.Cast(Rend, onunit, () => Me.CurrentTarget.HasAuraExpired("Rend", 5) && !Me.CurrentTarget.HasMyAura("Colossus Smash"));
-            await Spell.Cast(Execute, onunit, () => Me.CurrentTarget.HasMyAura("Colossus Smash") || Me.HasAura(SuddenDeath) || Me.CurrentRage >= 60 && Spell.GetSpellCooldown("Colossus Smash").TotalSeconds > 1);
-            await Spell.Cast(ImpendingVictory, onunit, () => Me.CurrentTarget.HealthPercent > 20 && Me.CurrentRage < 40 && Spell.GetSpellCooldown("Colossus Smash").TotalSeconds > 1 && Spell.GetSpellCooldown("Mortal Strike").TotalSeconds > 1);
+            await Spell.Cast(DragonRoar, onunit, () => !Me.CurrentTarget.HasAura("Colossus Smash", true) && Me.CurrentTarget.Distance <= 8);
+            await Spell.Cast(Rend, onunit, () => Me.CurrentTarget.HasAuraExpired("Rend", 5) && !Me.CurrentTarget.HasAura("Colossus Smash", true));
+            await Spell.Cast(Execute, onunit, () => Me.CurrentTarget.HasAura("Colossus Smash", true) || Me.HasAura(SuddenDeath) || Me.CurrentRage >= 60 && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1);
+            await Spell.Cast(ImpendingVictory, onunit, () => Me.CurrentTarget.HealthPercent > 20 && Me.CurrentRage < 40 && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1 && Spell.GetCooldownLeft("Mortal Strike").TotalSeconds > 1);
             //await Spell.CoCast(ThunderClap, Unit.UnfriendlyUnits(8).Count() >= 3 && Clusters.GetCluster(Me, Unit.UnfriendlyUnits(8), ClusterType.Radius, 8).Any(u => !u.HasAura("Deep Wounds")));
-            await Spell.Cast(Whirlwind, onunit, () => Me.CurrentTarget.HealthPercent > 20 && (Me.CurrentRage > 40 || Me.CurrentTarget.HasMyAura("Colossus Smash")) && Spell.GetSpellCooldown("Colossus Smash").TotalSeconds > 1 && Spell.GetSpellCooldown("Mortal Strike").TotalSeconds > 1 && Me.CurrentTarget.Distance <= 8);
-            await Spell.Cast(HeroicThrow);
+            await Spell.Cast(Whirlwind, onunit, () => Me.CurrentTarget.HealthPercent > 20 && (Me.CurrentRage > 40 || Me.CurrentTarget.HasAura("Colossus Smash", true)) && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1 && Spell.GetCooldownLeft("Mortal Strike").TotalSeconds > 1 && Me.CurrentTarget.Distance <= 8);
+            await Spell.Cast(HeroicThrow, onunit);
 
 
             //await Spell.Cast("Colossus Smash", onunit, () => Me.RagePercent > 30);
@@ -87,16 +87,16 @@ namespace Axiom.Class.Warrior
         {
             if (!reqs) return false;
 
-            await Spell.Cast(SweepingStrikes, onunit, () => Unit.UnfriendlyUnits(8).Count() >= 2 && Axiom.AOE);
-            await Spell.Cast(Rend, onunit, () => !Me.CurrentTarget.HasMyAura("Rend"));
+            await Spell.Cast(SweepingStrikes, onunit, () => Units.EnemyUnitsSub8.Count() >= 2 && Axiom.AOE);
+            await Spell.Cast(Rend, onunit, () => !Me.CurrentTarget.HasAura("Rend", true));
             await Spell.Cast(Bladestorm, onunit, () => Me.CurrentTarget.IsWithinMeleeRange && Axiom.AOE);
-            await Spell.Cast(ColossusSmash, onunit, () => Me.CurrentTarget.HasMyAura("Rend"));
-            await Spell.Cast(MortalStrike, onunit, () => Me.CurrentTarget.HealthPercent > 20 && Spell.GetSpellCooldown("Colossus Smash").TotalSeconds > 1.5 && Unit.UnfriendlyUnits(8).Count() <= 5);
-            await Spell.Cast(Execute, onunit, () => Me.HasAura(SuddenDeath) || Me.CurrentTarget.HasMyAura("Colossus Smash") || Me.CurrentRage >= 60 && Spell.GetSpellCooldown("Colossus Smash").TotalSeconds > 1);
-            await Spell.Cast(DragonRoar, onunit, () => !Me.CurrentTarget.HasMyAura("Colossus Smash") && Me.CurrentTarget.Distance <= 8);
-            await Spell.Cast(Whirlwind, onunit, () => Spell.GetSpellCooldown("Colossus Smash").TotalSeconds > 1 && (Me.CurrentTarget.HealthPercent >= 20 || Unit.UnfriendlyUnits(8).Count() > 9));
+            await Spell.Cast(ColossusSmash, onunit, () => Me.CurrentTarget.HasAura("Rend", true));
+            await Spell.Cast(MortalStrike, onunit, () => Me.CurrentTarget.HealthPercent > 20 && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1.5 && Units.EnemyUnitsSub8.Count() <= 5);
+            await Spell.Cast(Execute, onunit, () => Me.HasAura(SuddenDeath) || Me.CurrentTarget.HasAura("Colossus Smash", true) || Me.CurrentRage >= 60 && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1);
+            await Spell.Cast(DragonRoar, onunit, () => !Me.CurrentTarget.HasAura("Colossus Smash", true) && Me.CurrentTarget.Distance <= 8);
+            await Spell.Cast(Whirlwind, onunit, () => Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1 && (Me.CurrentTarget.HealthPercent >= 20 || Units.EnemyUnitsSub8.Count() > 9));
             await Spell.Cast(Rend, onunit, () => Me.CurrentTarget.HasAuraExpired("Rend", 6));
-            await Spell.Cast(StormBolt, onunit, () => (Me.CurrentTarget.HasMyAura("Colossus Smash") || Spell.GetSpellCooldown("Colossus Smash").TotalSeconds > 4) && Me.CurrentRage < 90);
+            await Spell.Cast(StormBolt, onunit, () => (Me.CurrentTarget.HasAura("Colossus Smash", true) || Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 4) && Me.CurrentRage < 90);
             await Spell.Cast(HeroicThrow, onunit);
 
             return true;
