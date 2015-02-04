@@ -73,6 +73,58 @@ namespace Axiom.Helpers
 
         #endregion
 
+        #region AuraIds
+        public static bool HasAura(this WoWUnit unit, int auraid, int msLeft = 0, int stacks = 0)
+        {
+            if (unit == null)
+                return false;
+            WoWAura result = unit.GetAllAuras().Where(a => a.CreatorGuid == StyxWoW.Me.Guid && a.SpellId == auraid && !a.IsPassive).FirstOrDefault();
+            if (result == null)
+                return false;
+
+            if (result.TimeLeft.TotalMilliseconds < msLeft && msLeft != 0)
+                return false;
+
+            if (result.StackCount < stacks && stacks != 0)
+                return false;
+
+            return true;
+        }
+        public static bool HasAura(this WoWUnit unit, string name, bool MyAurasOnly)
+        {
+            if (unit == null)
+                return false;
+            WoWAura result = unit.GetAllAuras().Where(a => a.CreatorGuid == StyxWoW.Me.Guid && a.Name == name && !a.IsPassive).FirstOrDefault();
+            if (result == null)
+                return false;
+            return true;
+        }
+        public static uint AuraTimeLeft(this WoWUnit unit, int aura)
+        {
+            if (!unit.IsValid)
+                return 0;
+
+            WoWAura result = unit.GetAllAuras().Where(a => a.CreatorGuid == StyxWoW.Me.Guid && a.SpellId == aura && !a.IsPassive).FirstOrDefault();
+
+            if (result == null)
+                return 0;
+
+            return result.Duration;
+        }
+        public static uint GetAuraStackCount(this WoWUnit unit, string aura)
+        {
+            if (unit != null && unit.IsValid)
+            {
+                WoWAura S = unit.Auras.Values.Where(a => a.Name == aura && a.CreatorGuid == Me.Guid).FirstOrDefault();
+                if (S != null)
+                {
+                    Log.WritetoFile(Styx.Common.LogLevel.Diagnostic, string.Format("{0} has {1} stacks of {2}", unit.safeName(), unit.Auras[aura].StackCount, aura));
+                    return S.StackCount;
+                }
+            }
+            return uint.MinValue;
+        }
+        #endregion
 
         public static bool InRange(this WoWUnit unit)
         {

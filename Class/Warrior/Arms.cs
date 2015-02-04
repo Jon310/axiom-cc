@@ -5,9 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Axiom.Helpers;
 using Axiom.Managers;
+using Buddy.Coroutines;
 using CommonBehaviors.Actions;
 using Styx;
+using Styx.CommonBot;
+using Styx.CommonBot.Coroutines;
 using Styx.TreeSharp;
+using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
 
 namespace Axiom.Class.Warrior
@@ -44,11 +48,11 @@ namespace Axiom.Class.Warrior
             //await Item.CoUseHS(50);
             await Leap();
 
-            await Spell.Cast(Recklessness, onunit, () => Axiom.Burst && (Me.CurrentTarget.HasMyAura("Colossus Smash") || Me.HasAura("Bloodbath") || Me.CurrentTarget.HealthPercent < 20));
+            await Spell.Cast(Recklessness, onunit, () => Axiom.Burst && (onunit.HasAura("Colossus Smash", true) || Me.HasAura("Bloodbath") || Me.CurrentTarget.HealthPercent < 20));
             await Spell.Cast(Avatar, onunit, () => Axiom.Burst && Me.HasAura("Recklessness"));
             await Spell.Cast(BloodBath, onunit, () => Axiom.Burst && Spell.GetSpellCooldown("Colossus Smash").TotalSeconds < 5);
 
-            await AOE(Unit.UnfriendlyUnits(8).Count() >= 2 && Axiom.AOE);
+            await AOE(onunit, Units.EnemyUnitsSub8.Count() >= 2 && Axiom.AOE);
             await Spell.Cast(Rend, onunit, () => !Me.CurrentTarget.HasMyAura("Rend"));
             await Spell.CastOnGround(Ravager, onunit, () => Me.CurrentTarget.Location, Spell.GetSpellCooldown("Colossus Smash").TotalSeconds < 4 && Axiom.AOE);
             await Spell.Cast(Bladestorm, onunit, () => Me.CurrentTarget.IsWithinMeleeRange && SlimAI.AOE);
@@ -79,8 +83,9 @@ namespace Axiom.Class.Warrior
         }
 
         #region Coroutine AOE
-        private static async Task<bool> AOE(WoWUnit onunit)
+        private static async Task<bool> AOE(WoWUnit onunit, bool reqs)
         {
+            if (!reqs) return false;
 
             await Spell.Cast(SweepingStrikes, onunit, () => Unit.UnfriendlyUnits(8).Count() >= 2 && Axiom.AOE);
             await Spell.Cast(Rend, onunit, () => !Me.CurrentTarget.HasMyAura("Rend"));
@@ -112,7 +117,7 @@ namespace Axiom.Class.Warrior
 
             if (!await Coroutine.Wait(1000, () => StyxWoW.Me.CurrentPendingCursorSpell != null))
             {
-                Logging.Write("Cursor Spell Didnt happen");
+                Log.WriteLog("Cursor Spell Didnt happen");
                 return false;
             }
 
