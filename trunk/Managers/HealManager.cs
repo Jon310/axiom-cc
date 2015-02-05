@@ -40,7 +40,6 @@ namespace Axiom.Managers
 
             get
             {
-
                 // Grab party+raid member + myself GUIDs
                 WoWGuid[] guids =
                     StyxWoW.Me.GroupInfo.RaidMemberGuids.Union(StyxWoW.Me.GroupInfo.PartyMemberGuids).Distinct().ToArray();
@@ -246,10 +245,7 @@ namespace Axiom.Managers
         {
             if (!TargetManager.IsValid(unitCenter))
                 return 0;
-            return
-                HealManager.Targets(healthPercent).Where(
-                    unit =>
-                    unitCenter.Location.Distance(unit.Location) <= distance).Count();
+            return Targets(healthPercent).Count(unit => unitCenter.Location.Distance(unit.Location) <= distance);
         }
 
         #endregion

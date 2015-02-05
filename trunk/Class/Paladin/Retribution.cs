@@ -11,7 +11,7 @@ using Styx;
 using Styx.TreeSharp;
 using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
-using S = Axiom.Lists.SpellList;
+using S = Axiom.Lists.SpellLists;
 
 namespace Axiom.Class.Paladin
 {
