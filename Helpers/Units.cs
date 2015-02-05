@@ -38,6 +38,17 @@ namespace Axiom.Helpers
 
         #endregion
 
+        #region EnemyUnitsCone
+
+        public static IEnumerable<WoWUnit> EnemyUnitsCone(WoWUnit target, IEnumerable<WoWUnit> otherUnits, float distance)
+        {
+            var targetLoc = target.Location;
+            // most (if not all) player cone spells are 90 degrees.
+            return otherUnits.Where(u => target.IsSafelyFacing(u, 90) && u.Location.Distance(targetLoc) <= distance);
+        }
+
+        #endregion
+
         #region EnemyUnitsSub40
 
         public static IEnumerable<WoWUnit> EnemyUnitsSub40
@@ -72,6 +83,16 @@ namespace Axiom.Helpers
             get { return EnemyUnits(Me.MeleeRange().ToString(CultureInfo.InvariantCulture).ToInt32()); }
         }
 
+        #endregion
+
+        #region FriendlyUnitsNearTarget
+        public static IEnumerable<WoWUnit> FriendlyUnitsNearTarget(float distance)
+        {
+            var dist = distance * distance;
+            var curTarLocation = StyxWoW.Me.CurrentTarget.Location;
+            return ObjectManager.GetObjectsOfType<WoWUnit>(false, false).Where(
+                        p => TargetManager.IsValid(p) && p.IsFriendly && p.Location.DistanceSqr(curTarLocation) <= dist).ToList();
+        }
         #endregion
 
         #region Auras
