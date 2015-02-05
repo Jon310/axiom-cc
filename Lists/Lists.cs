@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 namespace Axiom.Lists
 {
     [UsedImplicitly]
-    class SpellList : Axiom
+    class SpellLists : Axiom
     {
         #region ChannedInteruptableSpells
         public static readonly HashSet<int> ChanneledInteruptableSpells = new HashSet<int>

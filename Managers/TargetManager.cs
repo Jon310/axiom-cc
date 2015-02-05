@@ -118,7 +118,7 @@ namespace Axiom.Managers
                         (unit.CastingSpell != null &&
                          unit.CanInterruptCurrentSpellCast) ||
                         unit.ChannelObject != null &&
-                        SpellList.ChanneledInteruptableSpells.Contains(unit.ChanneledCastingSpellId))
+                        SpellLists.ChanneledInteruptableSpells.Contains(unit.ChanneledCastingSpellId))
                     .ToList();
             }
         }
