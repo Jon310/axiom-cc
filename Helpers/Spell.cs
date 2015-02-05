@@ -9,6 +9,7 @@ using Axiom.Managers;
 using Axiom.Settings;
 using Axiom.Helpers;
 using Buddy.Coroutines;
+using JetBrains.Annotations;
 using Styx;
 using Styx.Common;
 using Styx.CommonBot;
@@ -18,11 +19,12 @@ using Styx.WoWInternals.WoWObjects;
 
 namespace Axiom.Helpers
 {
+    [UsedImplicitly]
     public class Spell : Axiom
     {
         public static readonly LocalPlayer Me = StyxWoW.Me;
         public static WoWUnit LastCastTarget;
-        public static string LastSpellCast;
+        private static string LastSpellCast;
 
         #region Enums
         public enum CanCastResult
@@ -427,8 +429,8 @@ namespace Axiom.Helpers
         public static bool SpellHistoryContainsKey(string spell, WoWGuid unitguid)
         {
 
-            LastCastSpell LCS = SpellHistory.Where(s => spell == s.SpellName && (s.UnitGUID.IsValid && s.UnitGUID == unitguid) &&
-                   DateTime.UtcNow.Subtract(s.CurrentTime).TotalMilliseconds <= s.ExpiryTime).FirstOrDefault();
+            LastCastSpell LCS = SpellHistory.FirstOrDefault(s => spell == s.SpellName && (s.UnitGUID.IsValid && s.UnitGUID == unitguid) &&
+                                                                 DateTime.UtcNow.Subtract(s.CurrentTime).TotalMilliseconds <= s.ExpiryTime);
             return LCS.SpellName != null;
         }
 

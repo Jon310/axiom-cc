@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,9 +16,27 @@ namespace Axiom
 {
     public partial class AxiomGUI : Form
     {
+        #region Form Dragging API Support
+        //The SendMessage function sends a message to a window or windows.
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
+        static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
+        //ReleaseCapture releases a mouse capture
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
+        public static extern bool ReleaseCapture();
+        #endregion
+
         public AxiomGUI()
         {
             InitializeComponent();
+        }
+
+        private void Overlay_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(this.Handle, 0xa1, 0x2, 0);
+            }
         }
 
         private void On_Load(object sender, EventArgs e)
@@ -46,6 +65,11 @@ namespace Axiom
         {
             Axiom.ShowOverlay = true;
             Overlay.ShowOverlay();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            On_Exit(sender, e);
         }
     }
 

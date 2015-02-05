@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using CommonBehaviors.Actions;
 using Axiom.Helpers;
@@ -19,10 +15,10 @@ namespace Axiom
 {
     public partial class Axiom : CombatRoutine
     {
-        public static readonly LocalPlayer Me = StyxWoW.Me;
+        protected static readonly LocalPlayer Me = StyxWoW.Me;
 
         #region Overrides
-        public override string Name { get { return "Axiom"; } }
+        public override string Name { get { return string.Format("Axiom - {0}.", Me.Specialization); } }
         public override WoWClass Class { get { return WoWClass.None; } }
         public override bool WantButton { get { return true; } }
         public override void OnButtonPress() { AxiomGUI GUI = new AxiomGUI(); GUI.ShowDialog(); }
@@ -83,9 +79,10 @@ namespace Axiom
 
         private void onBotStartEvent(object o)
         {
+            RegisterHotkeys();
             InitializeOnce();
             EventLog.AttachCombatLogEvent();
-            RegisterHotkeys();
+            
         }
 
         private void onBotStopEvent(object o)
@@ -94,51 +91,56 @@ namespace Axiom
             UnregisterHotkeys();
         }
 
-        private void InitializeOnce()
+        private static void InitializeOnce()
         {
             ClassSettings.Initialize();
             
             switch (BotManager.Current.Name)
             {
                 case "LazyRaider":
-                    GeneralSettings.Instance.DisableMovement = true;
-                    Log.WriteLog("Movement Disabled - LazyRaider detected");
+                    GeneralSettings.Instance.Movement = false;
                     break;
                 case "Enyo (Buddystore)":
-                    GeneralSettings.Instance.DisableMovement = true;
-                    Log.WriteLog("Movement Disabled - Tyreal detected");
+                    GeneralSettings.Instance.Movement = false;
                     break;
                 case "Questing":
-                    GeneralSettings.Instance.DisableMovement = false;
-                    GeneralSettings.Instance.DisableTargeting = false;
+                    GeneralSettings.Instance.Movement = true;
+                    GeneralSettings.Instance.Targeting = true;
+                    Log.WriteLog(string.Format("Movement Enabled - Bot - {0} detected", BotManager.Current.Name));
                     break;
                 case "Akatosh Quester":
-                    GeneralSettings.Instance.DisableMovement = false;
-                    GeneralSettings.Instance.DisableTargeting = false;
+                    GeneralSettings.Instance.Movement = true;
+                    GeneralSettings.Instance.Targeting = true;
+                    Log.WriteLog(string.Format("Movement Enabled - Bot - {0} detected", BotManager.Current.Name));
                     break;
                 case "BGBuddy":
-                    GeneralSettings.Instance.DisableMovement = false;
-                    GeneralSettings.Instance.DisableTargeting = false;
+                    GeneralSettings.Instance.Movement = true;
+                    GeneralSettings.Instance.Targeting = true;
+                    GeneralSettings.Instance.PvP = true;
+                    Log.WriteLog(string.Format("Movement Enabled - Bot - {0} detected", BotManager.Current.Name));
                     break;
                 case "BGFarmer [Millz]":
-                    GeneralSettings.Instance.DisableMovement = false;
-                    GeneralSettings.Instance.DisableTargeting = false;
+                    GeneralSettings.Instance.Movement = true;
+                    GeneralSettings.Instance.Targeting = true;
+                    GeneralSettings.Instance.PvP = true;
+                    Log.WriteLog(string.Format("Movement Enabled - Bot - {0} detected", BotManager.Current.Name));
                     break;
                 case "Combat Bot":
-                    GeneralSettings.Instance.DisableMovement = false;
-                    GeneralSettings.Instance.DisableTargeting = false;
+                    GeneralSettings.Instance.Movement = true;
+                    GeneralSettings.Instance.Targeting = true;
+                    Log.WriteLog(string.Format("Movement Enabled - Bot - {0} detected", BotManager.Current.Name));
                     break;
                 case "Grind Bot":
-                    GeneralSettings.Instance.DisableMovement = false;
+                    GeneralSettings.Instance.Movement = true;
+                    Log.WriteLog(string.Format("Movement Enabled - Bot - {0} detected", BotManager.Current.Name));
                     break;
                 case "Raid Bot":
-                    GeneralSettings.Instance.DisableMovement = true;
-                    Log.WriteLog("Movement Disabled - Raid Bot detected");
+                    GeneralSettings.Instance.Movement = false;
                     break;
                 default:
-                    GeneralSettings.Instance.DisableMovement = false;
-                    GeneralSettings.Instance.DisableTargeting = false;
-                    Log.WriteLog(string.Format("Movement Enabled - Bot - {0} detected", BotManager.Current.Name));
+                    GeneralSettings.Instance.Movement = false;
+                    GeneralSettings.Instance.Targeting = true;
+                    Log.WriteLog(string.Format("Botbase - {0} detected", BotManager.Current.Name));
                     break;
             }
 

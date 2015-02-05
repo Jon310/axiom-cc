@@ -61,8 +61,7 @@ namespace Axiom.Managers
             get
             {
                 return InitialUnits.Where(unit =>
-                    !HealManager.Tanks.Any(
-                        tank => tank.GetThreatInfoFor(unit).ThreatStatus == ThreatStatus.SecurelyTanking))
+                    HealManager.Tanks.All(tank => tank.GetThreatInfoFor(unit).ThreatStatus != ThreatStatus.SecurelyTanking))
                     .OrderBy(unit => unit.ThreatInfo.ThreatValue)
                     .FirstOrDefault();
             }
@@ -139,7 +138,7 @@ namespace Axiom.Managers
 
         public static void EnsureTarget(WoWUnit onunit)
         {
-            if (!IsValid(Styx.StyxWoW.Me.CurrentTarget) && onunit != null && onunit.IsValid && onunit.IsAlive)
+            if (!IsValid(StyxWoW.Me.CurrentTarget) && onunit != null && onunit.IsValid && onunit.IsAlive)
             {
                 Log.WriteLog(Styx.Common.LogLevel.Diagnostic, "No Target...Reselecting");
                 onunit.Target();
@@ -156,11 +155,7 @@ namespace Axiom.Managers
         {
             get
             {
-                return
-                    InitialUnits.Where(
-                        unit =>
-                            unit.IsBoss && unit.Classification == WoWUnitClassificationType.Elite && unit.Distance < 40)
-                        .Count() != 0;
+                return InitialUnits.Count(unit => unit.IsBoss && unit.Classification == WoWUnitClassificationType.Elite && unit.Distance < 40) != 0;
             }
         }
 
@@ -171,7 +166,7 @@ namespace Axiom.Managers
 
         public static WoWUnit RangeTarget
         {
-            get { return SmartTarget(true, 40); }
+            get { return SmartTarget(true); }
         }
 
         public static WoWUnit SmartTarget(bool Range = false, double Distance = 40)
@@ -199,7 +194,7 @@ namespace Axiom.Managers
                     select t).FirstOrDefault();
             if (BestTarget != null && BestTarget.IsValid)
                 Log.WritetoFile(Styx.Common.LogLevel.Diagnostic,
-                    "Hostile Target selected:" + BestTarget.SafeName + "@" + BestTarget.HealthPercent.ToString() + "HP@" +
+                    "Hostile Target selected:" + BestTarget.SafeName + "@" + BestTarget.HealthPercent + "HP@" +
                     Math.Round(BestTarget.Distance) + "Distance");
             return BestTarget;
         }
@@ -208,20 +203,17 @@ namespace Axiom.Managers
         {
             if (!TargetManager.IsValid(unitCenter))
                 return 0;
-            return
-                TargetManager.InitialUnits.Where(
-                    unit =>
-                        unit.ThreatInfo.ThreatStatus != ThreatStatus.UnitNotInThreatTable &&
-                        unitCenter.Location.Distance(unit.Location) <= distance).Count();
+            return TargetManager.InitialUnits.Count(unit => unit.ThreatInfo.ThreatStatus != ThreatStatus.UnitNotInThreatTable &&
+                                                         unitCenter.Location.Distance(unit.Location) <= distance);
 
         }
 
         public static double CountUnitsTargetingMe()
         {
-            return TargetManager.InitialUnits.Where(unit => unit.IsTargetingMeOrPet).Count();
+            return TargetManager.InitialUnits.Count(unit => unit.IsTargetingMeOrPet);
         }
 
-        public static IEnumerable<WoWUnit> HasMyAura(string Aura, float range = 40)
+        public static IEnumerable<WoWUnit> HasAura(string Aura, float range = 40)
         {
             return TargetManager.InitialUnits.Where(unit => unit.HasAura(Aura));
         }

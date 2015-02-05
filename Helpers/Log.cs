@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using Axiom.Settings;
+﻿using System.Windows.Media;
 using Styx.Common;
 
 namespace Axiom.Helpers
 {
-    class Log
+    public static class Log
     {
         public static void WriteLog(string text)
         {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Axiom.Helpers;
 using Axiom.Managers;
+using Axiom.Settings;
 using Buddy.Coroutines;
 using CommonBehaviors.Actions;
 using Styx;
@@ -39,8 +40,10 @@ namespace Axiom.Class.Warrior
 
         private async Task<bool> CombatCoroutine(WoWUnit onunit)
         {
+            if (GeneralSettings.Instance.Targeting)
+                TargetManager.EnsureTarget(onunit);
 
-            if (Axiom.PvPRotation)
+            if (Axiom.PvPRotation || GeneralSettings.Instance.PvP)
             {
                 await PvP(onunit);
                 return true;
@@ -53,9 +56,6 @@ namespace Axiom.Class.Warrior
             }
 
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
-
-            //await Spell.Cast("Colossus Smash", onunit);
-            //await Spell.Cast("Mortal Strike", onunit);
 
             await Spell.Cast(BloodBath, onunit, () => Axiom.Burst && Me.CurrentTarget.IsWithinMeleeRange);
             await Spell.Cast(Avatar, onunit, () => Axiom.Burst && Me.CurrentTarget.IsWithinMeleeRange);
@@ -87,12 +87,10 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(Execute, onunit, () => Me.HasAura("Sudden Death") || Me.CurrentRage > Me.MaxRage - 30 && Axiom.Burst);
             await Spell.Cast(Devastate, onunit, () => Me.HasAuraExpired("Unyielding Strikes", 2) && !Me.HasAura("Unyielding Strikes", 6));
             await AOE(onunit, Units.EnemyUnitsSub8.Count() >= 2 && Axiom.AOE);
-            await Spell.Cast(HeroicThrow, onunit); 
+            await Spell.Cast(HeroicThrow, onunit);
 
-
-            //await Spell.Cast("Colossus Smash", onunit, () => Me.RagePercent > 30);
-            //await Spell.Cast("Mortal Strike", onunit);
-            
+            if (GeneralSettings.Instance.Movement)
+                return await Movement.MoveToTarget(onunit);
 
             return false;
         }

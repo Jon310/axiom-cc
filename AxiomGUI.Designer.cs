@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AxiomGUI));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.menuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOverlayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -37,6 +38,7 @@
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
+            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -54,6 +56,7 @@
             this.menuStrip1.Size = new System.Drawing.Size(597, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Overlay_MouseDown);
             // 
             // menuToolStripMenuItem
             // 
@@ -101,13 +104,19 @@
             // 
             // propertyGrid1
             // 
+            this.propertyGrid1.CategorySplitterColor = System.Drawing.SystemColors.ControlDark;
+            this.propertyGrid1.CommandsBackColor = System.Drawing.SystemColors.ControlDark;
+            this.propertyGrid1.CommandsBorderColor = System.Drawing.SystemColors.ControlDarkDark;
             this.propertyGrid1.HelpBackColor = System.Drawing.SystemColors.ControlDark;
+            this.propertyGrid1.HelpBorderColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDark;
             this.propertyGrid1.Location = new System.Drawing.Point(7, 7);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(552, 376);
             this.propertyGrid1.TabIndex = 0;
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.ViewBackColor = System.Drawing.SystemColors.ControlDark;
+            this.propertyGrid1.ViewBorderColor = System.Drawing.SystemColors.ControlDarkDark;
             // 
             // tabPage2
             // 
@@ -122,13 +131,32 @@
             // 
             // propertyGrid2
             // 
+            this.propertyGrid2.CategorySplitterColor = System.Drawing.SystemColors.ControlDark;
+            this.propertyGrid2.CommandsBorderColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.propertyGrid2.CommandsForeColor = System.Drawing.SystemColors.ControlText;
             this.propertyGrid2.HelpBackColor = System.Drawing.SystemColors.ControlDark;
+            this.propertyGrid2.HelpBorderColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.propertyGrid2.LineColor = System.Drawing.SystemColors.ControlDark;
             this.propertyGrid2.Location = new System.Drawing.Point(7, 7);
             this.propertyGrid2.Name = "propertyGrid2";
             this.propertyGrid2.Size = new System.Drawing.Size(552, 376);
             this.propertyGrid2.TabIndex = 0;
             this.propertyGrid2.ToolbarVisible = false;
             this.propertyGrid2.ViewBackColor = System.Drawing.SystemColors.ControlDark;
+            this.propertyGrid2.ViewBorderColor = System.Drawing.SystemColors.ControlDarkDark;
+            // 
+            // button1
+            // 
+            this.button1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button1.BackgroundImage")));
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.button1.FlatAppearance.BorderSize = 0;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Location = new System.Drawing.Point(570, 0);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(28, 28);
+            this.button1.TabIndex = 2;
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // AxiomGUI
             // 
@@ -136,6 +164,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.ClientSize = new System.Drawing.Size(597, 465);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -144,6 +173,7 @@
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "AxiomGUI";
             this.Text = "AxiomGUI";
+            this.Load += new System.EventHandler(this.On_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -165,5 +195,6 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.PropertyGrid propertyGrid2;
+        private System.Windows.Forms.Button button1;
     }
 }

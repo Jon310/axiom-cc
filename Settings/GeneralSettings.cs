@@ -17,11 +17,14 @@ namespace Axiom.Settings
 
         public GeneralSettings() : base(Path.Combine(Utilities.AssemblyDirectory, string.Format(@"Settings/Axiom/General.xml"))) { }
 
-        [Setting, DefaultValue(false), Category("Behaviour")]
-        public bool DisableTargeting { get; set; }
-
         [Setting, DefaultValue(true), Category("Behaviour")]
-        public bool DisableMovement { get; set; }
+        public bool Targeting { get; set; }
+
+        [Setting, DefaultValue(false), Category("Behaviour")]
+        public bool Movement { get; set; }
+
+        [Setting, DefaultValue(false), Category("Behaviour")]
+        public bool PvP { get; set; }
 
         [Setting, DefaultValue(2)]
         public int AOEMobCount { get; set; }
