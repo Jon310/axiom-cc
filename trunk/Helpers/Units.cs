@@ -74,7 +74,11 @@ namespace Axiom.Helpers
 
         #endregion
 
-        #region AuraIds
+        #region Auras
+        public static bool HasAura(this WoWUnit unit, int auraid, int stacks = 0)
+        {
+            return HasAura(unit, 0, stacks);
+        }
         public static bool HasAura(this WoWUnit unit, int auraid, int msLeft = 0, int stacks = 0)
         {
             if (unit == null)
