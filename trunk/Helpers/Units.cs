@@ -95,6 +95,14 @@ namespace Axiom.Helpers
 
             return true;
         }
+        public static bool HasAura(this WoWUnit unit, string aura, int stacks)
+        {
+            return HasAura(unit, aura, stacks, null);
+        }
+        private static bool HasAura(this WoWUnit unit, string aura, int stacks, WoWUnit creator)
+        {
+            return unit.GetAllAuras().Any(a => a.Name == aura && a.StackCount >= stacks && (creator == null || a.CreatorGuid == creator.Guid));
+        }
         public static bool HasAura(this WoWUnit unit, string name, bool MyAurasOnly)
         {
             if (unit == null)

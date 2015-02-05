@@ -66,7 +66,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(EnragedRegeneration, onunit, () => Me.HealthPercent <= 50);
             await Spell.Cast(LastStand, onunit, () => Me.HealthPercent <= 15 && !Me.HasAura("Shield Wall") && Axiom.AFK);
             await Spell.Cast(ShieldWall, onunit, () => Me.HealthPercent <= 30 && !Me.HasAura("Last Stand") && Axiom.AFK);
-            await Spell.Cast(DemoralizingShout, onunit, () => Unit.UnfriendlyUnits(10).Any() && IsCurrentTank() && Me.HealthPercent <= 75);
+            await Spell.Cast(DemoralizingShout, onunit, () => Units.EnemyUnitsSub10.Any() && IsCurrentTank() && Me.HealthPercent <= 75);
             await Spell.Cast(ImpendingVictory, onunit, () => Me.HealthPercent <= 60);
             
             //shield_block,if=!(debuff.demoralizing_shout.up|buff.ravager.up|buff.shield_wall.up|buff.last_stand.up|buff.enraged_regeneration.up|buff.shield_block.up)
@@ -157,7 +157,7 @@ namespace Axiom.Class.Warrior
 
             await Spell.Cast(ShieldSlam, onunit);
             await Spell.Cast(Revenge, onunit);
-            await Spell.CastOnGround(Ravager, onunit, () => Me.CurrentTarget.Location, SlimAI.Burst && Me.CurrentTarget.Distance <= 8);
+            await Spell.CastOnGround(Ravager, onunit, Me.CurrentTarget.Location, SlimAI.Burst && Me.CurrentTarget.Distance <= 8);
             await Spell.Cast(DragonRoar, onunit, () => Me.CurrentTarget.Distance <= 8);
             await Spell.Cast(Execute, onunit, () => Me.HasAura("Sudden Death"));
             await Spell.Cast(ThunderClap, onunit, () => SlimAI.AOE && Unit.EnemyUnitsSub8.Count(u => !u.HasAura("Deep Wounds")) >= 1 && Unit.UnfriendlyUnits(8).Count() >= 2);
