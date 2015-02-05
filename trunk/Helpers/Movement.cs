@@ -7,15 +7,18 @@ using Axiom.Managers;
 using Axiom.Settings;
 using Buddy.Coroutines;
 using Axiom.Helpers;
+using JetBrains.Annotations;
 using Styx;
+using Styx.Common;
 using Styx.Pathing;
 using Styx.WoWInternals.WoWObjects;
 
 namespace Axiom.Helpers
 {
-    class Movement : Axiom
+    [UsedImplicitly]
+    internal class Movement : Axiom
     {
-        public static async Task<bool> MoveToTarget(WoWUnit unit)
+        public static async Task<bool> MoveToTarget(WoWUnit unit, bool range = false)
         {
             //No Target , No Problem lets ignore the rest
             if (!TargetManager.IsValid(unit))
@@ -32,15 +35,24 @@ namespace Axiom.Helpers
                 return await Coroutine.Wait(100, () => StyxWoW.Me.CurrentTarget == null);
             }
 
-            //Well it's final we need to move our ass, hold on to your beer
-            if (!unit.InRange())
+            // Move to Ranged
+            if (range && unit.Distance > 35)
             {
-                Log.WriteLog(Styx.Common.LogLevel.Diagnostic, "Moving to " + unit.safeName() + "@" + unit.Location);
-                if (Styx.Pathing.Navigator.MoveTo(unit.Location - 2f) == MoveResult.ReachedDestination)
+                Log.WriteLog(LogLevel.Diagnostic, "Moving to " + unit.safeName() + "@" + unit.Location);
+                if (Navigator.MoveTo(unit.Location - 35f) == MoveResult.ReachedDestination)
+                    return true;
+            }
+
+            // Move to Melee
+            if (!range && !unit.InRange())
+            {
+                Log.WriteLog(LogLevel.Diagnostic, "Moving to " + unit.safeName() + "@" + unit.Location);
+                if (Navigator.MoveTo(unit.Location - 2f) == MoveResult.ReachedDestination)
                     return true;
             }
             return false;
         }
+
         //Credit to the Singular Team for the CreateFaceTargetBehavior
         public static async Task<bool> FaceTarget(WoWUnit unit, Spell.SpellFlags type, float viewDegrees = 150f)
         {
@@ -63,7 +75,7 @@ namespace Axiom.Helpers
                 return true;
             }
 
-            if (!GeneralSettings.Instance.DisableMovement
+            if (!GeneralSettings.Instance.Movement
                 && !StyxWoW.Me.IsMoving)
             {
                 Log.WritetoFile(Styx.Common.LogLevel.Diagnostic, string.Format("FaceTarget: facing since more than {0} degrees", (long)viewDegrees));

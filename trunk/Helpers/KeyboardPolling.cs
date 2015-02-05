@@ -5,11 +5,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using Styx;
 
 namespace Axiom.Helpers
 {
-    class KeyboardPolling
+    [UsedImplicitly]
+    class KeyboardPolling : Axiom
     {
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();

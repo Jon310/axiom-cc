@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Axiom.Settings;
 using Styx.Common;
 using Styx.WoWInternals;
 
@@ -20,6 +21,8 @@ namespace Axiom
         public static bool Weave { get; set; }
         public static bool Dispell { get; set; }
         public static bool HealAll { get; set; }
+        public static bool Movements { get; set; }
+        public static bool Targeting { get; set; }
 
         public static bool ShowOverlay { get; set; }
 
@@ -34,6 +37,8 @@ namespace Axiom
             HotkeysManager.Unregister("Weave Toggle");
             HotkeysManager.Unregister("Dispell Toggle");
             HotkeysManager.Unregister("Heal All");
+            HotkeysManager.Unregister("Movements");
+            HotkeysManager.Unregister("Targeting");
             HotkeysManager.Unregister("Show Overlay");
         }
 
@@ -46,6 +51,7 @@ namespace Axiom
             {
                 PvPRotation = !PvPRotation;
                 Logging.Write("PvP enabled: " + PvPRotation);
+                GeneralSettings.Instance.PvP = PvPRotation;
                 Lua.DoString("print('PvP Enabled: " + PvPRotation + "')");
             });
             PvPRotation = false;
@@ -137,6 +143,30 @@ namespace Axiom
                 Lua.DoString("print('Heal All Enabled: " + HealAll + "')");
             });
             HealAll = false;
+
+            HotkeysManager.Register("Movements",
+            Keys.M,
+            ModifierKeys.Control,
+            o =>
+            {
+                Movements = !Movements;
+                Logging.Write("Movement enabled: " + Movements);
+                GeneralSettings.Instance.Movement = Movements;
+                Lua.DoString("print('Movement Enabled: " + Movements + "')");
+            });
+            Movements = false;
+
+            HotkeysManager.Register("Targeting",
+            Keys.T,
+            ModifierKeys.Control,
+            o =>
+            {
+                Targeting = !Targeting;
+                Logging.Write("Targeting enabled: " + Targeting);
+                GeneralSettings.Instance.Targeting = Targeting;
+                Lua.DoString("print('Targeting Enabled: " + Targeting + "')");
+            });
+            Targeting = true;
 
             HotkeysManager.Register("Show Overlay",
             Keys.O,

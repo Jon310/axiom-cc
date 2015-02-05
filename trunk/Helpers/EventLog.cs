@@ -11,7 +11,7 @@ using Styx.WoWInternals;
 
 namespace Axiom.Helpers
 {
-    class EventLog
+    class EventLog : Axiom
     {
         private static bool _combatLogAttached;
 
