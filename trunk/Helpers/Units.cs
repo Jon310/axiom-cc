@@ -104,6 +104,12 @@ namespace Axiom.Helpers
                 return false;
             return true;
         }
+        public static bool HasAnyAura(this WoWUnit unit, params string[] auraNames)
+        {
+            var auras = unit.GetAllAuras();
+            var hashes = new HashSet<string>(auraNames);
+            return auras.Any(a => hashes.Contains(a.Name));
+        }
         public static uint AuraTimeLeft(this WoWUnit unit, int aura)
         {
             if (!unit.IsValid)
