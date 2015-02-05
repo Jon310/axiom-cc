@@ -7,7 +7,7 @@
     <ProjectGuid>{3F72E6BC-13E4-497E-AACE-91357BC01BA9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NotNamed</RootNamespace>
+    <RootNamespace>Axiom</RootNamespace>
     <AssemblyName>NotNamed</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class\Paladin\Retribution.cs" />
     <Compile Include="Class\Warrior\Arms.cs" />
     <Compile Include="Class\Warrior\Protection.cs" />
     <Compile Include="Helpers\CombatLog.cs" />
@@ -102,7 +103,6 @@
     <Folder Include="Class\Hunter\" />
     <Folder Include="Class\Mage\" />
     <Folder Include="Class\Monk\" />
-    <Folder Include="Class\Paladin\" />
     <Folder Include="Class\Priest\" />
     <Folder Include="Class\Rogue\" />
     <Folder Include="Class\Shaman\" />
