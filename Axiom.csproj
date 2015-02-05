@@ -49,10 +49,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\Warrior\Arms.cs" />
+    <Compile Include="Class\Warrior\Protection.cs" />
     <Compile Include="Helpers\CombatLog.cs" />
     <Compile Include="Helpers\EventLog.cs" />
     <Compile Include="Helpers\Extensions.cs" />
-    <Compile Include="Helpers\KeyboardPolling.cs" />
     <Compile Include="Helpers\Log.cs" />
     <Compile Include="Helpers\Movement.cs" />
     <Compile Include="Helpers\Spell.cs" />
