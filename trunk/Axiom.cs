@@ -116,7 +116,11 @@ namespace Axiom
                     GeneralSettings.Instance.DisableMovement = false;
                     GeneralSettings.Instance.DisableTargeting = false;
                     break;
-                case "RaidBot":
+                case "Grind Bot":
+                    GeneralSettings.Instance.DisableMovement = false;
+                    GeneralSettings.Instance.DisableTargeting = false;
+                    break;
+                case "Raid Bot":
                     GeneralSettings.Instance.DisableMovement = true;
                     GeneralSettings.Instance.DisableTargeting = true;
                     break;
