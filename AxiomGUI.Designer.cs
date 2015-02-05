@@ -69,6 +69,7 @@
             this.openOverlayToolStripMenuItem.Name = "openOverlayToolStripMenuItem";
             this.openOverlayToolStripMenuItem.Size = new System.Drawing.Size(168, 24);
             this.openOverlayToolStripMenuItem.Text = "Open Overlay";
+            this.openOverlayToolStripMenuItem.Click += new System.EventHandler(this.openOverlayToolStripMenuItem_Click);
             // 
             // saveExitToolStripMenuItem
             // 

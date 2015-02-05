@@ -9,6 +9,7 @@ using Axiom.Helpers;
 using Axiom.Managers;
 using Bots.DungeonBuddy.Helpers;
 using Styx;
+using Styx.CommonBot;
 using Styx.Helpers;
 using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
@@ -111,6 +112,13 @@ namespace Axiom.Helpers
 
             return result.Duration;
         }
+        public static TimeSpan GetAuraTimeLeft(this WoWUnit onUnit, string auraName, bool fromMyAura = true)
+        {
+            WoWAura wantedAura =
+                onUnit.GetAllAuras().Where(a => a != null && a.Name == auraName && a.TimeLeft > TimeSpan.Zero && (!fromMyAura || a.CreatorGuid == StyxWoW.Me.Guid)).FirstOrDefault();
+
+            return wantedAura != null ? wantedAura.TimeLeft : TimeSpan.Zero;
+        }
         public static uint GetAuraStackCount(this WoWUnit unit, string aura)
         {
             if (unit != null && unit.IsValid)
@@ -123,6 +131,16 @@ namespace Axiom.Helpers
                 }
             }
             return uint.MinValue;
+        }
+        public static bool HasAuraExpired(this WoWUnit u, string aura, int secs = 3, bool myAura = true)
+        {
+            return u.HasAuraExpired(aura, aura, secs, myAura);
+        }
+        public static bool HasAuraExpired(this WoWUnit u, string spell, string aura, int secs = 3, bool myAura = true)
+        {
+            // need to compare millisecs even though seconds are provided.  otherwise see it as expired 999 ms early because
+            // .. of loss of precision
+            return SpellManager.HasSpell(spell) && u.GetAuraTimeLeft(aura, myAura).TotalSeconds <= secs;
         }
         #endregion
 

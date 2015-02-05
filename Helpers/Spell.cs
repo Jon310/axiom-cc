@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using Axiom.Helpers;
 using Axiom.Managers;
 using Axiom.Settings;
 using Axiom.Helpers;
+using Buddy.Coroutines;
 using Styx;
 using Styx.Common;
 using Styx.CommonBot;
+using Styx.CommonBot.Coroutines;
 using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
 
@@ -19,6 +22,7 @@ namespace Axiom.Helpers
     {
         public static readonly LocalPlayer Me = StyxWoW.Me;
         public static WoWUnit LastCastTarget;
+        public static string LastSpellCast;
 
         #region Enums
         public enum CanCastResult
@@ -112,6 +116,35 @@ namespace Axiom.Helpers
                 return true;
             }
             return false;
+        }
+
+        #endregion
+
+        #region CastOnGround
+
+        public static async Task<bool> CastOnGround(int spell, WoWPoint onLocation, bool reqs)
+        {
+            var sp = WoWSpell.FromId(spell);
+            var sname = sp != null ? sp.Name : "#" + spell;
+
+            if (!reqs || !SpellManager.CanCast(spell))
+                return false;
+
+            if (!SpellManager.Cast(spell))
+                return false;
+
+            if (!await Coroutine.Wait(1000, () => StyxWoW.Me.CurrentPendingCursorSpell != null))
+            {
+                Logging.Write(Colors.DarkRed, "Cursor Spell Didnt happen");
+                return false;
+            }
+
+            SpellManager.ClickRemoteLocation(onLocation);
+            Log.WritetoFile(LogLevel.Diagnostic,
+                    String.Format("Casting {0}"));
+            LastSpellCast = sname;
+            await CommonCoroutines.SleepForLagDuration();
+            return true;
         }
 
         #endregion
