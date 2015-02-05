@@ -396,6 +396,34 @@ namespace Axiom.Helpers
             return spell.HasRange ? spell.MaxRange : Math.Max(5, Me.CombatReach + 1.3333334f + unit.CombatReach);
         }
 
+        public static int GetCharges(string name)
+        {
+            SpellFindResults sfr;
+            if (SpellManager.FindSpell(name, out sfr))
+            {
+                WoWSpell spell = sfr.Override ?? sfr.Original;
+                return GetCharges(spell);
+            }
+            return 0;
+        }
+
+        public static int GetCharges(int name)
+        {
+            SpellFindResults sfr;
+            if (SpellManager.FindSpell(name, out sfr))
+            {
+                WoWSpell spell = sfr.Override ?? sfr.Original;
+                return GetCharges(spell);
+            }
+            return 0;
+        }
+
+        public static int GetCharges(WoWSpell spell)
+        {
+            int charges = Lua.GetReturnVal<int>("return GetSpellCharges(" + spell.Id + ")", 0);
+            return charges;
+        }
+
         public static bool SpellHistoryContainsKey(string spell, WoWGuid unitguid)
         {
 

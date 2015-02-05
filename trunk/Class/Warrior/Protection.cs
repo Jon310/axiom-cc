@@ -108,7 +108,7 @@ namespace Axiom.Class.Warrior
         {
             if (!reqs) return false;
 
-            await Spell.Cast(Shockwave, onunit, () => Clusters.GetClusterCount(Me, Unit.NearbyUnfriendlyUnits, ClusterType.Cone, 9) >= 3);
+            await Spell.Cast(Shockwave, onunit, () => Units.EnemyUnitsCone(Me, Units.EnemyUnits(10), 9).Count() >= 3);
             await Spell.Cast(Bladestorm, onunit, () => Me.CurrentTarget.IsWithinMeleeRange);
             await Spell.Cast(ThunderClap, onunit);
 
@@ -130,11 +130,11 @@ namespace Axiom.Class.Warrior
 
             await Spell.Cast(VictoryRush, onunit, () => Me.HealthPercent <= 90 && Me.HasAura("Victorious"));
 
-            await Spell.Cast("Intervene", onunit, () => BestBanner);
+            await Spell.Cast("Intervene", BestBanner);
 
             await StormBoltFocus();
 
-            await Spell.Cast("Intervene", onunit, () => BestInterveneTarget);
+            await Spell.Cast("Intervene", BestInterveneTarget);
             //await Spell.CoCast(MassSpellReflection, Me.CurrentTarget.IsCasting && Me.CurrentTarget.Distance > 10);
             //await Spell.CoCast(ShieldWall, Me.HealthPercent < 40);
             //await Spell.CoCast(LastStand, Me.CurrentTarget.HealthPercent > Me.HealthPercent && Me.HealthPercent < 60);
@@ -153,15 +153,15 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(ShieldCharge, onunit, () => (!Me.HasAura("Shield Charge") && SpellManager.Spells["Shield Slam"].Cooldown) || Spell.GetCharges(ShieldCharge) > 1);
             //await Spell.CoCast(HeroicStrike, Me.HasAura("Shield Charge") || Me.HasAura("Ultimatum") || Me.CurrentRage >= 90 || Me.HasAura("Unyielding Strikes", 5));
 
-            await Spell.Cast(HeroicStrike, onunit, () => (Me.HasAura("Sheld Charge") || (Me.HasAura("Unyielding Strikes") && Me.CurrentRage >= 50 - Spell.StackCount(169686) * 5)) && Me.CurrentTarget.HealthPercent > 20);
+            await Spell.Cast(HeroicStrike, onunit, () => (Me.HasAura("Sheld Charge") || (Me.HasAura("Unyielding Strikes") && Me.CurrentRage >= 50 - Me.GetAuraStackCount("Unyielding Strikes") * 5)) && Me.CurrentTarget.HealthPercent > 20);
             await Spell.Cast(HeroicStrike, onunit, () => Me.HasAura("Ultimatum") || Me.CurrentRage >= Me.MaxRage - 20 || Me.HasAura("Unyielding Strikes", 5));
 
             await Spell.Cast(ShieldSlam, onunit);
             await Spell.Cast(Revenge, onunit);
-            await Spell.CastOnGround(Ravager, onunit, Me.CurrentTarget.Location, SlimAI.Burst && Me.CurrentTarget.Distance <= 8);
+            await Spell.CastOnGround(Ravager, onunit.Location, Burst && Me.CurrentTarget.Distance <= 8);
             await Spell.Cast(DragonRoar, onunit, () => Me.CurrentTarget.Distance <= 8);
             await Spell.Cast(Execute, onunit, () => Me.HasAura("Sudden Death"));
-            await Spell.Cast(ThunderClap, onunit, () => SlimAI.AOE && Unit.EnemyUnitsSub8.Count(u => !u.HasAura("Deep Wounds")) >= 1 && Unit.UnfriendlyUnits(8).Count() >= 2);
+            await Spell.Cast(ThunderClap, onunit, () => Axiom.AOE && Units.EnemyUnitsSub8.Count(u => !u.HasAura("Deep Wounds")) >= 1 && Units.EnemyUnitsSub8.Count() >= 2);
 
             await Spell.Cast(Execute, onunit, () => Me.CurrentRage > 60 && Me.CurrentTarget.HealthPercent < 20);
             await Spell.Cast(Devastate, onunit);
@@ -197,14 +197,14 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(ShieldCharge, onunit, () => (!Me.HasAura("Shield Charge") && !SpellManager.Spells["Shield Slam"].Cooldown) || Spell.GetCharges(ShieldCharge) == 2);
             //await Spell.CoCast(HeroicStrike, Me.HasAura("Shield Charge") || Me.HasAura("Ultimatum") || Me.CurrentRage >= 90 || Me.HasAura("Unyielding Strikes", 5));
 
-            await Spell.Cast(HeroicStrike, onunit, () => (Me.HasAura("Sheld Charge") || (Me.HasAura("Unyielding Strikes") && Me.CurrentRage >= 50 - Spell.StackCount(169686) * 5)) && Me.CurrentTarget.HealthPercent > 20);
+            await Spell.Cast(HeroicStrike, onunit, () => (Me.HasAura("Sheld Charge") || (Me.HasAura("Unyielding Strikes") && Me.CurrentRage >= 50 - Me.GetAuraStackCount("Unyielding Strikes") * 5)) && Me.CurrentTarget.HealthPercent > 20);
             await Spell.Cast(HeroicStrike, onunit, () => Me.HasAura("Ultimatum") || Me.CurrentRage >= Me.MaxRage - 20 || Me.HasAura("Unyielding Strikes", 5));
 
             await Spell.Cast(ShieldSlam, onunit);
             await Spell.Cast(Revenge, onunit);
             await Spell.Cast(Execute, onunit, () => Me.HasAura("Sudden Death"));
             await Spell.Cast(StormBolt, onunit);
-            await Spell.Cast(ThunderClap, onunit, () => Axiom.AOE && Unit.EnemyUnitsSub8.Any(u => !u.HasAura("Deep Wounds")) && Unit.EnemyUnitsSub8.Count() >= 2);
+            await Spell.Cast(ThunderClap, onunit, () => Axiom.AOE && Units.EnemyUnitsSub8.Any(u => !u.HasAura("Deep Wounds")) && Units.EnemyUnitsSub8.Count() >= 2);
             await Spell.Cast(DragonRoar, onunit, () => Me.CurrentTarget.Distance <= 8);
             await Spell.Cast(ThunderClap, onunit, () => Axiom.AOE && Units.EnemyUnitsSub8.Count() >= 6);
             await Spell.Cast(Execute, onunit, () => Me.CurrentRage > 60 && Me.CurrentTarget.HealthPercent < 20);
@@ -213,20 +213,29 @@ namespace Axiom.Class.Warrior
             return true;
         }
 
-
         #endregion
-        static bool IsCurrentTank()
+
+        #region IsCurrentTank()
+
+        private static bool IsCurrentTank()
         {
             return StyxWoW.Me.CurrentTarget.CurrentTargetGuid == StyxWoW.Me.Guid;
         }
 
+        #endregion
+        
+        #region DefCools
+
         private static bool DefCools
         {
             get
-                {
-                return Me.HasAura("Shield Block") || Me.HasAura(Ravager) || Me.HasAura(LastStand) || Me.HasAura(ShieldWall) || Me.CurrentTarget.HasAura("Demoralizing Shout", true);
+            {
+                return Me.HasAura("Shield Block") || Me.HasAura(Ravager) || Me.HasAura(LastStand) ||
+                       Me.HasAura(ShieldWall) || Me.CurrentTarget.HasAura("Demoralizing Shout", true);
             }
         }
+
+        #endregion
 
         #region Leap
         private static async Task<bool> Leap()
@@ -278,15 +287,44 @@ namespace Axiom.Class.Warrior
         }
         #endregion
 
+        #region Freedoms
 
-        #region Pvp Stuff
         private static bool Freedoms
         {
             get
             {
-                return Me.CurrentTarget.HasAnyAura("Hand of Freedom", "Ice Block", "Hand of Protection", "Divine Shield", "Cyclone", "Deterrence", "Phantasm", "Windwalk Totem");
+                return Me.CurrentTarget.HasAnyAura("Hand of Freedom", "Ice Block", "Hand of Protection", "Divine Shield",
+                    "Cyclone", "Deterrence", "Phantasm", "Windwalk Totem");
             }
         }
+
+        #endregion
+
+        #region Best Banner
+        public static WoWUnit BestBanner//WoWUnit
+        {
+            get
+            {
+                if (!StyxWoW.Me.GroupInfo.IsInParty)
+                    return null;
+                if (StyxWoW.Me.GroupInfo.IsInParty)
+                {
+                    var closePlayer = Units.FriendlyUnitsNearTarget(6f).OrderBy(t => t.DistanceSqr).FirstOrDefault(t => t.IsAlive);
+                    if (closePlayer != null)
+                        return closePlayer;
+                    var bestBan = (from unit in ObjectManager.GetObjectsOfType<WoWUnit>(false)
+                                   //where (unit.Equals(59390) || unit.Equals(59398))
+                                   //where unit.Guid.Equals(59390) || unit.Guid.Equals(59398)
+                                   where unit.Entry.Equals(59390) || unit.Entry.Equals(59398)
+                                   //where (unit.Guid == 59390 || unit.Guid == 59398) 
+                                   where unit.InLineOfSight
+                                   select unit).FirstOrDefault();
+                    return bestBan;
+                }
+                return null;
+            }
+        }
+        #endregion
 
         #region Coroutine Stormbolt Focus
 
@@ -295,7 +333,7 @@ namespace Axiom.Class.Warrior
             KeyboardPolling.IsKeyDown(Keys.C);
             if (SpellManager.CanCast("Storm Bolt") && KeyboardPolling.IsKeyDown(Keys.C))
             {
-                await Spell.CoCast(StormBolt, Me.FocusedUnit);
+                await Spell.Cast(StormBolt, Me.FocusedUnit);
             }
 
             return false;
@@ -303,7 +341,7 @@ namespace Axiom.Class.Warrior
 
         #endregion
 
- #region Best Intervene
+        #region Best Intervene
         public static WoWUnit BestInterveneTarget
         {
             get
@@ -312,7 +350,7 @@ namespace Axiom.Class.Warrior
                     return null;
                 if (StyxWoW.Me.GroupInfo.IsInParty)
                 {
-                    var bestTank = Group.Tanks.OrderBy(t => t.DistanceSqr).FirstOrDefault(t => t.IsAlive);
+                    var bestTank = HealManager.Tanks.OrderBy(t => t.DistanceSqr).FirstOrDefault(t => t.IsAlive);
                     if (bestTank != null)
                         return bestTank;
                     var bestInt = (from unit in ObjectManager.GetObjectsOfType<WoWPlayer>(false)
@@ -330,17 +368,6 @@ namespace Axiom.Class.Warrior
         }
         #endregion
 
-
-        #region FriendlyUnitsNearTarget
-        public static IEnumerable<WoWUnit> FriendlyUnitsNearTarget(float distance)
-        {
-            var dist = distance * distance;
-            var curTarLocation = StyxWoW.Me.CurrentTarget.Location;
-            return ObjectManager.GetObjectsOfType<WoWUnit>(false, false).Where(
-                        p => ValidUnit(p) && p.IsFriendly && p.Location.DistanceSqr(curTarLocation) <= dist).ToList();
-        }
-        #endregion
-
         #region IsGlobalCooldown
         public static bool IsGlobalCooldown(bool faceDuring = false, bool allowLagTollerance = true)
         {
@@ -349,66 +376,6 @@ namespace Axiom.Class.Warrior
             return gcdTimeLeft.TotalMilliseconds > latency;
         }
         #endregion
-
-        #region ShatterBubbles
-        static Composite ShatterBubbles()
-        {
-            return new Decorator(
-                    ret => Me.CurrentTarget.IsPlayer &&
-                          Me.CurrentTarget.HasAnyAura("Ice Block", "Hand of Protection", "Divine Shield") && Me.CurrentTarget.InLineOfSight,
-                //Me.CurrentTarget.ActiveAuras.ContainsKey("Ice Block") ||
-                //Me.CurrentTarget.ActiveAuras.ContainsKey("Hand of Protection") ||
-                //Me.CurrentTarget.ActiveAuras.ContainsKey("Divine Shield")),
-                    new PrioritySelector(
-                        Spell.Cast("Shattering Throw")));
-        }
-        #endregion
-
-        #region Coroutine Shatter Bubbles
-        private static Task<bool> CoShatterBubbles()
-        {
-            return Spell.Cast(ShatteringThrow,
-                        Me.CurrentTarget.IsPlayer &&
-                        Me.CurrentTarget.HasAnyAura("Ice Block", "Hand of Protection", "Divine Shield") &&
-                        Me.CurrentTarget.InLineOfSight);
-        }
-        #endregion
-
-        #region ValidUnit
-        public static bool ValidUnit(WoWUnit p)
-        {
-            // Ignore shit we can't select/attack
-            if (!p.CanSelect || !p.Attackable)
-                return false;
-
-            // Duh
-            if (p.IsDead)
-                return false;
-
-            // check for players
-            if (p.IsPlayer)
-                return true;
-
-            // Dummies/bosses are valid by default. Period.
-            if (p.IsTrainingDummy())
-                return true;
-
-            // If its a pet, lets ignore it please.
-            if (p.IsPet || p.OwnedByRoot != null)
-                return false;
-
-            // And ignore critters/non-combat pets
-            if (p.IsNonCombatPet || p.IsCritter)
-                return false;
-
-            if (p.CreatedByUnitGuid != WoWGuid.Empty || p.SummonedByUnitGuid != WoWGuid.Empty)
-                return false;
-
-            return true;
-        }
-        #endregion
-        #endregion
-
 
         #region WarriorTalents
         enum WarriorTalents
