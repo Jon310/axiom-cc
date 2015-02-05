@@ -52,6 +52,7 @@
     <Compile Include="Helpers\CombatLog.cs" />
     <Compile Include="Helpers\EventLog.cs" />
     <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Helpers\KeyboardPolling.cs" />
     <Compile Include="Helpers\Log.cs" />
     <Compile Include="Helpers\Movement.cs" />
     <Compile Include="Helpers\Spell.cs" />

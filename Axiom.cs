@@ -112,17 +112,28 @@ namespace Axiom
                     GeneralSettings.Instance.DisableMovement = false;
                     GeneralSettings.Instance.DisableTargeting = false;
                     break;
+                case "Akatosh Quester":
+                    GeneralSettings.Instance.DisableMovement = false;
+                    GeneralSettings.Instance.DisableTargeting = false;
+                    break;
+                case "BGBuddy":
+                    GeneralSettings.Instance.DisableMovement = false;
+                    GeneralSettings.Instance.DisableTargeting = false;
+                    break;
+                case "BGFarmer [Millz]":
+                    GeneralSettings.Instance.DisableMovement = false;
+                    GeneralSettings.Instance.DisableTargeting = false;
+                    break;
                 case "Combat Bot":
                     GeneralSettings.Instance.DisableMovement = false;
                     GeneralSettings.Instance.DisableTargeting = false;
                     break;
                 case "Grind Bot":
                     GeneralSettings.Instance.DisableMovement = false;
-                    GeneralSettings.Instance.DisableTargeting = false;
                     break;
                 case "Raid Bot":
                     GeneralSettings.Instance.DisableMovement = true;
-                    GeneralSettings.Instance.DisableTargeting = true;
+                    Log.WriteLog("Movement Disabled - Raid Bot detected");
                     break;
                 default:
                     GeneralSettings.Instance.DisableMovement = false;
