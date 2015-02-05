@@ -208,12 +208,17 @@ namespace Axiom.Helpers
             {
                 if (unit.Distance >= spell.MaxRange + unit.CombatReach)
                     return CanCastResult.Range;
+                if (unit.Distance <= spell.MinRange - unit.CombatReach)
+                    return CanCastResult.Range;
             }
             else
             {
                 if (!unit.IsWithinMeleeRange)
                     return CanCastResult.Range;
             }
+
+            if (Me.HasAura("Bladestorm"))
+                return CanCastResult.Channeling;
 
             if (Me.HasAura("Drink"))
                 return CanCastResult.Drinking;
