@@ -41,6 +41,12 @@ namespace Axiom
         {
             On_Exit(sender, e);
         }
+
+        private void openOverlayToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Axiom.ShowOverlay = true;
+            Overlay.ShowOverlay();
+        }
     }
 
 

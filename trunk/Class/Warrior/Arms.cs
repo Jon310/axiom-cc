@@ -54,7 +54,7 @@ namespace Axiom.Class.Warrior
 
             await AOE(onunit, Units.EnemyUnitsSub8.Count() >= 2 && Axiom.AOE);
             await Spell.Cast(Rend, onunit, () => !Me.CurrentTarget.HasAura("Rend", true));
-            await Spell.CastOnGround(Ravager, onunit, () => Me.CurrentTarget.Location, Spell.GetCooldownLeft("Colossus Smash").TotalSeconds < 4 && Axiom.AOE);
+            await Spell.CastOnGround(Ravager, Me.CurrentTarget.Location, Spell.GetCooldownLeft("Colossus Smash").TotalSeconds < 4 && Axiom.AOE);
             await Spell.Cast(Bladestorm, onunit, () => Me.CurrentTarget.IsWithinMeleeRange && Axiom.AOE);
             await Spell.Cast(ColossusSmash, onunit, () => Me.CurrentTarget.HasAura("Rend", true));
             await Spell.Cast(MortalStrike, onunit, () => Me.CurrentTarget.HealthPercent > 20 && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1);
