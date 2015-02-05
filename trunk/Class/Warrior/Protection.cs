@@ -46,11 +46,12 @@ namespace Axiom.Class.Warrior
                 return true;
             }
 
-            //if (Me.HasAura("Gladiator Stance"))
-            //{
-            //    await Glad();
-            //    return true;
-            //}
+            if (Me.HasAura("Gladiator Stance"))
+            {
+                await Glad(onunit);
+                return true;
+            }
+
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
             //await Spell.Cast("Colossus Smash", onunit);
@@ -60,7 +61,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(Avatar, onunit, () => Axiom.Burst && Me.CurrentTarget.IsWithinMeleeRange);
 
             await Leap();
-            await MockingBanner();
+            await DropMockingBanner();
 
             await Spell.Cast(VictoryRush, onunit, () => Me.HealthPercent <= 90 && Me.HasAura("Victorious"));
             await Spell.Cast(EnragedRegeneration, onunit, () => Me.HealthPercent <= 50);
@@ -76,7 +77,7 @@ namespace Axiom.Class.Warrior
 
             //await Spell.CoCast(HeroicStrike, Me.CurrentRage > Me.MaxRage - (30 - Unit.buffStackCount(169685, Me) * 5));
             await Spell.Cast(HeroicStrike, onunit, () => Me.HasAura(Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank()));
-            await Spell.CastOnGround(Ravager, onunit, () => Me.CurrentTarget.Location, Axiom.Burst && Me.CurrentTarget.IsWithinMeleeRange);
+            await Spell.CastOnGround(Ravager, onunit.Location, Axiom.Burst && Me.CurrentTarget.IsWithinMeleeRange);
             await Spell.Cast(DragonRoar, onunit, () => Me.CurrentTarget.IsWithinMeleeRange && Axiom.Burst);
             await Spell.Cast(StormBolt, onunit);            
             
@@ -169,6 +170,51 @@ namespace Axiom.Class.Warrior
         }
         #endregion
 
+        #region Glad
+
+        private static async Task<bool> Glad(WoWUnit onunit)
+        {
+            if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
+
+            //await Spell.CoCast(MassSpellReflection, Me.CurrentTarget.IsCasting && Me.CurrentTarget.Distance > 10);
+            //await Spell.CoCast(ShieldWall, Me.HealthPercent < 40);
+            //await Spell.CoCast(LastStand, Me.CurrentTarget.HealthPercent > Me.HealthPercent && Me.HealthPercent < 60);
+            //await Spell.CoCast(DemoralizingShout, Unit.EnemyUnitsSub10.Count() >= 3);
+            await Spell.Cast(ShieldBarrier, onunit, () => Me.HealthPercent < 40 && Me.CurrentRage >= 100);
+            await Spell.Cast(VictoryRush, onunit, () => Me.HealthPercent <= 90 && Me.HasAura("Victorious"));
+            //await Spell.CoCast(BerserkerRage, Me.HasAuraWithMechanic(WoWSpellMechanic.Fleeing));
+            await Spell.Cast(EnragedRegeneration, onunit, () => Me.HealthPercent <= 50);
+
+            await Leap();
+
+            if (Me.CurrentTarget.IsWithinMeleeRange && Axiom.Burst)
+            {
+                await Spell.Cast(Avatar, onunit);
+                await Spell.Cast(BloodBath, onunit);
+                await Spell.Cast(Bladestorm, onunit);
+            }
+
+            await Spell.Cast(ShieldCharge, onunit, () => (!Me.HasAura("Shield Charge") && !SpellManager.Spells["Shield Slam"].Cooldown) || Spell.GetCharges(ShieldCharge) == 2);
+            //await Spell.CoCast(HeroicStrike, Me.HasAura("Shield Charge") || Me.HasAura("Ultimatum") || Me.CurrentRage >= 90 || Me.HasAura("Unyielding Strikes", 5));
+
+            await Spell.Cast(HeroicStrike, onunit, () => (Me.HasAura("Sheld Charge") || (Me.HasAura("Unyielding Strikes") && Me.CurrentRage >= 50 - Spell.StackCount(169686) * 5)) && Me.CurrentTarget.HealthPercent > 20);
+            await Spell.Cast(HeroicStrike, onunit, () => Me.HasAura("Ultimatum") || Me.CurrentRage >= Me.MaxRage - 20 || Me.HasAura("Unyielding Strikes", 5));
+
+            await Spell.Cast(ShieldSlam, onunit);
+            await Spell.Cast(Revenge, onunit);
+            await Spell.Cast(Execute, onunit, () => Me.HasAura("Sudden Death"));
+            await Spell.Cast(StormBolt, onunit);
+            await Spell.Cast(ThunderClap, onunit, () => Axiom.AOE && Unit.EnemyUnitsSub8.Any(u => !u.HasAura("Deep Wounds")) && Unit.EnemyUnitsSub8.Count() >= 2);
+            await Spell.Cast(DragonRoar, onunit, () => Me.CurrentTarget.Distance <= 8);
+            await Spell.Cast(ThunderClap, onunit, () => Axiom.AOE && Units.EnemyUnitsSub8.Count() >= 6);
+            await Spell.Cast(Execute, onunit, () => Me.CurrentRage > 60 && Me.CurrentTarget.HealthPercent < 20);
+            await Spell.Cast(Devastate, onunit);
+
+            return true;
+        }
+
+
+        #endregion
         static bool IsCurrentTank()
         {
             return StyxWoW.Me.CurrentTarget.CurrentTargetGuid == StyxWoW.Me.Guid;
@@ -177,7 +223,7 @@ namespace Axiom.Class.Warrior
         private static bool DefCools
         {
             get
-            {
+                {
                 return Me.HasAura("Shield Block") || Me.HasAura(Ravager) || Me.HasAura(LastStand) || Me.HasAura(ShieldWall) || Me.CurrentTarget.HasAura("Demoralizing Shout", true);
             }
         }
@@ -257,16 +303,7 @@ namespace Axiom.Class.Warrior
 
         #endregion
 
-        private static bool DefCools
-        {
-            get
-            {
-                return Me.HasAura("Shield Block") || Me.HasAura(Ravager) || Me.HasAura(LastStand) || Me.HasAura(ShieldWall) || Me.CurrentTarget.HasMyAura("Demoralizing Shout");
-            }
-        }
-
-
-        #region Best Intervene
+ #region Best Intervene
         public static WoWUnit BestInterveneTarget
         {
             get
@@ -335,155 +372,6 @@ namespace Axiom.Class.Warrior
                         Me.CurrentTarget.HasAnyAura("Ice Block", "Hand of Protection", "Divine Shield") &&
                         Me.CurrentTarget.InLineOfSight);
         }
-        #endregion
-
-        #region InterruptCastNoChannel
-
-        private static double InterruptCastNoChannel(WoWUnit target)
-        {
-            if (target == null || !target.IsPlayer)
-            {
-                return 0;
-            }
-            double timeLeft = 0;
-
-            if (target.IsCasting && (//target.CastingSpell.Name == "Arcane Blast" ||
-                ////target.CastingSpell.Name == "Banish" ||
-                //target.CastingSpell.Name == "Binding Heal" ||
-                                     target.CastingSpell.Name == "Cyclone" ||
-                //target.CastingSpell.Name == "Chain Heal" ||
-                //target.CastingSpell.Name == "Chain Lightning" ||
-                //target.CastingSpell.Name == "Chi Burst" ||
-                                     target.CastingSpell.Name == "Chaos Bolt" ||
-                //target.CastingSpell.Name == "Demonic Circle: Summon" ||
-                //target.CastingSpell.Name == "Denounce" ||
-                //target.CastingSpell.Name == "Divine Light" ||
-                //target.CastingSpell.Name == "Divine Plea" ||
-                                     target.CastingSpell.Name == "Dominated Mind" ||
-                                     target.CastingSpell.Name == "Elemental Blast" ||
-                                     target.CastingSpell.Name == "Entangling Roots" ||
-                //target.CastingSpell.Name == "Enveloping Mist" ||
-                                     target.CastingSpell.Name == "Fear" ||
-                //target.CastingSpell.Name == "Fireball" ||
-                //target.CastingSpell.Name == "Flash Heal" ||
-                //target.CastingSpell.Name == "Flash of Light" ||
-                //target.CastingSpell.Name == "Frost Bomb" ||
-                //target.CastingSpell.Name == "Frostjaw" ||
-                //target.CastingSpell.Name == "Frostbolt" ||
-                //target.CastingSpell.Name == "Frostfire Bolt" ||
-                //target.CastingSpell.Name == "Greater Heal" ||
-                //target.CastingSpell.Name == "Greater Healing Wave" ||
-                //target.CastingSpell.Name == "Haunt" ||
-                //target.CastingSpell.Name == "Heal" ||
-                //target.CastingSpell.Name == "Healing Surge" ||
-                //target.CastingSpell.Name == "Healing Touch" ||
-                //target.CastingSpell.Name == "Healing Wave" ||
-                                     target.CastingSpell.Name == "Hex" ||
-                //target.CastingSpell.Name == "Holy Fire" ||
-                //target.CastingSpell.Name == "Holy Light" ||
-                //target.CastingSpell.Name == "Holy Radiance" ||
-                //target.CastingSpell.Name == "Hibernate" ||
-                                     target.CastingSpell.Name == "Mass Dispel" ||
-                //target.CastingSpell.Name == "Mind Spike" ||
-                //target.CastingSpell.Name == "Immolate" ||
-                //target.CastingSpell.Name == "Incinerate" ||
-                                     target.CastingSpell.Name == "Lava Burst" ||
-                //target.CastingSpell.Name == "Mind Blast" ||
-                //target.CastingSpell.Name == "Mind Spike" ||
-                //target.CastingSpell.Name == "Nourish" ||
-                                     target.CastingSpell.Name == "Polymorph" ||
-                //target.CastingSpell.Name == "Prayer of Healing" ||
-                //target.CastingSpell.Name == "Pyroblast" ||
-                //target.CastingSpell.Name == "Rebirth" ||
-                //target.CastingSpell.Name == "Regrowth" ||
-                                     target.CastingSpell.Name == "Repentance" ||
-                //target.CastingSpell.Name == "Scorch" ||
-                //target.CastingSpell.Name == "Shadow Bolt" ||
-                //target.CastingSpell.Name == "Shackle Undead"
-                //target.CastingSpell.Name == "Smite" ||
-                //target.CastingSpell.Name == "Soul Fire" ||
-                //target.CastingSpell.Name == "Starfire" ||
-                //target.CastingSpell.Name == "Starsurge" ||
-                //target.CastingSpell.Name == "Surging Mist" ||
-                //target.CastingSpell.Name == "Transcendence" ||
-                //target.CastingSpell.Name == "Transcendence: Transfer" ||
-                                    target.CastingSpell.Name == "Unstable Affliction"
-                //target.CastingSpell.Name == "Vampiric Touch" ||
-                //target.CastingSpell.Name == "Wrath")
-                ))
-            {
-                timeLeft = target.CurrentCastTimeLeft.TotalMilliseconds;
-            }
-            return timeLeft;
-        }
-
-        #endregion
-
-        #region InterruptCastChannel
-
-        private static double InterruptCastChannel(WoWUnit target)
-        {
-            if (target == null || !target.IsPlayer)
-            {
-                return 0;
-            }
-            double timeLeft = 0;
-
-            if (target.IsChanneling && (target.ChanneledSpell.Name == "Hymn of Hope" ||
-                //target.ChanneledSpell.Name == "Arcane Barrage" ||
-                                        target.ChanneledSpell.Name == "Evocation" ||
-                //target.ChanneledSpell.Name == "Mana Tea" ||
-                //target.ChanneledSpell.Name == "Crackling Jade Lightning" ||
-                //target.ChanneledSpell.Name == "Malefic Grasp" ||
-                //target.ChanneledSpell.Name == "Hellfire" ||
-                                        target.ChanneledSpell.Name == "Harvest Life" ||
-                                        target.ChanneledSpell.Name == "Health Funnel" ||
-                                        target.ChanneledSpell.Name == "Drain Soul" ||
-                //target.ChanneledSpell.Name == "Arcane Missiles" ||
-                //target.ChanneledSpell.Name == "Mind Flay" ||
-                //target.ChanneledSpell.Name == "Penance" ||
-                //target.ChanneledSpell.Name == "Soothing Mist" ||
-                                        target.ChanneledSpell.Name == "Tranquility" ||
-                                        target.ChanneledSpell.Name == "Drain Life"))
-            {
-                timeLeft = target.CurrentChannelTimeLeft.TotalMilliseconds;
-            }
-
-            return timeLeft;
-        }
-
-        #endregion
-
-        #region UpdateMyLatency
-
-        public static readonly double MyLatency = 65;
-
-        public static void UpdateMyLatency()
-        {
-            //if (THSettings.Instance.LagTolerance)
-            //{
-            //    //If SLagTolerance enabled, start casting next spell MyLatency Millisecond before GlobalCooldown ready.
-
-            //    MyLatency = (StyxWoW.WoWClient.Latency);
-            //    //MyLatency = 0;
-            //    //Use here because Lag Tolerance cap at 400
-            //    //Logging.Write("----------------------------------");
-            //    //Logging.Write("MyLatency: " + MyLatency);
-            //    //Logging.Write("----------------------------------");
-
-            //    if (MyLatency > 400)
-            //    {
-            //        //Lag Tolerance cap at 400
-            //        MyLatency = 400;
-            //    }
-            //}
-            //else
-            //{
-            //    //MyLatency = 400;
-            //    MyLatency = 0;
-            //}
-        }
-
         #endregion
 
         #region ValidUnit
