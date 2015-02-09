@@ -39,6 +39,8 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.propertyGrid2 = new System.Windows.Forms.PropertyGrid();
             this.button1 = new System.Windows.Forms.Button();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpSpellsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -50,7 +52,8 @@
             this.menuStrip1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.menuStrip1.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuToolStripMenuItem});
+            this.menuToolStripMenuItem,
+            this.debugToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(597, 28);
@@ -158,6 +161,21 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // debugToolStripMenuItem
+            // 
+            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dumpSpellsToolStripMenuItem});
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(66, 24);
+            this.debugToolStripMenuItem.Text = "Debug";
+            // 
+            // dumpSpellsToolStripMenuItem
+            // 
+            this.dumpSpellsToolStripMenuItem.Name = "dumpSpellsToolStripMenuItem";
+            this.dumpSpellsToolStripMenuItem.Size = new System.Drawing.Size(162, 24);
+            this.dumpSpellsToolStripMenuItem.Text = "Dump Spells";
+            this.dumpSpellsToolStripMenuItem.Click += new System.EventHandler(this.dumpSpellsToolStripMenuItem_Click);
+            // 
             // AxiomGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -196,5 +214,7 @@
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.PropertyGrid propertyGrid2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dumpSpellsToolStripMenuItem;
     }
 }

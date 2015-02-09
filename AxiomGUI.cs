@@ -71,6 +71,11 @@ namespace Axiom
         {
             On_Exit(sender, e);
         }
+
+        private void dumpSpellsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Lists.SpellLists.SpellDump();
+        }
     }
 
 

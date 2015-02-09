@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Axiom.Helpers;
 using JetBrains.Annotations;
+using Styx.CommonBot;
 
 namespace Axiom.Lists
 {
@@ -34,60 +36,74 @@ namespace Axiom.Lists
         };
         #endregion
 
+        #region SpellDump
+
+        public static void SpellDump()
+        {
+            foreach (var spell in SpellManager.Spells)
+            {
+                Log.WriteLog(string.Format("{0} = {1},", spell.Value.Name, spell.Value.Id));
+            }
+        }
+
+        #endregion
+
         #region Warrior Spells
 
         public const int Avatar = 107574,
-                          BattleShout = 6673,
-                          Bladestorm = 46924,
-                          BloodBath = 12292,
-                          Bloodthirst = 23881,
-                          BerserkerRage = 18499,
-                          Charge = 100,
-                          Cleave = 845,
-                          ColossusSmash = 167105,
-                          CommandingShout = 469,
-                          DemoralizingBanner = 114203,
-                          DemoralizingShout = 1160,
-                          Devastate = 20243,
-                          DieByTheSword = 118038,
-                          DragonRoar = 118000,
-                          Enrage = 12880,
-                          EnragedRegeneration = 55694,
-                          Execute = 163201,
-                          HeroicLeap = 6544,
-                          HeroicStrike = 78,
-                          HeroicThrow = 57755,
-                          ImpendingVictory = 103840,
-                          LastStand = 12975,
-                          MassSpellReflection = 114028,
-                          MockingBanner = 114192,
-                          MortalStrike = 12294,
-                          Overpower = 7384,
-                          RagingBlow = 85288,
-                          RallyingCry = 97462,
-                          Ravager = 152277,
-                          Recklessness = 1719,
-                          Rend = 772,
-                          Revenge = 6572,
-                          Siegebreaker = 176289,
-                          ShatteringThrow = 64382,
-                          ShieldBarrier = 112048,
-                          ShieldBlock = 2565,
-                          ShieldCharge = 156321,
-                          ShieldSlam = 23922,
-                          ShieldWall = 871,
-                          Shockwave = 46968,
-                          SkullBanner = 114207,
-                          Slam = 1464,
-                          StormBolt = 107570,
-                          SuddenDeath = 52437,
-                          SweepingStrikes = 12328,
-                          ThunderClap = 6343,
-                          Ultimatum = 122510,
-                          UnyieldingStrikes = 169685,
-                          VictoryRush = 34428,
-                          Whirlwind = 1680,
-                          WildStrike = 100130;
+            BattleShout = 6673,
+            Bladestorm = 46924,
+            BloodBath = 12292,
+            Bloodthirst = 23881,
+            BerserkerRage = 18499,
+            Charge = 100,
+            Cleave = 845,
+            ColossusSmash = 167105,
+            CommandingShout = 469,
+            DemoralizingBanner = 114203,
+            DemoralizingShout = 1160,
+            Devastate = 20243,
+            DieByTheSword = 118038,
+            DragonRoar = 118000,
+            Enrage = 12880,
+            EnragedRegeneration = 55694,
+            Execute = 163201,
+            HeroicLeap = 6544,
+            HeroicStrike = 78,
+            HeroicThrow = 57755,
+            ImpendingVictory = 103840,
+            LastStand = 12975,
+            MassSpellReflection = 114028,
+            MockingBanner = 114192,
+            MortalStrike = 12294,
+            Overpower = 7384,
+            RagingBlow = 85288,
+            RallyingCry = 97462,
+            Ravager = 152277,
+            Recklessness = 1719,
+            Rend = 772,
+            Revenge = 6572,
+            Siegebreaker = 176289,
+            ShatteringThrow = 64382,
+            ShieldBarrier = 112048,
+            ShieldBlock = 2565,
+            ShieldCharge = 156321,
+            ShieldSlam = 23922,
+            ShieldWall = 871,
+            Shockwave = 46968,
+            SkullBanner = 114207,
+            Slam = 1464,
+            StormBolt = 107570,
+            SuddenDeath = 52437,
+            SweepingStrikes = 12328,
+            ThunderClap = 6343,
+            Ultimatum = 122510,
+            UnyieldingStrikes = 169685,
+            VictoryRush = 34428,
+            Whirlwind = 1680,
+            WildStrike = 100130;
+
+
         #endregion
 
         #region Paladian Spells
@@ -384,5 +400,39 @@ namespace Axiom.Lists
             WindwalkTotem = 108273;
 
         #endregion
+
+        #region Mage Spells
+
+        public const int
+            AmplifyMagic = 159916,
+            BlastWave = 157981,
+            BlazingSpeed = 108843,
+            Blink = 1953,
+            ColdSnap = 11958,
+            Combustion = 11129,
+            Counterspell = 2139,
+            DragonsBreath = 31661,
+            Evanesce = 157913,
+            Fireball = 133,
+            Flamestrike = 2120,
+            FrostfireBolt = 44614,
+            FrostNova = 122,
+            GreaterInvisibility = 110959,
+            IceBlock = 45438,
+            IceFloes = 108839,
+            InfernoBlast = 108853,
+            Invisibility = 66,
+            LivingBomb = 44457,
+            Meteor = 153561,
+            Pyroblast = 11366,
+            RemoveCurse = 475,
+            RingofFrost = 113724,
+            RuneofPower = 116011,
+            Scorch = 2948,
+            SlowFall = 130,
+            Spellsteal = 30449;
+
+        #endregion
+
     }
 }
