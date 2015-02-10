@@ -81,7 +81,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.ShieldSlam, onunit);
             await Spell.Cast(S.Revenge, onunit, () => Me.CurrentRage < 90);
 
-            await Spell.Cast(S.Execute, onunit, () => (Me.HasAura("Sudden Death") || onunit.HealthPercent < 20) && Me.CurrentRage > Me.MaxRage - 30);
+            await Spell.Cast(S.Execute, onunit, () => (Me.HasAura("Sudden Death") || onunit.HealthPercent < 20) && Me.CurrentRage > Me.MaxRage - 30 && SpellManager.CanCast(S.Execute));
             await Spell.Cast(S.Devastate, onunit, () => Me.HasAuraExpired("Unyielding Strikes", 2) && !Me.HasAura("Unyielding Strikes", 6));
             await AOE(onunit, Units.EnemyUnitsSub8.Count() >= 2 && Axiom.AOE);
             await Spell.Cast(S.HeroicThrow, onunit);
@@ -155,7 +155,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.Execute, onunit, () => Me.HasAura("Sudden Death"));
             await Spell.Cast(S.ThunderClap, onunit, () => Axiom.AOE && Units.EnemyUnitsSub8.Count(u => !u.HasAura("Deep Wounds")) >= 1 && Units.EnemyUnitsSub8.Count() >= 2);
 
-            await Spell.Cast(S.Execute, onunit, () => Me.CurrentRage > 60 && Me.CurrentTarget.HealthPercent < 20);
+            await Spell.Cast(S.Execute, onunit, () => Me.CurrentRage > 60 && SpellManager.CanCast(S.Execute));
             await Spell.Cast(S.Devastate, onunit);
 
             return true;
@@ -199,7 +199,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.ThunderClap, onunit, () => Axiom.AOE && Units.EnemyUnitsSub8.Any(u => !u.HasAura("Deep Wounds")) && Units.EnemyUnitsSub8.Count() >= 2);
             await Spell.Cast(S.DragonRoar, onunit, () => Me.CurrentTarget.Distance <= 8);
             await Spell.Cast(S.ThunderClap, onunit, () => Axiom.AOE && Units.EnemyUnitsSub8.Count() >= 6);
-            await Spell.Cast(S.Execute, onunit, () => Me.CurrentRage > 60 && Me.CurrentTarget.HealthPercent < 20);
+            await Spell.Cast(S.Execute, onunit, () => Me.CurrentRage > 60 && SpellManager.CanCast(S.Execute));
             await Spell.Cast(S.Devastate, onunit);
 
             return true;
