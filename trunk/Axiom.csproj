@@ -52,12 +52,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\Mage\Fire.cs" />
+    <Compile Include="Class\Monk\Mistweaver.cs" />
     <Compile Include="Class\Paladin\Retribution.cs" />
     <Compile Include="Class\Warrior\Arms.cs" />
     <Compile Include="Class\Warrior\Protection.cs" />
     <Compile Include="Helpers\CombatLog.cs" />
     <Compile Include="Helpers\EventLog.cs" />
     <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Helpers\Item.cs" />
     <Compile Include="Helpers\KeyboardPolling.cs" />
     <Compile Include="Helpers\Log.cs" />
     <Compile Include="Helpers\Movement.cs" />
@@ -105,7 +107,6 @@
     <Folder Include="Class\DeathKnight\" />
     <Folder Include="Class\Druid\" />
     <Folder Include="Class\Hunter\" />
-    <Folder Include="Class\Monk\" />
     <Folder Include="Class\Priest\" />
     <Folder Include="Class\Rogue\" />
     <Folder Include="Class\Shaman\" />
