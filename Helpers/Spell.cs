@@ -420,6 +420,21 @@ namespace Axiom.Helpers
             return 0;
         }
 
+        public static bool StopCasting(Func<bool> reqs)
+        {
+            if (reqs())
+            {
+                if (Me.IsChanneling || Me.IsCasting)
+                {
+                    SpellManager.StopCasting();
+                    Log.WritetoFile("Stopping Casting");
+                    return false;
+                }
+                return true;
+            }
+            return false;
+        }
+
         public static int GetCharges(WoWSpell spell)
         {
             int charges = Lua.GetReturnVal<int>("return GetSpellCharges(" + spell.Id + ")", 0);
