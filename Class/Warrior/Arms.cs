@@ -71,7 +71,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.ImpendingVictory, onunit, () => Me.CurrentTarget.HealthPercent > 20 && Me.CurrentRage < 40 && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1 && Spell.GetCooldownLeft("Mortal Strike").TotalSeconds > 1);
             await Spell.Cast(S.Slam, onunit, () => (Me.CurrentRage > 20 || Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1.35) && Me.CurrentTarget.HealthPercent > 20 && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1);
             //await Spell.CoCast(ThunderClap, Unit.UnfriendlyUnits(8).Count() >= 3 && Clusters.GetCluster(Me, Unit.UnfriendlyUnits(8), ClusterType.Radius, 8).Any(u => !u.HasAura("Deep Wounds")));
-            await Spell.Cast(S.Whirlwind, onunit, () => Me.CurrentTarget.HealthPercent > 20 && (Me.CurrentRage > 40 || Me.CurrentTarget.HasAura("Colossus Smash", true)) && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1 && Spell.GetCooldownLeft("Mortal Strike").TotalSeconds > 1 && Me.CurrentTarget.Distance <= 8);
+            await Spell.Cast(S.Whirlwind, onunit, () => !TalentManager.IsSelected(9) && (Me.CurrentTarget.HealthPercent > 20 && (Me.CurrentRage > 40 || Me.CurrentTarget.HasAura("Colossus Smash", true)) && Spell.GetCooldownLeft("Colossus Smash").TotalSeconds > 1 && Spell.GetCooldownLeft("Mortal Strike").TotalSeconds > 1 && Me.CurrentTarget.Distance <= 8));
             await Spell.Cast(S.HeroicThrow, onunit);
 
             if (GeneralSettings.Instance.Movement)
@@ -145,10 +145,10 @@ namespace Axiom.Class.Warrior
             EnragedRegeneration,
             SecondWind,
             ImpendingVictory,
-            StaggeringShout,
-            PiercingHowl,
-            DisruptingShout,
-            Bladestorm,
+            TasteforBlood,
+            SuddenDeath,
+            Slam,
+            StormBolt,
             Shockwave,
             DragonRoar,
             MassSpellReflection,
@@ -156,7 +156,10 @@ namespace Axiom.Class.Warrior
             Vigilance,
             Avatar,
             Bloodbath,
-            StormBolt
+            BladeStorm,
+            AngerManagement,
+            Ravager,
+            Siegebreaker
         }
         #endregion
 
