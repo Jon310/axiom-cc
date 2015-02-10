@@ -67,7 +67,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.EnragedRegeneration, onunit, () => Me.HealthPercent <= 50);
             await Spell.Cast(S.LastStand, onunit, () => Me.HealthPercent <= 15 && !Me.HasAura("Shield Wall") && Axiom.AFK);
             await Spell.Cast(S.ShieldWall, onunit, () => Me.HealthPercent <= 30 && !Me.HasAura("Last Stand") && Axiom.AFK);
-            await Spell.Cast(S.DemoralizingShout, onunit, () => Units.EnemyUnitsSub10.Any() && IsCurrentTank() && Me.HealthPercent <= 75);
+            //await Spell.Cast(S.DemoralizingShout, onunit, () => Units.EnemyUnitsSub10.Any() && IsCurrentTank() && Me.HealthPercent <= 75);
             await Spell.Cast(S.ImpendingVictory, onunit, () => Me.HealthPercent <= 60);
             
             await Spell.Cast(S.ShieldBlock, onunit, () => !DefCools && IsCurrentTank());
