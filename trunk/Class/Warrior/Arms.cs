@@ -27,7 +27,7 @@ namespace Axiom.Class.Warrior
         public override WoWClass Class { get { return Me.Specialization == WoWSpec.WarriorArms ? WoWClass.Warrior : WoWClass.None; } }
         protected override Composite CreateCombat()
         {
-            return new ActionRunCoroutine(ret => CombatCoroutine(TargetManager.MeleeTarget));
+            return new ActionRunCoroutine(ret => CombatCoroutine(Me.CurrentTarget));
         }
         protected override Composite CreateBuffs()
         {
