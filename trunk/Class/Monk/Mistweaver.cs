@@ -149,7 +149,7 @@ namespace Axiom.Class.Monk
             if (SpellManager.Spells["Spinning Crane Kick"].Cooldown || !Me.Combat)
                 return false;
 
-            var totaltargets = SerpentStance ? HealManager.CountNearby(Me, Settings.Monk.SpinningCraneKickCount, 8) 
+            var totaltargets = SerpentStance ? HealManager.CountNearby(Me, 8, Settings.Monk.SpinningCraneKick) 
                                             : TargetManager.CountNear(Me, 8);
 
             if (totaltargets < Settings.Monk.SpinningCraneKickCount)

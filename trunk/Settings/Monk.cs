@@ -8,8 +8,8 @@ namespace Axiom.Settings
 {
     public class Monk : Styx.Helpers.Settings
     {
-        public static Monk Instance = new Monk();
-        public Monk() : base(Path.Combine(Utilities.AssemblyDirectory, string.Format(@"Settings/Axiom/Monk.xml"))) { }
+        public static readonly Monk Instance = new Monk();
+        private Monk() : base(Path.Combine(Utilities.AssemblyDirectory, string.Format(@"Settings/Axiom/Monk.xml"))) { }
 
         #region General
 
