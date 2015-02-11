@@ -26,7 +26,7 @@ namespace Axiom.Class.Warrior
         public override WoWClass Class { get { return Me.Specialization == WoWSpec.WarriorProtection ? WoWClass.Warrior : WoWClass.None; } }
         protected override Composite CreateCombat()
         {
-            return new ActionRunCoroutine(ret => CombatCoroutine(TargetManager.MeleeTarget));
+            return new ActionRunCoroutine(ret => CombatCoroutine(Me.CurrentTarget));
         }
         protected override Composite CreateBuffs()
         {
@@ -38,53 +38,53 @@ namespace Axiom.Class.Warrior
         }
         #endregion
 
-        private async Task<bool> CombatCoroutine(WoWUnit onunit)
+        private static async Task<bool> CombatCoroutine(WoWUnit target)
         {
             if (GeneralSettings.Instance.Targeting)
-                TargetManager.EnsureTarget(onunit);
+                TargetManager.EnsureTarget(target);
 
             if (Axiom.PvPRotation || GeneralSettings.Instance.PvP)
             {
-                await PvP(onunit);
+                await PvP(target);
                 return true;
             }
 
             if (Me.HasAura("Gladiator Stance"))
             {
-                await Glad(onunit);
+                await Glad(target);
                 return true;
             }
 
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
-            await Spell.Cast(S.BloodBath, onunit, () => Axiom.Burst && Me.CurrentTarget.IsWithinMeleeRange);
-            await Spell.Cast(S.Avatar, onunit, () => Axiom.Burst && Me.CurrentTarget.IsWithinMeleeRange);
+            await Spell.Cast(S.BloodBath, target, () => Axiom.Burst && target.IsWithinMeleeRange);
+            await Spell.Cast(S.Avatar, target, () => Axiom.Burst && target.IsWithinMeleeRange);
 
             await Leap();
             await DropMockingBanner();
 
-            await Spell.Cast(S.VictoryRush, onunit, () => Me.HealthPercent <= 90 && Me.HasAura("Victorious"));
-            await Spell.Cast(S.EnragedRegeneration, onunit, () => Me.HealthPercent <= 50);
-            await Spell.Cast(S.LastStand, onunit, () => Me.HealthPercent <= 15 && !Me.HasAura("Shield Wall") && Axiom.AFK);
-            await Spell.Cast(S.ShieldWall, onunit, () => Me.HealthPercent <= 30 && !Me.HasAura("Last Stand") && Axiom.AFK);
-            //await Spell.Cast(S.DemoralizingShout, onunit, () => Units.EnemyUnitsSub10.Any() && IsCurrentTank() && Me.HealthPercent <= 75);
-            await Spell.Cast(S.ImpendingVictory, onunit, () => Me.HealthPercent <= 60);
+            await Spell.Cast(S.VictoryRush, target, () => Me.HealthPercent <= 90 && Me.HasAura("Victorious"));
+            await Spell.Cast(S.EnragedRegeneration, target, () => Me.HealthPercent <= 50);
+            await Spell.Cast(S.LastStand, target, () => Me.HealthPercent <= 15 && !Me.HasAura("Shield Wall") && Axiom.AFK);
+            await Spell.Cast(S.ShieldWall, target, () => Me.HealthPercent <= 30 && !Me.HasAura("Last Stand") && Axiom.AFK);
+            //await Spell.Cast(S.DemoralizingShout, target, () => Units.EnemyUnitsSub10.Any() && IsCurrentTank() && Me.HealthPercent <= 75);
+            await Spell.Cast(S.ImpendingVictory, target, () => Me.HealthPercent <= 60);
             
-            await Spell.Cast(S.ShieldBlock, onunit, () => !DefCools && IsCurrentTank());
-            await Spell.Cast("Shield Barrier", onunit, () => (Me.CurrentRage >= 85) && !Me.HasAura("Shield Barrier") && IsCurrentTank());
+            await Spell.Cast(S.ShieldBlock, target, () => !DefCools && IsCurrentTank());
+            await Spell.Cast("Shield Barrier", target, () => (Me.CurrentRage >= 85) && !Me.HasAura("Shield Barrier") && IsCurrentTank());
 
-            await Spell.Cast(S.HeroicStrike, onunit, () => Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank()));
-            await Spell.CastOnGround(S.Ravager, onunit.Location, Axiom.Burst && Me.CurrentTarget.IsWithinMeleeRange);
-            await Spell.Cast(S.DragonRoar, onunit, () => Me.CurrentTarget.IsWithinMeleeRange);
-            await Spell.Cast(S.StormBolt, onunit);            
+            await Spell.Cast(S.HeroicStrike, target, () => Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank()));
+            await Spell.CastOnGround(S.Ravager, target.Location, Axiom.Burst && target.IsWithinMeleeRange);
+            await Spell.Cast(S.DragonRoar, target, () => target.IsWithinMeleeRange);
+            await Spell.Cast(S.StormBolt, target);            
             
-            await Spell.Cast(S.ShieldSlam, onunit);
-            await Spell.Cast(S.Revenge, onunit, () => Me.CurrentRage < 90);
+            await Spell.Cast(S.ShieldSlam, target);
+            await Spell.Cast(S.Revenge, target, () => Me.CurrentRage < 90);
 
-            await Spell.Cast(S.Execute, onunit, () => (Me.HasAura("Sudden Death") || onunit.HealthPercent < 20) && Me.CurrentRage > Me.MaxRage - 30 && SpellManager.CanCast(S.Execute));
-            await Spell.Cast(S.Devastate, onunit, () => Me.HasAuraExpired("Unyielding Strikes", 2) && !Me.HasAura("Unyielding Strikes", 6));
-            await AOE(onunit, Units.EnemyUnitsSub8.Count() >= 2 && Axiom.AOE);
-            await Spell.Cast(S.HeroicThrow, onunit);
+            await Spell.Cast(S.Execute, target, () => (Me.HasAura("Sudden Death") || target.HealthPercent < 20) && Me.CurrentRage > Me.MaxRage - 30 && SpellManager.CanCast(S.Execute));
+            await Spell.Cast(S.Devastate, target, () => Me.HasAuraExpired("Unyielding Strikes", 2) && !Me.HasAura("Unyielding Strikes", 6));
+            await AOE(target, Units.EnemyUnitsSub8.Count() >= 2 && Axiom.AOE);
+            await Spell.Cast(S.HeroicThrow, target);
 
             return false;
         }
@@ -101,7 +101,7 @@ namespace Axiom.Class.Warrior
             if (!reqs) return false;
 
             await Spell.Cast(S.Shockwave, onunit, () => Units.EnemyUnitsCone(Me, Units.EnemyUnits(10), 9).Count() >= 3);
-            await Spell.Cast(S.Bladestorm, onunit, () => Me.CurrentTarget.IsWithinMeleeRange);
+            await Spell.Cast(S.Bladestorm, onunit, () => onunit.IsWithinMeleeRange);
             await Spell.Cast(S.ThunderClap, onunit);
 
             return true;
@@ -168,10 +168,10 @@ namespace Axiom.Class.Warrior
         {
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
-            //await Spell.CoCast(S.MassSpellReflection, Me.CurrentTarget.IsCasting && Me.CurrentTarget.Distance > 10);
-            //await Spell.CoCast(S.ShieldWall, Me.HealthPercent < 40);
-            //await Spell.CoCast(S.LastStand, Me.CurrentTarget.HealthPercent > Me.HealthPercent && Me.HealthPercent < 60);
-            //await Spell.CoCast(S.DemoralizingShout, Unit.EnemyUnitsSub10.Count() >= 3);
+            await Spell.Cast(S.MassSpellReflection, () => onunit.IsCasting && onunit.Distance > 10);
+            await Spell.Cast(S.ShieldWall, () => Me.HealthPercent < 40);
+            await Spell.Cast(S.LastStand, () => onunit.HealthPercent > Me.HealthPercent && Me.HealthPercent < 60);
+            await Spell.Cast(S.DemoralizingShout, () => Units.EnemyUnitsSub10.Count() >= 3);
             await Spell.Cast(S.ShieldBarrier, onunit, () => Me.HealthPercent < 40 && Me.CurrentRage >= 100);
             await Spell.Cast(S.VictoryRush, onunit, () => Me.HealthPercent <= 90 && Me.HasAura("Victorious"));
             //await Spell.CoCast(S.BerserkerRage, Me.HasAuraWithMechanic(WoWSpellMechanic.Fleeing));
@@ -179,7 +179,7 @@ namespace Axiom.Class.Warrior
 
             await Leap();
 
-            if (Me.CurrentTarget.IsWithinMeleeRange && Axiom.Burst)
+            if (onunit.IsWithinMeleeRange && Axiom.Burst)
             {
                 await Spell.Cast(S.Avatar, onunit);
                 await Spell.Cast(S.BloodBath, onunit);
@@ -187,7 +187,6 @@ namespace Axiom.Class.Warrior
             }
 
             await Spell.Cast(S.ShieldCharge, onunit, () => (!Me.HasAura("Shield Charge") && !SpellManager.Spells["Shield Slam"].Cooldown) || Spell.GetCharges(S.ShieldCharge) == 2);
-            //await Spell.CoCast(S.HeroicStrike, Me.HasAura("Shield Charge") || Me.HasAura("Ultimatum") || Me.CurrentRage >= 90 || Me.HasAura("Unyielding Strikes", 5));
 
             await Spell.Cast(S.HeroicStrike, onunit, () => (Me.HasAura("Sheld Charge") || (Me.HasAura("Unyielding Strikes") && Me.CurrentRage >= 50 - Me.GetAuraStackCount("Unyielding Strikes") * 5)) && Me.CurrentTarget.HealthPercent > 20);
             await Spell.Cast(S.HeroicStrike, onunit, () => Me.HasAura("Ultimatum") || Me.CurrentRage >= Me.MaxRage - 20 || Me.HasAura("Unyielding Strikes", 5));
@@ -197,7 +196,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.Execute, onunit, () => Me.HasAura("Sudden Death"));
             await Spell.Cast(S.StormBolt, onunit);
             await Spell.Cast(S.ThunderClap, onunit, () => Axiom.AOE && Units.EnemyUnitsSub8.Any(u => !u.HasAura("Deep Wounds")) && Units.EnemyUnitsSub8.Count() >= 2);
-            await Spell.Cast(S.DragonRoar, onunit, () => Me.CurrentTarget.Distance <= 8);
+            await Spell.Cast(S.DragonRoar, onunit, () => onunit.Distance <= 8);
             await Spell.Cast(S.ThunderClap, onunit, () => Axiom.AOE && Units.EnemyUnitsSub8.Count() >= 6);
             await Spell.Cast(S.Execute, onunit, () => Me.CurrentRage > 60 && SpellManager.CanCast(S.Execute));
             await Spell.Cast(S.Devastate, onunit);

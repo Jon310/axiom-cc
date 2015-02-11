@@ -42,8 +42,7 @@ namespace Axiom
         private void On_Load(object sender, EventArgs e)
         {
             ClassSettings.Initialize();
-            if (ClassSettings.Settings != null)
-                propertyGrid1.SelectedObject = ClassSettings.Settings;
+            propertyGrid1.SelectedObject = ClassSettings.Settings;
             propertyGrid2.SelectedObject = GeneralSettings.Instance;
         }
 
@@ -79,7 +78,7 @@ namespace Axiom
     }
 
 
-    public class ClassSettings
+    public static class ClassSettings
     {
         public static Styx.Helpers.Settings Settings;
         public static void Initialize()
@@ -119,8 +118,6 @@ namespace Axiom
                     break;
                 case WoWClass.Warrior:
                     Settings = Warrior.Instance;
-                    break;
-                default:
                     break;
             }
             if (Settings != null)
