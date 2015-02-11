@@ -73,7 +73,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.ShieldBlock, target, () => !DefCools && IsCurrentTank());
             await Spell.Cast("Shield Barrier", target, () => (Me.CurrentRage >= 85) && !Me.HasAura("Shield Barrier") && IsCurrentTank());
 
-            await Spell.Cast(S.HeroicStrike, target, () => Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank()));
+            await Spell.Cast(S.HeroicStrike, target, () => (Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank())) && SpellManager.CanCast("Heroic Strike"));
             await Spell.CastOnGround(S.Ravager, target.Location, Axiom.Burst && target.IsWithinMeleeRange);
             await Spell.Cast(S.DragonRoar, target, () => target.IsWithinMeleeRange);
             await Spell.Cast(S.StormBolt, target);            
@@ -186,10 +186,10 @@ namespace Axiom.Class.Warrior
                 await Spell.Cast(S.Bladestorm, onunit);
             }
 
-            await Spell.Cast(S.ShieldCharge, onunit, () => (!Me.HasAura("Shield Charge") && !SpellManager.Spells["Shield Slam"].Cooldown) || Spell.GetCharges(S.ShieldCharge) == 2);
+            await Spell.Cast(S.ShieldCharge, onunit, () => ((!Me.HasAura("Shield Charge") && !SpellManager.Spells["Shield Slam"].Cooldown) || Spell.GetCharges(S.ShieldCharge) == 2) && SpellManager.CanCast("Shield Charge"));
 
-            await Spell.Cast(S.HeroicStrike, onunit, () => (Me.HasAura("Sheld Charge") || (Me.HasAura("Unyielding Strikes") && Me.CurrentRage >= 50 - Me.GetAuraStackCount("Unyielding Strikes") * 5)) && Me.CurrentTarget.HealthPercent > 20);
-            await Spell.Cast(S.HeroicStrike, onunit, () => Me.HasAura("Ultimatum") || Me.CurrentRage >= Me.MaxRage - 20 || Me.HasAura("Unyielding Strikes", 5));
+            await Spell.Cast(S.HeroicStrike, onunit, () => (Me.HasAura("Sheld Charge") || (Me.HasAura("Unyielding Strikes") && Me.CurrentRage >= 50 - Me.GetAuraStackCount("Unyielding Strikes") * 5)) && Me.CurrentTarget.HealthPercent > 20 && SpellManager.CanCast("Heroic Strike"));
+            await Spell.Cast(S.HeroicStrike, onunit, () => (Me.HasAura("Ultimatum") || Me.CurrentRage >= Me.MaxRage - 20 || Me.HasAura("Unyielding Strikes", 5)) && SpellManager.CanCast("Heroic Strike"));
 
             await Spell.Cast(S.ShieldSlam, onunit);
             await Spell.Cast(S.Revenge, onunit);
