@@ -34,7 +34,7 @@ namespace Axiom.Class.Warrior
         }
         protected override Composite CreatePull()
         {
-            return new ActionRunCoroutine(ret => CombatCoroutine(TargetManager.MeleeTarget));
+            return new ActionRunCoroutine(ret => CombatCoroutine(Me.CurrentTarget));
         }
         #endregion
 
