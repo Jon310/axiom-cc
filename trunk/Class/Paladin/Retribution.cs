@@ -29,7 +29,7 @@ namespace Axiom.Class.Paladin
         }
         protected override Composite CreatePull()
         {
-            return new ActionRunCoroutine(ret => CombatCoroutine(TargetManager.MeleeTarget));
+            return new ActionRunCoroutine(ret => CombatCoroutine(Me.CurrentTarget));
         }
         #endregion
 
@@ -38,33 +38,27 @@ namespace Axiom.Class.Paladin
 
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
-            if (GeneralSettings.Instance.Targeting)
-                TargetManager.EnsureTarget(onunit);
-
             await Spell.Cast(S.AvengingWrath, onunit, () => Burst);
             await Spell.Cast(S.HolyAvenger, onunit, () => Me.HasAura(S.AvengingWrath) && Burst);
             await Spell.Cast(S.DivineShield, onunit, () => Me.HealthPercent <= 20 && Weave);
 
             await Spell.Cast(S.FlashofLight, FlashTarclutch, () => Me.HasAura("Selfless Healer", 3));
-            await Spell.Cast(S.SealofRighteousness, onunit, () => AOE && !Me.HasAura("Seal of Righteousness") && Units.EnemyUnitsSub8.Count() >= 4);
-            await Spell.Cast(S.SealofTruth, onunit, () => !Me.HasAura("Seal of Truth") && Units.EnemyUnitsSub8.Count() < 4);
+            //await Spell.Cast(S.SealofRighteousness, onunit, () => AOE && !Me.HasAura("Seal of Righteousness") && Units.EnemyUnitsSub8.Count() >= 4);
+            //await Spell.Cast(S.SealofTruth, onunit, () => !Me.HasAura("Seal of Truth") && Units.EnemyUnitsSub8.Count() < 4);
             await Spell.Cast(S.ExecutionSentence, onunit, () => Burst);
-            await Spell.CastOnGround(S.LightsHammer, Me.Location, Me.CurrentTarget.IsBoss && AOE);
+            await Spell.CastOnGround(S.LightsHammer, Me.Location, onunit.IsBoss && AOE);
             await Spell.Cast(S.TemplarsVerdict, onunit, () => Me.CurrentHolyPower == 5 || Me.HasAura("Divine Purpose"));
-            await Spell.Cast(S.HammerofWrath, onunit);
-            await Spell.Cast(S.DivineStorm, onunit, () => AOE && Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict") && Me.CurrentTarget.Distance <= 8 && (Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35));
+            await Spell.CoCast(S.HammerofWrath, onunit);
+            await Spell.Cast(S.DivineStorm, onunit, () => AOE && Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict") && onunit.Distance <= 8 && (Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35));
             await Spell.Cast(S.HammeroftheRighteous, onunit, () => Me.CurrentHolyPower <= 4 && Units.EnemyUnitsSub8.Count() >= 2 && AOE);
             await Spell.Cast(S.CrusaderStrike, onunit, () => Me.CurrentHolyPower <= 4);
-            await Spell.Cast(S.DivineStorm, onunit, () => AOE && Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict") && Me.CurrentTarget.Distance <= 8);
+            await Spell.Cast(S.DivineStorm, onunit, () => AOE && Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict") && onunit.Distance <= 8);
             await Spell.Cast(S.Judgment, SecTar, () => Me.CurrentHolyPower <= 4 && Units.EnemyUnits(15).Count() >= 2 && Me.HasAura("Glyph of Double Jeopardy"));
             await Spell.Cast(S.Judgment, onunit, () => Me.CurrentHolyPower <= 4);
-            await Spell.Cast(S.TemplarsVerdict, onunit);
-            await Spell.Cast(S.Exorcism, onunit, () => Me.CurrentHolyPower <= 4);
+            await Spell.CoCast(S.TemplarsVerdict, onunit);
+            await Spell.CoCast(S.Exorcism, Me.CurrentHolyPower <= 4);
             await Spell.Cast(S.HolyPrism, onunit);
 
-            if (GeneralSettings.Instance.Movement)
-                return await Movement.MoveToTarget(onunit);
-            
             return false;
         }
 

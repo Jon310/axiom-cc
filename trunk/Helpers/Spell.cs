@@ -329,6 +329,16 @@ namespace Axiom.Helpers
             return  await CoCast(spell, unit, true, false);
         }
 
+        public static async Task<bool> CoCast(int spell, bool reqs)
+        {
+            return await CoCast(spell, Me.CurrentTarget, reqs, false);
+        }
+
+        public static async Task<bool> CoCast(int spell, WoWUnit unit, bool reqs)
+        {
+            return await CoCast(spell, unit, reqs, false);
+        }
+
         public static Task<bool> Buff(int spell, WoWUnit onunit, string reason = "")
         {
             return CastSpell(spell, onunit, () => true, SpellFlags.Buff, reason);
