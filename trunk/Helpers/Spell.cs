@@ -151,6 +151,32 @@ namespace Axiom.Helpers
 
         #endregion
 
+        #region CoCast
+
+        public static async Task<bool> CoCast(int spell, WoWUnit unit, bool reqs, bool cancel)
+        {
+            var sp = WoWSpell.FromId(spell);
+            var sname = sp != null ? sp.Name : "#" + spell;
+
+            if (unit == null || !reqs || !SpellManager.CanCast(spell, unit, true))
+                return false;
+
+            if (!SpellManager.Cast(spell, unit))
+                return false;
+
+            if (!await Coroutine.Wait(GetSpellCastTime(sname), () => cancel) && GetSpellCastTime(sname).TotalSeconds > 0)
+            {
+                SpellManager.StopCasting();
+                Logging.Write("Canceling " + sname + ".");
+                return false;
+            }
+
+            await CommonCoroutines.SleepForLagDuration();
+            return true;
+        }
+
+        #endregion
+
         #region CanCast
 
         public static CanCastResult CanCast(string strspell, WoWUnit unit, SpellFlags type, bool ignoregcd)
@@ -297,6 +323,12 @@ namespace Axiom.Helpers
         #endregion
 
         #region Simplicity Wrappers Int
+
+        public static async Task<bool> CoCast(int spell, WoWUnit unit)
+        {
+            return  await CoCast(spell, unit, true, false);
+        }
+
         public static Task<bool> Buff(int spell, WoWUnit onunit, string reason = "")
         {
             return CastSpell(spell, onunit, () => true, SpellFlags.Buff, reason);
@@ -364,6 +396,14 @@ namespace Axiom.Helpers
         {
             string lua = String.Format("return IsUsableSpell(\"{0}\")", Name);
             return Lua.GetReturnVal<bool>(lua, 2);
+        }
+
+        public static TimeSpan GetSpellCastTime(string s)
+        {
+            SpellFindResults sfr;
+            if (SpellManager.FindSpell(s, out sfr))
+                return TimeSpan.FromMilliseconds((sfr.Override ?? sfr.Original).CastTime);
+            return TimeSpan.Zero;
         }
 
         public static TimeSpan GetCooldownLeft(string spell)
