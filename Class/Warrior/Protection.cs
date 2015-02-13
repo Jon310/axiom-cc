@@ -57,6 +57,11 @@ namespace Axiom.Class.Warrior
 
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
+            await Spell.Cast(S.HeroicStrike, target, () => (Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank())) && SpellManager.CanCast("Heroic Strike"));
+            
+
+            if (SpellManager.GlobalCooldown) return true;
+
             await Spell.Cast(S.BloodBath, target, () => Axiom.Burst && target.IsWithinMeleeRange);
             await Spell.Cast(S.Avatar, target, () => Axiom.Burst && target.IsWithinMeleeRange);
 
@@ -73,7 +78,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.ShieldBlock, target, () => !DefCools && IsCurrentTank());
             await Spell.Cast("Shield Barrier", target, () => (Me.CurrentRage >= 85) && !Me.HasAura("Shield Barrier") && IsCurrentTank());
 
-            await Spell.Cast(S.HeroicStrike, target, () => (Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank())) && SpellManager.CanCast("Heroic Strike"));
+            //await Spell.Cast(S.HeroicStrike, target, () => (Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank())) && SpellManager.CanCast("Heroic Strike"));
             await Spell.CastOnGround(S.Ravager, target.Location, Axiom.Burst && target.IsWithinMeleeRange);
             await Spell.Cast(S.DragonRoar, target, () => target.IsWithinMeleeRange);
             await Spell.Cast(S.StormBolt, target);            
