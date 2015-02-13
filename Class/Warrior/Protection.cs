@@ -40,8 +40,8 @@ namespace Axiom.Class.Warrior
 
         private static async Task<bool> CombatCoroutine(WoWUnit target)
         {
-            if (GeneralSettings.Instance.Targeting)
-                TargetManager.EnsureTarget(target);
+            //if (GeneralSettings.Instance.Targeting)
+            //    TargetManager.EnsureTarget(target);
 
             if (Axiom.PvPRotation || GeneralSettings.Instance.PvP)
             {
@@ -80,13 +80,11 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.HeroicStrike, target, () => Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank()));
             //await Spell.Cast(S.HeroicStrike, target, () => (Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank())) && SpellManager.CanCast("Heroic Strike"));
 
-            if (IsGlobalCooldown()) return true;
-
             await Spell.CastOnGround(S.Ravager, target.Location, Axiom.Burst && target.IsWithinMeleeRange);
             await Spell.Cast(S.DragonRoar, target, () => target.IsWithinMeleeRange);
             await Spell.Cast(S.StormBolt, target);            
 
-            await Spell.Cast(S.ShieldSlam, target);
+            await Spell.CoCast(S.ShieldSlam, target);
             await Spell.Cast(S.Revenge, target, () => Me.CurrentRage < 90);
 
             await Spell.Cast(S.Execute, target, () => (Me.HasAura("Sudden Death") || target.HealthPercent < 20) && Me.CurrentRage > Me.MaxRage - 30 && SpellManager.CanCast(S.Execute));
