@@ -57,11 +57,7 @@ namespace Axiom.Class.Warrior
 
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
-            await Spell.Cast(S.HeroicStrike, target, () => (Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank())) && SpellManager.CanCast("Heroic Strike"));
-            
-
-            if (SpellManager.GlobalCooldown) return true;
-
+           
             await Spell.Cast(S.BloodBath, target, () => Axiom.Burst && target.IsWithinMeleeRange);
             await Spell.Cast(S.Avatar, target, () => Axiom.Burst && target.IsWithinMeleeRange);
 
@@ -78,18 +74,27 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.ShieldBlock, target, () => !DefCools && IsCurrentTank());
             await Spell.Cast("Shield Barrier", target, () => (Me.CurrentRage >= 85) && !Me.HasAura("Shield Barrier") && IsCurrentTank());
 
+
+            //await Spell.Cast(S.HeroicStrike, onunit, () => Me.CurrentRage > Me.MaxRage - (30 - Unit.buffStackCount(169685, Me) * 5));
+            await Spell.Cast(S.HeroicStrike, target, () => Me.GetAuraStackCount("Unyielding Strikes") >= 2 && Me.CurrentRage > 85 && Axiom.Weave);
+            await Spell.Cast(S.HeroicStrike, target, () => Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank()));
             //await Spell.Cast(S.HeroicStrike, target, () => (Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank())) && SpellManager.CanCast("Heroic Strike"));
+
+            if (IsGlobalCooldown()) return true;
+
             await Spell.CastOnGround(S.Ravager, target.Location, Axiom.Burst && target.IsWithinMeleeRange);
             await Spell.Cast(S.DragonRoar, target, () => target.IsWithinMeleeRange);
             await Spell.Cast(S.StormBolt, target);            
-            
+
             await Spell.Cast(S.ShieldSlam, target);
             await Spell.Cast(S.Revenge, target, () => Me.CurrentRage < 90);
 
             await Spell.Cast(S.Execute, target, () => (Me.HasAura("Sudden Death") || target.HealthPercent < 20) && Me.CurrentRage > Me.MaxRage - 30 && SpellManager.CanCast(S.Execute));
             await Spell.Cast(S.Devastate, target, () => Me.HasAuraExpired("Unyielding Strikes", 2) && !Me.HasAura("Unyielding Strikes", 6));
             await AOE(target, Units.EnemyUnitsSub8.Count() >= 2 && Axiom.AOE);
-            await Spell.Cast(S.HeroicThrow, target);
+            //await Spell.Cast(S.HeroicThrow, target);
+
+            await Spell.Cast(S.Devastate, target);
 
             return false;
         }
