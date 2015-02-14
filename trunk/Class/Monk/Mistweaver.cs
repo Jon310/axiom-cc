@@ -37,7 +37,7 @@ namespace Axiom.Class.Monk
         }
         protected override Composite CreatePull()
         {
-            return new ActionRunCoroutine(ret => CombatCoroutine(TargetManager.MeleeTarget));
+            return new ActionRunCoroutine(ret => CombatCoroutine(Me.CurrentTarget));
         }
         protected override Composite CreateHeal()
         {
@@ -51,7 +51,7 @@ namespace Axiom.Class.Monk
 
         private static async Task<bool> CombatCoroutine(WoWUnit onunit)
         {
-            await Crane(onunit,  Me.HasAura("Stance of the Spirited Crane"));
+            await Crane(onunit, CraneStance);
             await HealCoroutine(HealManager.Target);
 
             return false;
@@ -182,25 +182,29 @@ namespace Axiom.Class.Monk
 
         private static async Task<bool> SpinningCraneKick()
         {
+            if (!SpellManager.HasSpell("Spinning Crane Kick"))
+                return false;
+
             if (SpellManager.Spells["Spinning Crane Kick"].Cooldown || !Me.Combat)
                 return false;
 
-            var totaltargets = SerpentStance ? HealManager.CountNearby(Me, 8, Settings.Monk.SpinningCraneKick) 
-                                            : TargetManager.CountNear(Me, 8);
+            var totaltargets = SerpentStance ? HealManager.CountNearby(Me, 10f, 70)//Settings.Monk.SpinningCraneKick) 
+                                            : TargetManager.CountNear(Me, 8f);
 
-            if (totaltargets < Settings.Monk.SpinningCraneKickCount)
+            if (totaltargets < 3)//Settings.Monk.SpinningCraneKickCount)
                 return false;
 
-            if (TalentManager.IsSelected(16) && await Spell.SelfBuff(S.SpinningCraneKick))
-            {
-                return true;
-            }
+            await Spell.SelfBuff(S.SpinningCraneKick, () => TalentManager.IsSelected(16));
+            await Spell.SelfBuff(S.SpinningCraneKick, () => StyxWoW.Me.ChanneledCastingSpellId != S.SpinningCraneKick && !TalentManager.IsSelected(16));
 
-            return await Spell.SelfBuff(S.SpinningCraneKick, () => StyxWoW.Me.ChanneledCastingSpellId != S.SpinningCraneKick);
+            return false;
         }
 
         private static async Task<bool> RenewingMist()
         {
+            if (!SpellManager.HasSpell("Renewing Mist"))
+                return false;
+
             if (SpellManager.Spells["Renewing Mist"].Cooldown)
                 return false;
 
@@ -212,6 +216,9 @@ namespace Axiom.Class.Monk
 
         private static async Task<bool> ZenSpheres()
         {
+            if (!SpellManager.HasSpell("Zen Sphere"))
+                return false;
+
             if (SpellManager.Spells["Zen Sphere"].Cooldown)
                 return false;
 
@@ -261,7 +268,7 @@ namespace Axiom.Class.Monk
 
         private static async Task<bool> Detox(WoWUnit onunit)
         {
-            if (SpellManager.Spells["Detox"].Cooldown || Settings.Monk.Detox == Settings.Monk.DetoxBehaviour.Manually)
+            if (SpellManager.Spells["Detox"].Cooldown)// || Settings.Monk.Detox == Settings.Monk.DetoxBehaviour.Manually)
                 return false;
 
             if (Settings.Monk.Detox == Settings.Monk.DetoxBehaviour.OnCoolDown)
