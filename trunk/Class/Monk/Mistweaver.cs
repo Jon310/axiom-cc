@@ -11,6 +11,7 @@ using CommonBehaviors.Actions;
 using Styx;
 using Styx.CommonBot;
 using Styx.TreeSharp;
+using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
 using S = Axiom.Lists.SpellLists;
 
@@ -18,13 +19,17 @@ namespace Axiom.Class.Monk
 {
     public class Mistweaver : Axiom
     {
+        const ShapeshiftForm WISE_SERPENT = (ShapeshiftForm)20;
+        const ShapeshiftForm SPIRITED_CRANE = (ShapeshiftForm)9;
+        protected static readonly LocalPlayer Me = StyxWoW.Me;
+
         #region Overrides
         public override WoWClass Class { get { return Me.Specialization == WoWSpec.MonkMistweaver ? WoWClass.Monk : WoWClass.None; } }
         private static bool SerpentStance { get { return Me.HasAura("Stance of the Wise Serpent"); } }
         private static bool CraneStance { get { return Me.HasAura("Stance of the Spirited Crane"); } }
         protected override Composite CreateCombat()
         {
-            return new ActionRunCoroutine(ret => CombatCoroutine(TargetManager.MeleeTarget));
+            return new ActionRunCoroutine(ret => CombatCoroutine(Me.CurrentTarget));
         }
         protected override Composite CreateBuffs()
         {
@@ -46,6 +51,7 @@ namespace Axiom.Class.Monk
 
         private static async Task<bool> CombatCoroutine(WoWUnit onunit)
         {
+            await Crane(onunit,  Me.HasAura("Stance of the Spirited Crane"));
             await HealCoroutine(HealManager.Target);
 
             return false;
@@ -71,6 +77,18 @@ namespace Axiom.Class.Monk
                 await ChiBrew();
             }
 
+            //if (Me.HasAura("Stance of the Spirited Crane"))
+            //{
+            //    await Spell.Cast(S.ExpelHarm, healtarget, () => Me.HealthPercent <= 85);
+            //    await Spell.Cast(S.SurgingMist, VitalMistsTar, () => Me.HasAura("Vital Mists", 5));
+            //    await Spell.Cast(S.TigerPalm, healtarget, () => Me.HasAura("Vital Mists", 4) || Me.HasAuraExpired("Tiger Power", 4));
+            //    await Spell.Cast(S.BlackoutKick, healtarget, () => Me.HasAuraExpired("Crane's Zeal", 3));
+            //    await Spell.Cast(S.RisingSunKick, healtarget);
+            //    await Spell.Cast(S.ChiWave, healtarget);
+            //    await Spell.Cast(S.BlackoutKick, healtarget);
+            //    return true;
+            //}
+
             await ManaTea(Settings.Monk.ManaTea);
             await Uplift(Settings.Monk.Uplift);
             await ChiWave(healtarget);
@@ -86,9 +104,27 @@ namespace Axiom.Class.Monk
             return false;
         }
 
+
         private static async Task<bool> RestCoroutine()
         {
             return false;
+        }
+
+        private static async Task<bool> Crane(WoWUnit onunit, bool reqs)
+        {
+            if (!reqs) return false;
+            if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
+
+            await Spell.Cast(S.ExpelHarm, onunit, () => Me.HealthPercent <= 85);
+            await Spell.Cast(S.SurgingMist, VitalMistsTar, () => Me.HasAura("Vital Mists", 5));
+            await Spell.Cast(S.TigerPalm, onunit, () => (Me.HasAura("Vital Mists", 4) || !Me.HasAura("Tiger Power")) && Me.CurrentChi > 0);
+            await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Crane's Zeal") && Me.CurrentChi >= 2);
+            await Spell.Cast(S.RisingSunKick, onunit, () => Me.CurrentChi >= 2);
+            await Spell.Cast(S.ChiWave, onunit);
+            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 2);
+            await Spell.Cast(S.Jab, onunit);
+
+            return true;
         }
 
         private static async Task<bool> LifeCocoon()
@@ -247,5 +283,25 @@ namespace Axiom.Class.Monk
             return await Spell.SelfBuff(S.ChiBrew, () => Me.ManaPercent <= Settings.Monk.ManaTea && Me.CurrentChi <= (Me.MaxChi - 2) && Me.GetAuraStackCount("Mana Tea") < 18, "", true) 
                 && await Coroutine.Wait(1000, () => Me.CurrentChi == (currentChi + 2) || Me.CurrentChi == Me.MaxChi);
         }
+
+        #region VitalMistsTar
+
+        private static WoWUnit VitalMistsTar
+        {
+            get
+            {
+                var eHheal = (from unit in ObjectManager.GetObjectsOfTypeFast<WoWPlayer>()
+                              where unit.IsAlive
+                              where unit.IsInMyPartyOrRaid
+                              where unit.Distance < 40
+                              where unit.InLineOfSight
+                              where unit.HealthPercent <= 100
+                              select unit).OrderByDescending(u => u.HealthPercent).LastOrDefault();
+                return eHheal;
+            }
+        }
+
+        #endregion
+
     }
 }
