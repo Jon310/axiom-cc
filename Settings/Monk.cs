@@ -2,6 +2,7 @@
 using System.IO;
 using Styx.Helpers;
 using Styx.Common;
+
 using DefaultValue = Styx.Helpers.DefaultValueAttribute;
 
 namespace Axiom.Settings
