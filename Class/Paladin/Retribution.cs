@@ -52,22 +52,22 @@ namespace Axiom.Class.Paladin
             await Spell.Cast(S.DivineStorm, onunit, () => AOE && Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict") && Me.CurrentTarget.Distance <= 8 && Me.CurrentHolyPower == 5);
             //Divine Purpose	If Divine Purpose has less than three seconds in duration
             await Spell.Cast(S.DivineStorm, onunit, () => AOE && Me.HasAuraExpired("Divine Crusader", 3) && Me.CurrentTarget.Distance <= 8);
-            await Spell.Cast(S.TemplarsVerdict, onunit, () => Me.CurrentHolyPower == 5 || Me.HasAura("Divine Purpose"));
+            await Spell.CoCast(S.TemplarsVerdict, onunit, Me.CurrentHolyPower == 5 || Me.HasAura("Divine Purpose"));
 
-            await Spell.Cast(S.HammerofWrath, onunit);
-            await Spell.Cast(S.Exorcism, onunit, () => Me.HasAura("Blazing Contempt") && Me.CurrentHolyPower < 3);
+            await Spell.CoCast(S.HammerofWrath, onunit);
+            await Spell.CoCast(S.Exorcism, onunit, Me.HasAura("Blazing Contempt") && Me.CurrentHolyPower < 3);
             
             await Spell.Cast(S.DivineStorm, onunit, () => AOE && Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict") && onunit.Distance <= 8 && (Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35));
 
-            await Spell.Cast(S.TemplarsVerdict, onunit, () => Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35);
+            await Spell.CoCast(S.TemplarsVerdict, onunit, Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35);
             await Spell.Cast(S.HammeroftheRighteous, onunit, () => Me.CurrentHolyPower <= 4 && Units.EnemyUnitsSub8.Count() >= 4 && AOE);
             await Spell.Cast(S.CrusaderStrike, onunit, () => Me.CurrentHolyPower <= 4);
             await Spell.Cast(S.Judgment, SecTar, () => Me.CurrentHolyPower <= 4 && Units.EnemyUnits(15).Count() >= 2 && Me.HasAura("Glyph of Double Jeopardy"));
             await Spell.Cast(S.Judgment, onunit, () => Me.CurrentHolyPower <= 4);
             await Spell.Cast(S.DivineStorm, onunit, () => AOE && Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict") && Me.CurrentTarget.Distance <= 8);
-            await Spell.Cast(S.TemplarsVerdict, onunit, () => Me.HasAura("Divine Purpose"));
-            await Spell.Cast(S.TemplarsVerdict, onunit, () => Me.CurrentHolyPower == 4);
-            await Spell.Cast(S.Exorcism, onunit, () => Me.CurrentHolyPower <= 4);
+            await Spell.CoCast(S.TemplarsVerdict, onunit, Me.HasAura("Divine Purpose"));
+            await Spell.CoCast(S.TemplarsVerdict, onunit, Me.CurrentHolyPower == 4);
+            await Spell.CoCast(S.Exorcism, onunit, Me.CurrentHolyPower <= 4);
             await Spell.CoCast(S.TemplarsVerdict, onunit);
            
            
@@ -86,11 +86,7 @@ namespace Axiom.Class.Paladin
             //await Spell.Cast(S.TemplarsVerdict, onunit);
             //await Spell.Cast(S.Exorcism, onunit, () => Me.CurrentHolyPower <= 4);
             //await Spell.Cast(S.HolyPrism, onunit);
-
-            if (GeneralSettings.Instance.Movement)
-                return await Movement.MoveToTarget(onunit);
-            
-
+        
             return false;
         }
 
