@@ -70,18 +70,18 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.ShieldWall, target, () => Me.HealthPercent <= 30 && !Me.HasAura("Last Stand") && Axiom.AFK);
             //await Spell.Cast(S.DemoralizingShout, target, () => Units.EnemyUnitsSub10.Any() && IsCurrentTank() && Me.HealthPercent <= 75);
             await Spell.Cast(S.ImpendingVictory, target, () => Me.HealthPercent <= 60);
-            
-            await Spell.Cast(S.ShieldBlock, target, () => !DefCools && IsCurrentTank());
+
+            await Spell.Cast(S.ShieldBlock, target, () => !Me.HasAura(S.Ravager) && IsCurrentTank());
             await Spell.Cast("Shield Barrier", target, () => (Me.CurrentRage >= 85) && !Me.HasAura("Shield Barrier") && IsCurrentTank());
 
-
+            await Spell.Cast(S.HeroicStrike, target, () => Me.CurrentRage > Me.MaxRage - (30 + Me.GetAuraStackCount("Unyielding Strikes") * 5) && (Axiom.Weave || !IsCurrentTank()));
             //await Spell.Cast(S.HeroicStrike, onunit, () => Me.CurrentRage > Me.MaxRage - (30 - Unit.buffStackCount(169685, Me) * 5));
-            await Spell.Cast(S.HeroicStrike, target, () => Me.GetAuraStackCount("Unyielding Strikes") >= 2 && Me.CurrentRage > 85 && Axiom.Weave);
-            await Spell.Cast(S.HeroicStrike, target, () => Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank()));
+            //await Spell.Cast(S.HeroicStrike, target, () => Me.GetAuraStackCount("Unyielding Strikes") >= 2 && Me.CurrentRage > 85 && Axiom.Weave);
+            await Spell.Cast(S.HeroicStrike, target, () => Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6));
             //await Spell.Cast(S.HeroicStrike, target, () => (Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank())) && SpellManager.CanCast("Heroic Strike"));
 
             await Spell.CastOnGround(S.Ravager, target.Location, Axiom.Burst && target.IsWithinMeleeRange);
-            await Spell.Cast(S.DragonRoar, target, () => target.IsWithinMeleeRange);
+            await Spell.Cast(S.DragonRoar, target, () => target.IsWithinMeleeRange && Axiom.Burst);
             await Spell.Cast(S.StormBolt, target);            
 
             await Spell.CoCast(S.ShieldSlam, target);
