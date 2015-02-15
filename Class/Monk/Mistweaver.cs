@@ -88,6 +88,7 @@ namespace Axiom.Class.Monk
             {
                 await SerpentStatue(StatueCluster(), MonkSettings.Instance.AutoSerpentStatue);
                 await ManualStatue(!MonkSettings.Instance.AutoSerpentStatue);
+
                 await ManaTea(MonkSettings.Instance.ManaTea);
                 await Uplift(MonkSettings.Instance.Uplift);
                 await ChiWave(healtarget);
@@ -114,12 +115,13 @@ namespace Axiom.Class.Monk
         {
             if (!reqs) return false;
 
+            await SerpentStatue(StatueCluster(), MonkSettings.Instance.AutoSerpentStatue);
             await ManualStatue(!MonkSettings.Instance.AutoSerpentStatue);
 
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
             await LifeCocoon();
-            await Spell.Cast(S.ThunderFocusTea, onunit, () => VitalMistsTar.HealthPercent < MonkSettings.Instance.LifeCocoon);
+            await Spell.SelfBuff(S.ThunderFocusTea, () => HealManager.CountNearby(Me, 40, MonkSettings.Instance.LifeCocoon) >= 1 && Me.HasAura("Vital Mists", 5));
             await Detox(onunit);
             await ManaTea(MonkSettings.Instance.ManaTea);
             await Spell.SelfHeal(S.ExpelHarm, () => !TalentManager.HasGlyph("Targeted Expulsion") && Me.HealthPercent < MonkSettings.Instance.ExpelHarm);
