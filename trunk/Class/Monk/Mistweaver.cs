@@ -134,8 +134,8 @@ namespace Axiom.Class.Monk
             await Spell.Cast(S.ChiWave, onunit);
             await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 3);
             await ChiBrewFist();
-            await Spell.Cast(S.Jab, onunit, () => Me.CurrentChi <= 3 && !TalentManager.IsSelected(8) || Me.CurrentChi <= 4 && TalentManager.IsSelected(8));
-            //await Spell.Cast(S.Jab, onunit, () => Me.CurrentChi < Me.MaxChi);
+            //await Spell.Cast(S.Jab, onunit, () => Me.CurrentChi <= 3 && !TalentManager.IsSelected(8) || Me.CurrentChi <= 4 && TalentManager.IsSelected(8));
+            await Spell.Cast(S.Jab, onunit, () => Me.CurrentChi < Me.ChiInfo.Max);
 
             return true;
         }
