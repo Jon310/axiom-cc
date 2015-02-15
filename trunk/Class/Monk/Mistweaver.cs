@@ -115,13 +115,10 @@ namespace Axiom.Class.Monk
 
             await Detox(onunit);
             await ManaTea(MonkSettings.Instance.ManaTea);
-            await Spell.Cast(S.ExpelHarm, onunit, () => Me.HealthPercent <= MonkSettings.Instance.ExpelHarm && !TalentManager.HasGlyph("Targeted Expulsion"));
-            await Spell.Cast(S.ExpelHarm, HealManager.SmartTargets(MonkSettings.Instance.ExpelHarm), () => TalentManager.HasGlyph("Targeted Expulsion"));
-            await Spell.Cast(S.SurgingMist, HealManager.SmartTargets(100), () => Me.HasAura("Vital Mists", 5));
+            await Spell.SelfHeal(S.ExpelHarm, () => !TalentManager.HasGlyph("Targeted Expulsion") && Me.HealthPercent < MonkSettings.Instance.ExpelHarm);
+            await Spell.Heal(S.ExpelHarm, HealManager.Target, () => TalentManager.HasGlyph("Targeted Expulsion") && HealManager.Target.HealthPercent < MonkSettings.Instance.ExpelHarm);
+            await Spell.CoCast(S.SurgingMist, VitalMistsTar, Me.HasAura("Vital Mists", 5));
             await Spell.Cast(S.SpinningCraneKick, onunit, () => (Units.EnemyUnitsSub8.Count() >= 5 && !TalentManager.IsSelected(16) || Units.EnemyUnitsSub8.Count() >= 3 && TalentManager.IsSelected(16)) && Axiom.AOE);
-
-            //await Spell.Cast(S.ExpelHarm, onunit, () => Me.HealthPercent <= MonkSettings.Instance.ExpelHarm);
-            //await Spell.CoCast(S.SurgingMist, VitalMistsTar, Me.HasAura("Vital Mists", 5));
 
             await Spell.Cast(S.TigerPalm, onunit, () => (Me.HasAura("Vital Mists", 4) || !Me.HasAura("Tiger Power")) && Me.CurrentChi > 0);
             await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Crane's Zeal") && Me.CurrentChi >= 2);
