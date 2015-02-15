@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Axiom.Helpers;
+using Bots.DungeonBuddy.Helpers;
 using Styx;
 using Styx.CommonBot;
 using Styx.WoWInternals;

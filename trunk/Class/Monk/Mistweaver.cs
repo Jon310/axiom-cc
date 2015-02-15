@@ -193,6 +193,22 @@ namespace Axiom.Class.Monk
             return await Spell.Heal("Chi Wave", onunit, () => targets >= MonkSettings.Instance.ChiWaveCount);
         }
 
+        private static async Task<bool> ChiBurst(WoWUnit onunit)
+        {
+            if (!TalentManager.IsSelected(6))
+                return false;
+
+            var target = Units.GetPathUnits(onunit, Units.FriendlyUnitsNearTarget(40), 40);
+            
+            if (onunit == null || !onunit.IsValid)
+                return false;
+
+            var bursttars = target as IList<WoWUnit> ?? target.ToList();
+
+            return await Spell.Heal("Chi Wave", bursttars.OrderBy(u => u.Distance).FirstOrDefault(), 
+                () => bursttars.Count(u => u.HealthPercent < MonkSettings.Instance.ChiBurst) >= MonkSettings.Instance.ChiBurstCount);
+        }
+
         private async Task<bool> SpinningCraneKick()
         {
             if (!SpellManager.HasSpell("Spinning Crane Kick"))
