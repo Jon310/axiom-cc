@@ -87,6 +87,7 @@ namespace Axiom.Class.Monk
             if (SerpentStance)
             {
                 await SerpentStatue(StatueCluster(), MonkSettings.Instance.AutoSerpentStatue);
+                await ManualStatue(!MonkSettings.Instance.AutoSerpentStatue);
                 await ManaTea(MonkSettings.Instance.ManaTea);
                 await Uplift(MonkSettings.Instance.Uplift);
                 await ChiWave(healtarget);
@@ -113,7 +114,7 @@ namespace Axiom.Class.Monk
         {
             if (!reqs) return false;
 
-            await SJSS();
+            await ManualStatue(!MonkSettings.Instance.AutoSerpentStatue);
 
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
@@ -123,7 +124,7 @@ namespace Axiom.Class.Monk
             await ManaTea(MonkSettings.Instance.ManaTea);
             await Spell.SelfHeal(S.ExpelHarm, () => !TalentManager.HasGlyph("Targeted Expulsion") && Me.HealthPercent < MonkSettings.Instance.ExpelHarm);
             await Spell.Heal(S.ExpelHarm, HealManager.Target, () => TalentManager.HasGlyph("Targeted Expulsion") && HealManager.Target.HealthPercent < MonkSettings.Instance.ExpelHarm);
-            await Spell.CoCast(S.SurgingMist, VitalMistsTar, Me.HasAura("Vital Mists", 5));
+            await Spell.CoCast(S.SurgingMist, HealManager.SmartTarget(100), Me.HasAura("Vital Mists", 5));
             await Spell.Cast(S.SpinningCraneKick, onunit, () => (Units.EnemyUnitsSub8.Count() >= 5 && !TalentManager.IsSelected(16) || Units.EnemyUnitsSub8.Count() >= 3 && TalentManager.IsSelected(16)) && Axiom.AOE);
             await Spell.Cast(S.TigerPalm, onunit, () => (Me.HasAura("Vital Mists", 4) || !Me.HasAura("Tiger Power")) && Me.CurrentChi > 0);
             await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Crane's Zeal") && Me.CurrentChi >= 2);
@@ -435,9 +436,12 @@ namespace Axiom.Class.Monk
             return selectedTarget;
         }
 
-        #region SJSS
-        private static async Task<bool> SJSS()
+        #region Manual Statue
+        private async Task<bool> ManualStatue(bool reqs)
         {
+            if (!reqs)
+                return false;
+
             if (!SpellManager.CanCast(S.SummonJadeSerpentStatue))
                 return false;
 
