@@ -232,7 +232,7 @@ namespace Axiom.Class.Monk
             if (!SpellManager.HasSpell("Zen Sphere"))
                 return false;
 
-            if (SpellManager.Spells["Zen Sphere"].Cooldown)
+            if (!SpellManager.CanCast("Zen Sphere"))
                 return false;
 
             var onunit = HealManager.SmartTarget(MonkSettings.Instance.ZenSphere);
