@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using Axiom.Helpers;
 using Axiom.Managers;
 using Axiom.Settings;
@@ -13,6 +14,7 @@ using Styx;
 using Styx.Common;
 using Styx.CommonBot;
 using Styx.CommonBot.Coroutines;
+using Styx.Helpers;
 using Styx.TreeSharp;
 using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
@@ -84,7 +86,7 @@ namespace Axiom.Class.Monk
 
             if (SerpentStance)
             {
-                await SJSS();
+                await SerpentStatue(StatueCluster(), MonkSettings.Instance.AutoSerpentStatue);
                 await ManaTea(MonkSettings.Instance.ManaTea);
                 await Uplift(MonkSettings.Instance.Uplift);
                 await ChiWave(healtarget);
@@ -310,6 +312,127 @@ namespace Axiom.Class.Monk
 
             return await Spell.SelfBuff(S.ChiBrew, () => (!Me.HasAura("Crane's Zeal") || !Me.HasAura("Tiger Power") || !Me.CurrentTarget.HasAura(S.RisingSunKick)) && Me.CurrentChi <= (Me.MaxChi - 2) && Me.GetAuraStackCount("Mana Tea") < 18, "", true)
                 && await Coroutine.Wait(1000, () => Me.CurrentChi == (currentChi + 2) || Me.CurrentChi == Me.MaxChi);
+        }
+
+        private WoWPoint _statueLocation = new WoWPoint();
+        internal IEnumerable<WoWUnit> PossibleStatueTargets { get { return HealManager.Tanks.Where(player => !player.IsMoving); } }
+        private static WoWUnit MyStatue
+        {
+            get
+            {
+                return ObjectManager.GetObjectsOfType<WoWUnit>(true).FirstOrDefault(unit => unit != null && unit.Entry == 60849 && unit.Distance <= 20 && unit.CreatedByUnitGuid == Me.Guid);
+            }
+        }
+
+        private async Task<bool> SerpentStatue(WoWUnit onunit, bool reqs)
+        {
+            if (!reqs)
+                return false;
+
+            if (SpellManager.Spells["Summon Jade Serpent Statue"].Cooldown)
+                return false;
+
+            if (!Me.Combat || Me.IsMoving)
+                return false;
+
+            WoWPoint Location;
+            if (Me.GroupInfo.IsInParty && onunit != null && (TargetManager.BossFight || TargetManager.CountNear(onunit, 8) > 2))
+            {
+                if (onunit.IsMoving)
+                    return false;
+
+                if (!onunit.InLineOfSpellSight)
+                    return false;
+
+                Location = WoWMathHelper.CalculatePointFrom(Me.Location, onunit.Location, (float)onunit.Distance / 2);
+
+                if ((Location.Distance(_statueLocation) <= 5 || !Styx.Pathing.Navigator.CanNavigateFully(Me.Location, Location)) && MyStatue != null)
+                    return false;
+
+                await Spell.SelfBuff("Summon Jade Serpent Statue");
+
+                if (await Coroutine.Wait(1000, () => Me.CurrentPendingCursorSpell != null))
+                {
+                    SpellManager.ClickRemoteLocation(Location);
+                    _statueLocation = Location;
+
+                    if (await Coroutine.Wait(1000, () => MyStatue != null))
+                    {
+                        _statueLocation = Location;
+                        return true;
+                    }
+
+                    //bool ClickRemoteLocation does not return correctly so for now working around it.
+                    Lua.DoString("SpellStopTargeting()");
+                    Spell.UpdateSpellHistory("Summon Jade Serpent Statue", 5000, Me);
+                    Log.WriteLog("Failed to place Summon Jade Serpent Statue", Colors.Red);
+                    return false;
+                }
+            }
+            if (!Me.GroupInfo.IsInParty || MyStatue == null)
+            {
+                if (TargetManager.CountNear(Me, 20) < 1 || (MyStatue != null && Me.Location.Distance(_statueLocation) <= 10))
+                    return false;
+
+                Location = WoWMathHelper.CalculatePointInFront(Me.Location, (float)Me.Rotation, 3f);
+
+                if (Styx.Pathing.Navigator.CanNavigateFully(Me.Location, Location))
+                {
+                    await Spell.SelfBuff("Summon Jade Serpent Statue");
+
+                    if (await Coroutine.Wait(1000, () => Me.CurrentPendingCursorSpell != null))
+                    {
+                        SpellManager.ClickRemoteLocation(Location);
+                        _statueLocation = Location;
+
+                        if (await Coroutine.Wait(1000, () => MyStatue != null))
+                        {
+                            _statueLocation = Location;
+                            return true;
+                        }
+
+                        //bool ClickRemoteLocation does not return correctly so for now working around it.
+                        Lua.DoString("SpellStopTargeting()");
+                        Spell.UpdateSpellHistory("Summon Jade Serpent Statue", 5000, Me);
+                        Log.WriteLog("Failed to place Summon Jade Serpent Statue", Colors.Red);
+                        return false;
+                    }
+                }
+            }
+            return false;
+
+        }
+
+        private WoWUnit StatueCluster()
+        {
+            //Credit to ChinaJade for this
+            //Start by getting a list of All Targets that are between 15 and 40yards from me
+            var allMobCandidates =
+            (from mob in HealManager.ValidList
+             where
+            mob.Distance.IsBetween(15, 40)
+             select mob)
+            .ToList();
+
+            //Next, we have to count the mobs within 20yard radius of each candidate:
+
+            var selectedTarget =
+            (from candidate in allMobCandidates
+             // NB: We use 'allMobCandidates' here...
+             // The attack only considers candidates with X range, but the attack itself
+             // is an AoE that can snag mobs outside of that range.
+             let mobsSurroundingCandidate =
+            allMobCandidates
+            .Where(u => candidate.Location.Distance(u.Location) <= 20)
+            .ToList()
+             orderby
+                 // NB: Negate on purpose...
+                 // This sorts the candidates with the most mobs surrounding them
+                 // to the front of the list.
+            -mobsSurroundingCandidate.Count
+             select candidate)
+            .FirstOrDefault();
+            return selectedTarget;
         }
 
         #region SJSS

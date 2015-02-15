@@ -41,8 +41,11 @@ namespace Axiom.Settings
         [DisplayName("Detox Buff Names")]
         public string DetoxBuff { get; set; }
 
-        [Setting, DefaultValue(true), Category("General")]
-        public bool PrioritizeTanks { get; set; }
+        [Setting]
+        [DefaultValue(true)]
+        [Category("General")]
+        [DisplayName("Auto Place Serpent")]
+        public bool AutoSerpentStatue { get; set; }
 
         [Setting, DefaultValue(true), Category("General")]
         public bool PrioritizeSelf { get; set; }
