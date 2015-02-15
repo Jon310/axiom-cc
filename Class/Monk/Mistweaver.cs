@@ -77,13 +77,14 @@ namespace Axiom.Class.Monk
 
                 await Spell.SelfHeal(S.ExpelHarm, () => !TalentManager.HasGlyph("Targeted Expulsion") && Me.HealthPercent < MonkSettings.Instance.ExpelHarm);
                 await Spell.Heal(S.ExpelHarm, healtarget, () => TalentManager.HasGlyph("Targeted Expulsion") && healtarget.HealthPercent < MonkSettings.Instance.ExpelHarm);
-                await Spell.SelfBuff(S.FortifyingBrew, () => Me.HealthPercent() <= MonkSettings.Instance.FortifyingBrew);
-                await Spell.SelfBuff(S.DiffuseMagic, () => HealManager.NeedCleanseASAP(Me));
+                await Spell.SelfBuff(S.FortifyingBrew, () => Me.HealthPercent() <= MonkSettings.Instance.FortifyingBrew && AFK);
+                await Spell.SelfBuff(S.DiffuseMagic, () => HealManager.NeedCleanseASAP(Me) && AFK);
                 await ChiBrew();
             }
 
             if (SerpentStance)
-            { 
+            {
+                await SJSS();
                 await ManaTea(MonkSettings.Instance.ManaTea);
                 await Uplift(MonkSettings.Instance.Uplift);
                 await ChiWave(healtarget);
@@ -110,23 +111,26 @@ namespace Axiom.Class.Monk
         {
             if (!reqs) return false;
 
+            await SJSS();
+
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
-
+            await LifeCocoon();
+            await Spell.Cast(S.ThunderFocusTea, onunit, () => VitalMistsTar.HealthPercent < MonkSettings.Instance.LifeCocoon);
             await Detox(onunit);
             await ManaTea(MonkSettings.Instance.ManaTea);
             await Spell.SelfHeal(S.ExpelHarm, () => !TalentManager.HasGlyph("Targeted Expulsion") && Me.HealthPercent < MonkSettings.Instance.ExpelHarm);
             await Spell.Heal(S.ExpelHarm, HealManager.Target, () => TalentManager.HasGlyph("Targeted Expulsion") && HealManager.Target.HealthPercent < MonkSettings.Instance.ExpelHarm);
             await Spell.CoCast(S.SurgingMist, VitalMistsTar, Me.HasAura("Vital Mists", 5));
             await Spell.Cast(S.SpinningCraneKick, onunit, () => (Units.EnemyUnitsSub8.Count() >= 5 && !TalentManager.IsSelected(16) || Units.EnemyUnitsSub8.Count() >= 3 && TalentManager.IsSelected(16)) && Axiom.AOE);
-
             await Spell.Cast(S.TigerPalm, onunit, () => (Me.HasAura("Vital Mists", 4) || !Me.HasAura("Tiger Power")) && Me.CurrentChi > 0);
             await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Crane's Zeal") && Me.CurrentChi >= 2);
             await Spell.Cast(S.RisingSunKick, onunit, () => Me.CurrentChi >= 2);
             await Spell.Cast(S.ChiWave, onunit);
             await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 3);
             await ChiBrewFist();
-            await Spell.Cast(S.Jab, onunit);
+            await Spell.Cast(S.Jab, onunit, () => Me.CurrentChi <= 3 && !TalentManager.IsSelected(8) || Me.CurrentChi <= 4 && TalentManager.IsSelected(8));
+            //await Spell.Cast(S.Jab, onunit, () => Me.CurrentChi < Me.MaxChi);
 
             return true;
         }
@@ -307,6 +311,31 @@ namespace Axiom.Class.Monk
             return await Spell.SelfBuff(S.ChiBrew, () => (!Me.HasAura("Crane's Zeal") || !Me.HasAura("Tiger Power") || !Me.CurrentTarget.HasAura(S.RisingSunKick)) && Me.CurrentChi <= (Me.MaxChi - 2) && Me.GetAuraStackCount("Mana Tea") < 18, "", true)
                 && await Coroutine.Wait(1000, () => Me.CurrentChi == (currentChi + 2) || Me.CurrentChi == Me.MaxChi);
         }
+
+        #region SJSS
+        private static async Task<bool> SJSS()
+        {
+            if (!SpellManager.CanCast(S.SummonJadeSerpentStatue))
+                return false;
+
+            if (!Lua.GetReturnVal<bool>("return IsLeftAltKeyDown() and not GetCurrentKeyBoardFocus()", 0))
+                return false;
+
+            if (!SpellManager.Cast(S.SummonJadeSerpentStatue))
+                return false;
+
+            if (!await Coroutine.Wait(1000, () => StyxWoW.Me.CurrentPendingCursorSpell != null))
+            {
+                Log.WriteLog("Cursor Spell Didnt happen");
+                return false;
+            }
+
+            Lua.DoString("if SpellIsTargeting() then CameraOrSelectOrMoveStart() CameraOrSelectOrMoveStop() end");
+
+            await CommonCoroutines.SleepForLagDuration();
+            return true;
+        }
+        #endregion
 
         #region VitalMistsTar
 
