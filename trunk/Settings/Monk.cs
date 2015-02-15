@@ -9,7 +9,7 @@ namespace Axiom.Settings
 {
     public class Monk : Styx.Helpers.Settings
     {
-        public static Monk Instance = new Monk();
+        public static readonly Monk Instance = new Monk();
         public Monk() : base(Path.Combine(Utilities.AssemblyDirectory, string.Format(@"Settings/Axiom/Monk.xml"))) { }
 
         [Setting]
@@ -30,7 +30,7 @@ namespace Axiom.Settings
         public int ManaTea { get; set; }
 
         [Setting]
-        [DefaultValue(DetoxBehaviour.OnCoolDown)]
+        [DefaultValue(DetoxBehaviour.OnDebuff)]
         [Category("General")]
         [DisplayName("Detox Behavior")]
         public DetoxBehaviour Detox { get; set; }
@@ -65,6 +65,9 @@ namespace Axiom.Settings
 
         [Setting, DefaultValue(100), Category("Healing Percentages")]
         public int RenewingMist { get; set; }
+
+        [Setting, DefaultValue(70), Category("Healing Percentages")]
+        public int ExpelHarm { get; set; }
 
         [Setting, DefaultValue(70), Category("Healing Percentages")]
         public int SpinningCraneKick { get; set; }

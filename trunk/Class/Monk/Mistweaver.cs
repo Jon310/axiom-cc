@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using Axiom.Helpers;
@@ -9,11 +10,14 @@ using Axiom.Settings;
 using Buddy.Coroutines;
 using CommonBehaviors.Actions;
 using Styx;
+using Styx.Common;
 using Styx.CommonBot;
+using Styx.CommonBot.Coroutines;
 using Styx.TreeSharp;
 using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
 using S = Axiom.Lists.SpellLists;
+using MonkSettings = Axiom.Settings.Monk;
 
 namespace Axiom.Class.Monk
 {
@@ -52,7 +56,7 @@ namespace Axiom.Class.Monk
         private async Task<bool> CombatCoroutine(WoWUnit onunit)
         {
             await Crane(onunit, CraneStance);
-            await HealCoroutine(HealManager.Target);
+            //await HealCoroutine(HealManager.Target);
 
             return false;
         }
@@ -66,40 +70,32 @@ namespace Axiom.Class.Monk
         {
             await LifeCocoon();
 
-            if (Settings.Monk.Instance.PrioritizeSelf)
+            if (MonkSettings.Instance.PrioritizeSelf)
             {
-                if (Me.HealthPercent() <= Settings.Monk.Instance.HealthStone)
+                if (Me.HealthPercent() <= MonkSettings.Instance.HealthStone)
                     Item.UseContainerItem("Healthstone");
 
-                await Spell.SelfHeal(S.ExpelHarm, () => TargetManager.CountNear(Me, 10) >= 1);
-                await Spell.SelfBuff(S.FortifyingBrew, () => Me.HealthPercent() <= Settings.Monk.Instance.FortifyingBrew);
+                await Spell.SelfHeal(S.ExpelHarm, () => !TalentManager.HasGlyph("Targeted Expulsion") && Me.HealthPercent < MonkSettings.Instance.ExpelHarm);
+                await Spell.Heal(S.ExpelHarm, healtarget, () => TalentManager.HasGlyph("Targeted Expulsion") && healtarget.HealthPercent < MonkSettings.Instance.ExpelHarm);
+                await Spell.SelfBuff(S.FortifyingBrew, () => Me.HealthPercent() <= MonkSettings.Instance.FortifyingBrew);
                 await Spell.SelfBuff(S.DiffuseMagic, () => HealManager.NeedCleanseASAP(Me));
                 await ChiBrew();
             }
 
-            //if (Me.HasAura("Stance of the Spirited Crane"))
-            //{
-            //    await Spell.Cast(S.ExpelHarm, healtarget, () => Me.HealthPercent <= 85);
-            //    await Spell.Cast(S.SurgingMist, VitalMistsTar, () => Me.HasAura("Vital Mists", 5));
-            //    await Spell.Cast(S.TigerPalm, healtarget, () => Me.HasAura("Vital Mists", 4) || Me.HasAuraExpired("Tiger Power", 4));
-            //    await Spell.Cast(S.BlackoutKick, healtarget, () => Me.HasAuraExpired("Crane's Zeal", 3));
-            //    await Spell.Cast(S.RisingSunKick, healtarget);
-            //    await Spell.Cast(S.ChiWave, healtarget);
-            //    await Spell.Cast(S.BlackoutKick, healtarget);
-            //    return true;
-            //}
-
-            await ManaTea(90);//Settings.Monk.ManaTea);
-            await Uplift(Settings.Monk.Instance.Uplift);
-            await ChiWave(healtarget);
-            await SpinningCraneKick();
-            await RenewingMist();
-            await ZenSpheres();
-            await Spell.SelfBuff(S.Revival, () => HealManager.SmartTargets(Settings.Monk.Instance.Revival).Count() >= HealManager.GroupCount / 2);
-            await EnvelopingMists();
-            await SoothingMist();
-            await SurgingMists();
-            await Detox(healtarget);
+            if (SerpentStance)
+            { 
+                await ManaTea(MonkSettings.Instance.ManaTea);
+                await Uplift(MonkSettings.Instance.Uplift);
+                await ChiWave(healtarget);
+                await SpinningCraneKick();
+                await RenewingMist();
+                await ZenSpheres();
+                await Spell.SelfBuff(S.Revival, () => HealManager.SmartTargets(MonkSettings.Instance.Revival).Count() >= HealManager.GroupCount / 2);
+                await EnvelopingMists();
+                await SoothingMist();
+                await SurgingMists();
+                await Detox(healtarget);
+            }
 
             return false;
         }
@@ -115,7 +111,7 @@ namespace Axiom.Class.Monk
             if (!reqs) return false;
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
-            await Spell.Cast(S.ExpelHarm, onunit, () => Me.HealthPercent <= 85);
+            await Spell.Cast(S.ExpelHarm, onunit, () => Me.HealthPercent <= MonkSettings.Instance.ExpelHarm);
             await Spell.Cast(S.SurgingMist, VitalMistsTar, () => Me.HasAura("Vital Mists", 5));
             await Spell.Cast(S.TigerPalm, onunit, () => (Me.HasAura("Vital Mists", 4) || !Me.HasAura("Tiger Power")) && Me.CurrentChi > 0);
             await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Crane's Zeal") && Me.CurrentChi >= 2);
@@ -131,7 +127,7 @@ namespace Axiom.Class.Monk
         {
             var cocoontank = HealManager.Tanks.OrderBy(u => u.HealthPercent).LastOrDefault();
 
-            return await Spell.Buff("Life Cocoon", cocoontank, () => cocoontank.HealthPercent() < Settings.Monk.Instance.LifeCocoon, "Tank");
+            return await Spell.Buff("Life Cocoon", cocoontank, () => cocoontank.HealthPercent() < MonkSettings.Instance.LifeCocoon, "Tank");
         }
 
         private async Task<bool> ManaTea(int percent)
@@ -143,7 +139,7 @@ namespace Axiom.Class.Monk
 
             if (TalentManager.HasGlyph("Mana Tea"))
             {
-                return await Spell.SelfBuff(S.ManaTea, () => Me.ManaPercent < /*Settings.Monk.ManaTea*/ 90 && Me.GetAuraStackCount("Mana Tea") > 2);
+                return await Spell.SelfBuff(S.ManaTea, () => Me.ManaPercent < MonkSettings.Instance.ManaTea && Me.GetAuraStackCount("Mana Tea") > 2);
             }
 
             return await Spell.SelfBuff(S.ManaTea, () => Me.GetAuraStackCount("Mana Tea") >= 2 && currentmana + (4 * 2) < 100, "", true) 
@@ -156,7 +152,7 @@ namespace Axiom.Class.Monk
                 return false;
 
             var hasRenew = HealManager.SmartTargets(100).Where(hr => hr.HasAura("Renewing Mist"));
-            var needRenew = HealManager.SmartTargets(Settings.Monk.Instance.RenewingMist).Where(r => !r.HasAura(119611) && r.HealthPercent >= 30);
+            var needRenew = HealManager.SmartTargets(MonkSettings.Instance.RenewingMist).Where(r => !r.HasAura(119611) && r.HealthPercent >= 30);
             var woWUnits = hasRenew as IList<WoWUnit> ?? hasRenew.ToList();
 
             if (woWUnits.Count() >= 3 && !SpellManager.Spells["Thunder Focus Tea"].Cooldown && needRenew.Count() >= 3)
@@ -167,17 +163,17 @@ namespace Axiom.Class.Monk
             return await Spell.SelfBuff(S.Uplift, () => woWUnits.Count(t => t.HealthPercent() <= healthpct) >= 5);
         }
 
-        private async Task<bool> ChiWave(WoWUnit onunit)
+        private static async Task<bool> ChiWave(WoWUnit onunit)
         {
             if (!TalentManager.IsSelected(4))
                 return false;
 
-            var targets = HealManager.SmartTargets(Settings.Monk.Instance.ChiWave).Count() + TargetManager.CountNear(onunit, 20);
+            var targets = HealManager.SmartTargets(MonkSettings.Instance.ChiWave).Count() + TargetManager.CountNear(onunit, 20);
 
             if (onunit == null || !onunit.IsValid)
                 return false;
 
-            return await Spell.Heal("Chi Wave", onunit, () => targets >= Settings.Monk.Instance.ChiWaveCount);
+            return await Spell.Heal("Chi Wave", onunit, () => targets >= MonkSettings.Instance.ChiWaveCount);
         }
 
         private async Task<bool> SpinningCraneKick()
@@ -188,10 +184,10 @@ namespace Axiom.Class.Monk
             if (SpellManager.Spells["Spinning Crane Kick"].Cooldown || !Me.Combat)
                 return false;
 
-            var totaltargets = SerpentStance ? HealManager.CountNearby(Me, 10f, 70)//Settings.Monk.SpinningCraneKick) 
+            var totaltargets = SerpentStance ? HealManager.CountNearby(Me, 10f, MonkSettings.Instance.SpinningCraneKick) 
                                             : TargetManager.CountNear(Me, 8f);
 
-            if (totaltargets < 3)//Settings.Monk.SpinningCraneKickCount)
+            if (totaltargets < MonkSettings.Instance.SpinningCraneKickCount)
                 return false;
 
             await Spell.SelfBuff(S.SpinningCraneKick, () => TalentManager.IsSelected(16));
@@ -209,7 +205,7 @@ namespace Axiom.Class.Monk
                 return false;
 
             var needstoSpread = HealManager.InitialList.Where(hrm => hrm.HasAura("Renewing Mist") && hrm.GetAuraStackCount("Renewing Mist") == 3);
-            var onunit = HealManager.SmartTargets(Settings.Monk.Instance.RenewingMist).FirstOrDefault(st => !st.HasAura("Renewing Mist"));
+            var onunit = HealManager.SmartTargets(MonkSettings.Instance.RenewingMist).FirstOrDefault(st => !st.HasAura("Renewing Mist"));
 
             return await Spell.Heal(S.RenewingMist, onunit, () => onunit != null && !onunit.HasAura("Renewing Mist") && !needstoSpread.Any());
         }
@@ -222,7 +218,7 @@ namespace Axiom.Class.Monk
             if (SpellManager.Spells["Zen Sphere"].Cooldown)
                 return false;
 
-            var onunit = HealManager.SmartTarget(Settings.Monk.Instance.ZenSphere);
+            var onunit = HealManager.SmartTarget(MonkSettings.Instance.ZenSphere);
 
             return await Spell.Buff(S.ZenSphere, onunit, () => TalentManager.IsSelected(5) &&
                 onunit != null &&
@@ -230,12 +226,12 @@ namespace Axiom.Class.Monk
                 onunit.IsValid &&
                 !onunit.HasAura(S.ZenSphere) &&
                 TargetManager.CountNear(onunit, 10) +
-                HealManager.CountNearby(onunit, 10, Settings.Monk.Instance.ZenSphere) >= 3);
+                HealManager.CountNearby(onunit, 10, MonkSettings.Instance.ZenSphere) >= 3);
         }
 
         private async Task<bool> EnvelopingMists()
         {
-            var onunit = HealManager.SmartTarget(Settings.Monk.Instance.EnvelopingMist);
+            var onunit = HealManager.SmartTarget(MonkSettings.Instance.EnvelopingMist);
 
                 if (onunit == null || !onunit.IsValid || onunit.HasAura(S.EnvelopingMistBuff) || Me.CurrentChi < 3 || Me.ChanneledCastingSpellId != S.SoothingMist || Me.ChannelObjectGuid != onunit.Guid)
                     return false;
@@ -245,17 +241,19 @@ namespace Axiom.Class.Monk
 
         private async Task<bool> SoothingMist()
         {
-            var onunit = HealManager.SmartTarget(Settings.Monk.Instance.SoothingMist);
+            WoWUnit onunit = HealManager.SmartTarget(MonkSettings.Instance.SoothingMist);
 
-                if (onunit == null || !onunit.IsValid || CraneStance)
-                    return false;
+            if (onunit == null || !onunit.IsValid || CraneStance)
+            {
+                return false;
+            }
 
-                return await Spell.Heal(S.SoothingMist, onunit);
+            return await Spell.Heal("Soothing Mist", onunit);
         }
 
         private async Task<bool> SurgingMists()
         {
-            var onunit = HealManager.SmartTarget(Settings.Monk.Instance.SurgingMist);
+            var onunit = HealManager.SmartTarget(MonkSettings.Instance.SurgingMist);
 
             if (onunit == null)
                 return false;
@@ -268,14 +266,14 @@ namespace Axiom.Class.Monk
 
         private async Task<bool> Detox(WoWUnit onunit)
         {
-            if (SpellManager.Spells["Detox"].Cooldown)// || Settings.Monk.Detox == Settings.Monk.DetoxBehaviour.Manually)
+            if (SpellManager.Spells["Detox"].Cooldown || MonkSettings.Instance.Detox == Settings.Monk.DetoxBehaviour.Manually)
                 return false;
 
-            if (Settings.Monk.Instance.Detox == Settings.Monk.DetoxBehaviour.OnCoolDown)
+            if (MonkSettings.Instance.Detox == Settings.Monk.DetoxBehaviour.OnCoolDown)
                 return await Spell.Heal(S.Detox, onunit);
 
-            if (Settings.Monk.Instance.Detox == Settings.Monk.DetoxBehaviour.OnDebuff)
-                return await Spell.Heal(S.Detox, onunit, () => Settings.Monk.Instance.DetoxBuff != "" && onunit.HasAura(Settings.Monk.Instance.DetoxBuff));
+            if (MonkSettings.Instance.Detox == Settings.Monk.DetoxBehaviour.OnDebuff)
+                return await Spell.Heal(S.Detox, onunit, () => MonkSettings.Instance.DetoxBuff != "" && onunit.HasAura(MonkSettings.Instance.DetoxBuff));
 
             return false;
         }
@@ -287,7 +285,7 @@ namespace Axiom.Class.Monk
             if (!TalentManager.IsSelected(9))
                 return false;
 
-            return await Spell.SelfBuff(S.ChiBrew, () => Me.ManaPercent <= /*Settings.Monk.ManaTea*/ 90 && Me.CurrentChi <= (Me.MaxChi - 2) && Me.GetAuraStackCount("Mana Tea") < 18, "", true) 
+            return await Spell.SelfBuff(S.ChiBrew, () => Me.ManaPercent <= MonkSettings.Instance.ManaTea && Me.CurrentChi <= (Me.MaxChi - 2) && Me.GetAuraStackCount("Mana Tea") < 18, "", true) 
                 && await Coroutine.Wait(1000, () => Me.CurrentChi == (currentChi + 2) || Me.CurrentChi == Me.MaxChi);
         }
 
