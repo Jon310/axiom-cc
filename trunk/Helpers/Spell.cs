@@ -76,8 +76,8 @@ namespace Axiom.Helpers
                             CanCastr.ToString()));
                 return false;
             }
-            if (!await Movement.FaceTarget(onunit))
-                return false;
+            //if (!await Movement.FaceTarget(onunit))
+            //    return false;
             if (SpellManager.Cast(spell, onunit))
             {
                 LastCastTarget = onunit;
@@ -107,8 +107,8 @@ namespace Axiom.Helpers
                             CanCastr.ToString()));
                 return false;
             }
-            if (!await Movement.FaceTarget(onunit))
-                return false;
+            //if (!await Movement.FaceTarget(onunit))
+            //    return false;
             if (SpellManager.Cast(spell, onunit))
             {
                 LastCastTarget = onunit;
