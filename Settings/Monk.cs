@@ -78,6 +78,12 @@ namespace Axiom.Settings
         [Setting, DefaultValue(90), Category("Healing Percentages")]
         public int ChiWave { get; set; }
 
+        [Setting]
+        [DefaultValue(90)]
+        [Category("Healing Percentages")]
+        [DisplayName("Chi Burst Percent")]
+        public int ChiBurst { get; set; }
+
         [Setting, DefaultValue(80), Category("Healing Percentages")]
         public int Uplift { get; set; }
 
@@ -108,6 +114,12 @@ namespace Axiom.Settings
 
         [Setting, DefaultValue(3), Category("AOE Counts")]
         public int ChiWaveCount { get; set; }
+
+        [Setting]
+        [DefaultValue(3)]
+        [Category("AOE Counts")]
+        [DisplayName("Chi Burst Count")]
+        public int ChiBurstCount { get; set; }
 
         #endregion
 

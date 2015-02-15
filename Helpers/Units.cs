@@ -9,6 +9,7 @@ using Axiom.Helpers;
 using Axiom.Managers;
 using Bots.DungeonBuddy.Helpers;
 using Styx;
+using Styx.Common;
 using Styx.CommonBot;
 using Styx.Helpers;
 using Styx.WoWInternals;
@@ -95,6 +96,17 @@ namespace Axiom.Helpers
         }
         #endregion
 
+        #region GetPathUnits
+
+        public static IEnumerable<WoWUnit> GetPathUnits(WoWUnit target, IEnumerable<WoWUnit> otherUnits, float distance)
+        {
+            var myLoc = StyxWoW.Me.Location;
+            var targetLoc = target.Location;
+            return otherUnits.Where(u => u.Location.GetNearestPointOnSegment(myLoc, targetLoc).Distance(u.Location) <= distance);
+        }
+
+        #endregion
+
         #region Auras
         public static bool HasAura(this WoWUnit unit, int auraid, int stacks = 0)
         {
@@ -165,11 +177,11 @@ namespace Axiom.Helpers
                 WoWAura S = unit.Auras.Values.Where(a => a.Name == aura && a.CreatorGuid == Me.Guid).FirstOrDefault();
                 if (S != null)
                 {
-                    Log.WritetoFile(Styx.Common.LogLevel.Diagnostic, string.Format("{0} has {1} stacks of {2}", unit.safeName(), unit.Auras[aura].StackCount, aura));
+                    Log.WritetoFile(LogLevel.Diagnostic, String.Format("{0} has {1} stacks of {2}", unit.safeName(), unit.Auras[aura].StackCount, aura));
                     return S.StackCount;
                 }
             }
-            return uint.MinValue;
+            return UInt32.MinValue;
         }
         public static bool HasAuraExpired(this WoWUnit u, string aura, int secs = 3, bool myAura = true)
         {
