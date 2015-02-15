@@ -60,14 +60,13 @@ namespace Axiom.Helpers
 
         #region CastSpell
 
-        public static async Task<bool> CastSpell(string spell, WoWUnit onunit, Func<bool> reqs,
-            SpellFlags type = SpellFlags.Normal, string reason = "", bool ignoregcd = false)
+        public static async Task<bool> CastSpell(string spell, WoWUnit onunit, Func<bool> reqs, string reason = "", bool ignoregcd = false)
         {
             if (!reqs())
             {
                 return false;
             }
-            CanCastResult CanCastr = CanCast(spell, onunit, type, ignoregcd);
+            CanCastResult CanCastr = CanCast(spell, onunit, ignoregcd);
             if (CanCastr != CanCastResult.Success)
             {
                 if (GeneralSettings.Instance.LogCanCastResults)
@@ -77,7 +76,7 @@ namespace Axiom.Helpers
                             CanCastr.ToString()));
                 return false;
             }
-            if (!await Movement.FaceTarget(onunit, type))
+            if (!await Movement.FaceTarget(onunit))
                 return false;
             if (SpellManager.Cast(spell, onunit))
             {
@@ -98,7 +97,7 @@ namespace Axiom.Helpers
             {
                 return false;
             }
-            CanCastResult CanCastr = CanCast(sname, onunit, type, ignoregcd);
+            CanCastResult CanCastr = CanCast(sname, onunit, ignoregcd);
             if (CanCastr != CanCastResult.Success)
             {
                 if (GeneralSettings.Instance.LogCanCastResults)
@@ -108,7 +107,7 @@ namespace Axiom.Helpers
                             CanCastr.ToString()));
                 return false;
             }
-            if (!await Movement.FaceTarget(onunit, type))
+            if (!await Movement.FaceTarget(onunit))
                 return false;
             if (SpellManager.Cast(spell, onunit))
             {
@@ -179,7 +178,7 @@ namespace Axiom.Helpers
 
         #region CanCast
 
-        public static CanCastResult CanCast(string strspell, WoWUnit unit, SpellFlags type, bool ignoregcd)
+        public static CanCastResult CanCast(string strspell, WoWUnit unit, bool ignoregcd)
         {
             if (!Me.IsAlive || Me.IsDead || Me.IsGhost || Me.CurrentHealth == 0)
                 return CanCastResult.Dead;
@@ -216,21 +215,12 @@ namespace Axiom.Helpers
             if (spell.Cooldown)
                 return CanCastResult.CoolDown;
 
-            if (type != SpellFlags.FreeCast && HaveEnergy(strspell))
-                return CanCastResult.Energy;
-
             if ((!unit.InLineOfSight && unit.IsWithinMeleeRange) ||
                 (!unit.InLineOfSpellSight && !unit.IsWithinMeleeRange))
                 return CanCastResult.LOS;
 
             if (Me.Mounted && !GeneralSettings.Instance.AutoDismount)
                 return CanCastResult.Mounted;
-
-            if (Me.DebuffCC() && type != SpellFlags.Buff)
-                return CanCastResult.Inhibited;
-
-            if (unit.IsFriendly() && type == SpellFlags.Normal)
-                return CanCastResult.Friendly;
 
             if (spell.HasRange)
             {
@@ -251,9 +241,6 @@ namespace Axiom.Helpers
             if (Me.HasAura("Drink"))
                 return CanCastResult.Drinking;
 
-            if (type == SpellFlags.Heal && unit.CurrentHealth == unit.MaxHealth)
-                return CanCastResult.PointlessHeal;
-
             return CanCastResult.Success;
         }
 
@@ -262,63 +249,63 @@ namespace Axiom.Helpers
         #region Simplicity Wrappers
         public static Task<bool> Buff(string spell, WoWUnit onunit, string reason = "")
         {
-            return CastSpell(spell, onunit, () => true, SpellFlags.Buff, reason);
+            return CastSpell(spell, onunit, () => true, reason);
         }
         public static Task<bool> Buff(string spell, WoWUnit onunit, Func<bool> req, string reason = "")
         {
-            return CastSpell(spell, onunit, req, SpellFlags.Buff, reason);
+            return CastSpell(spell, onunit, req, reason);
         }
         public static Task<bool> FreeBuff(string spell, WoWUnit onunit, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, onunit, () => true, SpellFlags.Buff, reason, ignoregcd);
+            return CastSpell(spell, onunit, () => true, reason, ignoregcd);
         }
         public static Task<bool> FreeBuff(string spell, WoWUnit onunit, Func<bool> req, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, onunit, req, SpellFlags.Buff, reason, ignoregcd);
+            return CastSpell(spell, onunit, req, reason, ignoregcd);
         }
         public static Task<bool> SelfBuff(string spell, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, Me, () => true, SpellFlags.Buff, reason, ignoregcd);
+            return CastSpell(spell, Me, () => true, reason, ignoregcd);
         }
         public static Task<bool> SelfBuff(string spell, Func<bool> req, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, Me, req, SpellFlags.Buff, reason, ignoregcd);
+            return CastSpell(spell, Me, req, reason, ignoregcd);
         }
         public static Task<bool> Heal(string spell, WoWUnit onunit, string reason = "")
         {
-            return CastSpell(spell, onunit, () => true, SpellFlags.Heal, reason);
+            return CastSpell(spell, onunit, () => true, reason);
         }
         public static Task<bool> Heal(string spell, WoWUnit onunit, Func<bool> req, string reason = "")
         {
-            return CastSpell(spell, onunit, req, SpellFlags.Heal, reason);
+            return CastSpell(spell, onunit, req, reason);
         }
         public static Task<bool> SelfHeal(string spell, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, Me, () => true, SpellFlags.Heal, reason, ignoregcd);
+            return CastSpell(spell, Me, () => true, reason, ignoregcd);
         }
         public static Task<bool> SelfHeal(string spell, Func<bool> req, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, Me, req, SpellFlags.Heal, reason, ignoregcd);
+            return CastSpell(spell, Me, req, reason, ignoregcd);
         }
         public static Task<bool> Cast(string spell, WoWUnit onunit, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, onunit, () => true, SpellFlags.Normal, reason, ignoregcd);
+            return CastSpell(spell, onunit, () => true, reason, ignoregcd);
         }
         public static Task<bool> Cast(string spell, WoWUnit onunit, Func<bool> req, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, onunit, req, SpellFlags.Normal, reason, ignoregcd);
+            return CastSpell(spell, onunit, req, reason, ignoregcd);
         }
         public static Task<bool> Cast(string spell, Func<bool> req, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, Me.CurrentTarget, req, SpellFlags.Normal, reason, ignoregcd);
+            return CastSpell(spell, Me.CurrentTarget, req, reason, ignoregcd);
         }
         public static Task<bool> FreeCast(string spell, WoWUnit onunit, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, onunit, () => true, SpellFlags.FreeCast, reason, ignoregcd);
+            return CastSpell(spell, onunit, () => true, reason, ignoregcd);
         }
         public static Task<bool> FreeCast(string spell, WoWUnit onunit, Func<bool> req, string reason = "", bool ignoregcd = false)
         {
-            return CastSpell(spell, onunit, req, SpellFlags.FreeCast, reason, ignoregcd);
+            return CastSpell(spell, onunit, req, reason, ignoregcd);
         }
         #endregion
 

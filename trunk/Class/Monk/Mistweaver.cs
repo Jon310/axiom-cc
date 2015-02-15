@@ -95,6 +95,7 @@ namespace Axiom.Class.Monk
                 await SpinningCraneKick();
                 await RenewingMist();
                 await ZenSpheres();
+                await ChiBurst(healtarget);
                 await Spell.SelfBuff(S.Revival, () => HealManager.SmartTargets(MonkSettings.Instance.Revival).Count() >= HealManager.GroupCount / 2);
                 await EnvelopingMists();
                 await SoothingMist();
@@ -126,6 +127,7 @@ namespace Axiom.Class.Monk
             await ManaTea(MonkSettings.Instance.ManaTea);
             await Spell.SelfHeal(S.ExpelHarm, () => !TalentManager.HasGlyph("Targeted Expulsion") && Me.HealthPercent < MonkSettings.Instance.ExpelHarm);
             await Spell.Heal(S.ExpelHarm, HealManager.Target, () => TalentManager.HasGlyph("Targeted Expulsion") && HealManager.Target.HealthPercent < MonkSettings.Instance.ExpelHarm);
+            await ChiBurst(HealManager.Target);
             await Spell.CoCast(S.SurgingMist, HealManager.SmartTarget(100), Me.HasAura("Vital Mists", 5));
             await Spell.Cast(S.SpinningCraneKick, onunit, () => (Units.EnemyUnitsSub8.Count() >= 5 && !TalentManager.IsSelected(16) || Units.EnemyUnitsSub8.Count() >= 3 && TalentManager.IsSelected(16)) && Axiom.AOE);
             await Spell.Cast(S.TigerPalm, onunit, () => (Me.HasAura("Vital Mists", 4) || !Me.HasAura("Tiger Power")) && Me.CurrentChi > 0);
@@ -198,14 +200,16 @@ namespace Axiom.Class.Monk
             if (!TalentManager.IsSelected(6))
                 return false;
 
-            var target = Units.GetPathUnits(onunit, Units.FriendlyUnitsNearTarget(40), 40);
-            
             if (onunit == null || !onunit.IsValid)
                 return false;
 
+            var target = Units.GetPathUnits(onunit, Units.FriendlyUnitsNearTarget(40), 40);
             var bursttars = target as IList<WoWUnit> ?? target.ToList();
+            var lastmofo = bursttars.OrderBy(u => u.Distance).FirstOrDefault();
 
-            return await Spell.Heal("Chi Wave", bursttars.OrderBy(u => u.Distance).FirstOrDefault(), 
+            await Movement.FaceTarget(lastmofo, 5);
+
+            return await Spell.Heal("Chi Wave", lastmofo , 
                 () => bursttars.Count(u => u.HealthPercent < MonkSettings.Instance.ChiBurst) >= MonkSettings.Instance.ChiBurstCount);
         }
 

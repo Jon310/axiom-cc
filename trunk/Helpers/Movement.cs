@@ -54,13 +54,10 @@ namespace Axiom.Helpers
         }
 
         //Credit to the Singular Team for the CreateFaceTargetBehavior
-        public static async Task<bool> FaceTarget(WoWUnit unit, Spell.SpellFlags type, float viewDegrees = 150f)
+        public static async Task<bool> FaceTarget(WoWUnit unit, float viewDegrees = 150f)
         {
             if (unit == null || !unit.IsValid)
                 return false;
-
-            if (type == Spell.SpellFlags.Buff || type == Spell.SpellFlags.Heal && unit.IsFriendly())
-                return true;
 
             // even though we may want a tighter conical facing check, allow
             // .. behavior to continue if 150 or better so we can cast while turning
@@ -75,14 +72,14 @@ namespace Axiom.Helpers
                 return true;
             }
 
-            if (!GeneralSettings.Instance.Movement
-                && !StyxWoW.Me.IsMoving)
-            {
-                Log.WritetoFile(Styx.Common.LogLevel.Diagnostic, string.Format("FaceTarget: facing since more than {0} degrees", (long)viewDegrees));
-                unit.Face();
-                if (await Coroutine.Wait(100, () => StyxWoW.Me.IsSafelyFacing(unit, viewDegrees)))
-                    return true;
-            }
+
+            Log.WritetoFile(LogLevel.Diagnostic, string.Format("FaceTarget: facing since more than {0} degrees", (long)viewDegrees));
+
+            unit.Face();
+
+            if (await Coroutine.Wait(100, () => StyxWoW.Me.IsSafelyFacing(unit, viewDegrees)))
+                return true;
+
             // otherwise, indicate behavior complete so begins again while
             // .. waiting for facing to occur
             return false;
