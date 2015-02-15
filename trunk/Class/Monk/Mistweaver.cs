@@ -109,15 +109,26 @@ namespace Axiom.Class.Monk
         private async Task<bool> Crane(WoWUnit onunit, bool reqs)
         {
             if (!reqs) return false;
+
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
+<<<<<<< .mine
+            //await Detox(onunit);
+            await ManaTea(MonkSettings.Instance.ManaTea);
+            await Spell.Cast(S.ExpelHarm, onunit, () => Me.HealthPercent <= MonkSettings.Instance.ExpelHarm && !TalentManager.HasGlyph("Targeted Expulsion"));
+            await Spell.Cast(S.ExpelHarm, HealManager.SmartTargets(MonkSettings.Instance.ExpelHarm), () => TalentManager.HasGlyph("Targeted Expulsion"));
+            await Spell.Cast(S.SurgingMist, HealManager.SmartTargets(100), () => Me.HasAura("Vital Mists", 5));
+            await Spell.Cast(S.SpinningCraneKick, onunit, () => (Units.EnemyUnitsSub8.Count() >= 5 && !TalentManager.IsSelected(16) || Units.EnemyUnitsSub8.Count() >= 3 && TalentManager.IsSelected(16)) && Axiom.AOE);
+=======
             await Spell.Cast(S.ExpelHarm, onunit, () => Me.HealthPercent <= MonkSettings.Instance.ExpelHarm);
             await Spell.CoCast(S.SurgingMist, VitalMistsTar, Me.HasAura("Vital Mists", 5));
+>>>>>>> .r41
             await Spell.Cast(S.TigerPalm, onunit, () => (Me.HasAura("Vital Mists", 4) || !Me.HasAura("Tiger Power")) && Me.CurrentChi > 0);
             await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Crane's Zeal") && Me.CurrentChi >= 2);
             await Spell.Cast(S.RisingSunKick, onunit, () => Me.CurrentChi >= 2);
             await Spell.Cast(S.ChiWave, onunit);
-            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 2);
+            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 3);
+            await ChiBrewFist();
             await Spell.Cast(S.Jab, onunit);
 
             return true;
@@ -286,6 +297,17 @@ namespace Axiom.Class.Monk
                 return false;
 
             return await Spell.SelfBuff(S.ChiBrew, () => Me.ManaPercent <= MonkSettings.Instance.ManaTea && Me.CurrentChi <= (Me.MaxChi - 2) && Me.GetAuraStackCount("Mana Tea") < 18, "", true) 
+                && await Coroutine.Wait(1000, () => Me.CurrentChi == (currentChi + 2) || Me.CurrentChi == Me.MaxChi);
+        }
+
+        private async Task<bool> ChiBrewFist()
+        {
+            var currentChi = Me.CurrentChi;
+
+            if (!TalentManager.IsSelected(9))
+                return false;
+
+            return await Spell.SelfBuff(S.ChiBrew, () => (!Me.HasAura("Crane's Zeal") || !Me.HasAura("Tiger Power") || !Me.CurrentTarget.HasAura(S.RisingSunKick)) && Me.CurrentChi <= (Me.MaxChi - 2) && Me.GetAuraStackCount("Mana Tea") < 18, "", true)
                 && await Coroutine.Wait(1000, () => Me.CurrentChi == (currentChi + 2) || Me.CurrentChi == Me.MaxChi);
         }
 
