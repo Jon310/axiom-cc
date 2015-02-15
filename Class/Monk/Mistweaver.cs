@@ -112,7 +112,7 @@ namespace Axiom.Class.Monk
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
             await Spell.Cast(S.ExpelHarm, onunit, () => Me.HealthPercent <= MonkSettings.Instance.ExpelHarm);
-            await Spell.Cast(S.SurgingMist, VitalMistsTar, () => Me.HasAura("Vital Mists", 5));
+            await Spell.CoCast(S.SurgingMist, VitalMistsTar, Me.HasAura("Vital Mists", 5));
             await Spell.Cast(S.TigerPalm, onunit, () => (Me.HasAura("Vital Mists", 4) || !Me.HasAura("Tiger Power")) && Me.CurrentChi > 0);
             await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Crane's Zeal") && Me.CurrentChi >= 2);
             await Spell.Cast(S.RisingSunKick, onunit, () => Me.CurrentChi >= 2);
@@ -300,7 +300,6 @@ namespace Axiom.Class.Monk
                               where unit.IsInMyPartyOrRaid
                               where unit.Distance < 40
                               where unit.InLineOfSight
-                              where unit.HealthPercent <= 100
                               select unit).OrderByDescending(u => u.HealthPercent).LastOrDefault();
                 return eHheal;
             }
