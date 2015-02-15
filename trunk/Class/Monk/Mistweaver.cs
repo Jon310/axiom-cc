@@ -58,7 +58,6 @@ namespace Axiom.Class.Monk
         private async Task<bool> CombatCoroutine(WoWUnit onunit)
         {
             await Crane(onunit, CraneStance);
-            //await HealCoroutine(HealManager.Target);
 
             return false;
         }
@@ -194,7 +193,7 @@ namespace Axiom.Class.Monk
             if (onunit == null || !onunit.IsValid)
                 return false;
 
-            return await Spell.Heal("Chi Wave", onunit, () => targets >= MonkSettings.Instance.ChiWaveCount);
+            return await Spell.Heal(S.ChiWave, onunit, () => targets >= MonkSettings.Instance.ChiWaveCount);
         }
 
         private static async Task<bool> ChiBurst(WoWUnit onunit)
@@ -205,14 +204,29 @@ namespace Axiom.Class.Monk
             if (onunit == null || !onunit.IsValid)
                 return false;
 
+            var pathcount = HealManager.Targets().Count(u => u.RelativeLocation.IsBetween(Me.Location, onunit.Location));
+
             var target = Units.GetPathUnits(onunit, Units.FriendlyUnitsNearTarget(40), 40);
             var bursttars = target as IList<WoWUnit> ?? target.ToList();
             var lastmofo = bursttars.OrderBy(u => u.Distance).FirstOrDefault();
 
-            await Movement.FaceTarget(lastmofo, 5);
+            if (onunit.HealthPercent > MonkSettings.Instance.ChiBurst && pathcount >= MonkSettings.Instance.ChiBurstCount)
+            {
+                await Movement.FaceTarget(onunit, 5);
+                Log.WriteLog(string.Format("Running Top Chi Burst Code"), Colors.Chartreuse);
+                await CommonCoroutines.SleepForLagDuration();
+                await Spell.Heal(S.ChiBurst, onunit, () => onunit.HealthPercent > MonkSettings.Instance.ChiBurst && pathcount >= MonkSettings.Instance.ChiBurstCount);
+            }
 
-            return await Spell.Heal("Chi Wave", lastmofo , 
-                () => bursttars.Count(u => u.HealthPercent < MonkSettings.Instance.ChiBurst) >= MonkSettings.Instance.ChiBurstCount);
+            if (bursttars.Count(u => u.HealthPercent < MonkSettings.Instance.ChiBurst) >= MonkSettings.Instance.ChiBurstCount)
+            {
+                await Movement.FaceTarget(lastmofo, 5);
+                Log.WriteLog(string.Format("Running Bottom Chi Burst Code"), Colors.Chartreuse);
+                await CommonCoroutines.SleepForLagDuration();
+                await Spell.Heal(S.ChiBurst, lastmofo);
+            }
+
+            return false;
         }
 
         private async Task<bool> SpinningCraneKick()

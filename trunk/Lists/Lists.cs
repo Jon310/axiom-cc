@@ -242,6 +242,7 @@ namespace Axiom.Lists
         public const int BlackoutKick = 100784,
                           BreathofFire = 115181,
                           ChiBrew = 115399,
+                          ChiBurst = 123986,
                           ChiWave = 115098,
                           CracklingJadeLightning = 117952,
                           Detox = 115450,
