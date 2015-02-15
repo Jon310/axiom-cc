@@ -215,7 +215,7 @@ namespace Axiom.Class.Monk
             #region ChiBurst
             private static async Task<bool> ChiBurst(WoWUnit onunit)
             {
-                if (!TalentManager.IsSelected(6))
+                if (!TalentManager.IsSelected(6) || SpellManager.HasSpell(S.ChiBurst) || SpellManager.Spells["Chi Burst"].Cooldown)
                     return false;
 
                 if (onunit == null || !onunit.IsValid)
