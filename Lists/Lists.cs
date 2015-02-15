@@ -275,6 +275,7 @@ namespace Axiom.Lists
                           StanceoftheSturdyOx = 115069,
                           StanceoftheWiseSerpent = 115070,
                           SummonBlackOxStatue = 115315,
+                          SummonJadeSerpentStatue = 115313,
                           SurgingMist = 116694,
                           ThunderFocusTea = 116680,
                           TigereyeBrew = 116740,
