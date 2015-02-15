@@ -308,7 +308,7 @@ namespace Axiom.Helpers
         {
             return CastSpell(spell, onunit, req, SpellFlags.Normal, reason, ignoregcd);
         }
-        public static Task<bool> Cast(string spell, Func<bool> req, string reason = "", bool ignoregcd = false)
+        public static Task<bool> Cast(int spell, Func<bool> req, string reason = "", bool ignoregcd = false)
         {
             return CastSpell(spell, Me.CurrentTarget, req, SpellFlags.Normal, reason, ignoregcd);
         }
@@ -387,7 +387,7 @@ namespace Axiom.Helpers
         {
             return CastSpell(spell, onunit, req, SpellFlags.Normal, reason, ignoregcd);
         }
-        public static Task<bool> Cast(int spell, Func<bool> req, string reason = "", bool ignoregcd = false)
+        public static Task<bool> Cast(int spell, IOrderedEnumerable<WoWUnit> smartTargets, Func<bool> req, string reason = "", bool ignoregcd = false)
         {
             return CastSpell(spell, Me.CurrentTarget, req, SpellFlags.Normal, reason, ignoregcd);
         }
