@@ -70,6 +70,8 @@ namespace Axiom.Class.Monk
 
         private async Task<bool> HealCoroutine(WoWUnit healtarget)
         {
+            if (Me.Mounted) return true;
+
             await LifeCocoon();
 
             if (MonkSettings.Instance.PrioritizeSelf)
@@ -116,11 +118,11 @@ namespace Axiom.Class.Monk
         {
             if (!reqs) return false;
 
-            await SerpentStatue(StatueCluster(), MonkSettings.Instance.AutoSerpentStatue);
-            await ManualStatue(!MonkSettings.Instance.AutoSerpentStatue);
-
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
+            await SerpentStatue(StatueCluster(), MonkSettings.Instance.AutoSerpentStatue);
+            await ManualStatue(!MonkSettings.Instance.AutoSerpentStatue);
+            
             await LifeCocoon();
             await Spell.SelfBuff(S.ThunderFocusTea, () => HealManager.CountNearby(Me, 40, MonkSettings.Instance.LifeCocoon) >= 1 && Me.HasAura("Vital Mists", 5));
             await Detox(onunit);
