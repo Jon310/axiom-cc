@@ -222,8 +222,9 @@ namespace Axiom.Class.Monk
                     return false;
 
                 var pathcount = HealManager.Targets().Count(u => u.RelativeLocation.IsBetween(Me.Location, onunit.Location));
+                var pathcount2 = HealManager.Targets().Count(u => u.X.IsBetween(Me.X, onunit.X) && u.Y.IsBetween(Me.Y, onunit.Y));
 
-                var target = Units.GetPathUnits(onunit, Units.FriendlyUnitsNearTarget(40), 40);
+                var target = Units.GetPathUnits(onunit, Units.FriendlyUnitsNearTarget(40), 5);
                 var bursttars = target as IList<WoWUnit> ?? target.ToList();
                 var lastmofo = bursttars.OrderBy(u => u.Distance).FirstOrDefault();
 
