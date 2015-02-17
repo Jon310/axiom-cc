@@ -49,9 +49,9 @@ namespace Axiom.Class.Paladin
 
             await Spell.Cast(S.ExecutionSentence, onunit, () => Burst);
             await Spell.CastOnGround(S.LightsHammer, Me.Location, onunit.IsBoss && AOE);
-            await Spell.Cast(S.DivineStorm, onunit, () => AOE && Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict") && Me.CurrentTarget.Distance <= 8 && Me.CurrentHolyPower == 5);
+            await Spell.CoCast(S.DivineStorm, onunit, AOE && Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict") && Me.CurrentTarget.Distance <= 8 && Me.CurrentHolyPower == 5);
             //Divine Purpose	If Divine Purpose has less than three seconds in duration
-            await Spell.Cast(S.DivineStorm, onunit, () => AOE && Me.HasAuraExpired("Divine Crusader", 3) && Me.CurrentTarget.Distance <= 8);
+            await Spell.CoCast(S.DivineStorm, onunit, AOE && Me.HasAuraExpired("Divine Crusader", 3) && Me.CurrentTarget.Distance <= 8);
             await Spell.CoCast(S.TemplarsVerdict, onunit, Me.CurrentHolyPower == 5 || Me.HasAura("Divine Purpose"));
 
             await Spell.CoCast(S.HammerofWrath, onunit);
