@@ -81,22 +81,6 @@ namespace Axiom.Class.Paladin
             await Spell.CoCast(S.Exorcism, onunit, Me.CurrentHolyPower <= 4);
             await Spell.CoCast(S.TemplarsVerdict, onunit);
            
-           
-
-            //await Spell.Cast(S.SealofRighteousness, onunit, () => AOE && !Me.HasAura("Seal of Righteousness") && Units.EnemyUnitsSub8.Count() >= 4);
-            //await Spell.Cast(S.SealofTruth, onunit, () => !Me.HasAura("Seal of Truth") && Units.EnemyUnitsSub8.Count() < 4);
-
-            //
-            //
-            
-            //await Spell.Cast(S.HammeroftheRighteous, onunit, () => Me.CurrentHolyPower <= 4 && Units.EnemyUnitsSub8.Count() >= 4 && AOE);
-            //await Spell.Cast(S.CrusaderStrike, onunit, () => Me.CurrentHolyPower <= 4);
-            
-            //await Spell.Cast(S.Judgment, SecTar, () => Me.CurrentHolyPower <= 4 && Units.EnemyUnits(15).Count() >= 2 && Me.HasAura("Glyph of Double Jeopardy"));
-            //await Spell.Cast(S.Judgment, onunit, () => Me.CurrentHolyPower <= 4);
-            //await Spell.Cast(S.TemplarsVerdict, onunit);
-            //await Spell.Cast(S.Exorcism, onunit, () => Me.CurrentHolyPower <= 4);
-            //await Spell.Cast(S.HolyPrism, onunit);
         
             return false;
         }
@@ -111,70 +95,23 @@ namespace Axiom.Class.Paladin
         {
             if (!reqs) return false;
             await Spell.Cast(S.SealofRighteousness, onunit, () => Axiom.AOE && !Me.HasAura("Seal of Righteousness") && Units.EnemyUnitsSub8.Count() >= 2);
-//    5.57	divine_storm,if=buff.divine_crusader.react&(holy_power=5|buff.holy_avenger.up&holy_power>=3)&buff.final_verdict.up
             await Spell.CoCast(S.DivineStorm, onunit, (Me.HasAura("Final Verdict") || Me.HasAura("Divine Crusader")) && MaxHolyPower);
-//{	0.00	divine_storm,if=buff.divine_crusader.react&(holy_power=5|buff.holy_avenger.up&holy_power>=3)&active_enemies=2&!talent.final_verdict.enabled
-//|	10.35	divine_storm,if=(holy_power=5|buff.holy_avenger.up&holy_power>=3)&active_enemies=2&buff.final_verdict.up
-//}	0.00	divine_storm,if=buff.divine_crusader.react&(holy_power=5|buff.holy_avenger.up&holy_power>=3)&(talent.seraphim.enabled&cooldown.seraphim.remains<gcd*4)
-//~	0.00	templars_verdict,if=holy_power=5|buff.holy_avenger.up&holy_power>=3&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*4)
-//!	0.00	templars_verdict,if=buff.divine_purpose.react&buff.divine_purpose.remains<3
-//"	0.00	divine_storm,if=buff.divine_crusader.react&buff.divine_crusader.remains<3&!talent.final_verdict.enabled
-//#	19.20	final_verdict,if=holy_power=5|buff.holy_avenger.up&holy_power>=3
-//$	2.74	final_verdict,if=buff.divine_purpose.react&buff.divine_purpose.remains<3
             await Spell.CoCast(S.TemplarsVerdict, onunit, MaxHolyPower || Me.HasAura("Divine Purpose"));
-//%	55.44	hammer_of_wrath
             await Spell.Cast(S.HammerofWrath, onunit, () => SpellManager.CanCast(S.HammerofWrath));
-//&	0.00	judgment,if=talent.empowered_seals.enabled&seal.truth&buff.maraads_truth.remains<cooldown.judgment.duration
-//'	0.00	judgment,if=talent.empowered_seals.enabled&seal.righteousness&buff.liadrins_righteousness.remains<cooldown.judgment.duration
-//(	0.00	judgment,if=talent.empowered_seals.enabled&seal.righteousness&cooldown.avenging_wrath.remains<cooldown.judgment.duration
-//)	0.00	exorcism,if=buff.blazing_contempt.up&holy_power<=2&buff.holy_avenger.down
             await Spell.Cast(S.Exorcism, onunit, () => Me.HasAura("Blazing Contempt") && !MaxHolyPower);
-//*	0.00	seal_of_truth,if=talent.empowered_seals.enabled&buff.maraads_truth.down
-//+	0.00	seal_of_truth,if=talent.empowered_seals.enabled&cooldown.avenging_wrath.remains<cooldown.judgment.duration&buff.liadrins_righteousness.remains>cooldown.judgment.duration
-//,	0.00	seal_of_righteousness,if=talent.empowered_seals.enabled&buff.maraads_truth.remains>cooldown.judgment.duration&buff.liadrins_righteousness.down&!buff.avenging_wrath.up&!buff.bloodlust.up
-//-	13.68	divine_storm,if=buff.divine_crusader.react&buff.final_verdict.up&(buff.avenging_wrath.up|target.health.pct<35)
-            await Spell.CoCast(S.DivineStorm, onunit, Me.HasAura("Divine Crusader") && (Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35));
-//:	17.24	divine_storm,if=active_enemies=2&buff.final_verdict.up&(buff.avenging_wrath.up|target.health.pct<35)
-//;	32.12	final_verdict,if=buff.avenging_wrath.up|target.health.pct<35
+            await Spell.CoCast(S.DivineStorm, onunit, Me.HasAura("Final Verdict") && (Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35));
             await Spell.CoCast(S.TemplarsVerdict, onunit, Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35);
-//<	0.00	divine_storm,if=buff.divine_crusader.react&active_enemies=2&(buff.avenging_wrath.up|target.health.pct<35)&!talent.final_verdict.enabled
-//=	0.00	templars_verdict,if=holy_power=5&(buff.avenging_wrath.up|target.health.pct<35)&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*3)
-//>	0.00	templars_verdict,if=holy_power=4&(buff.avenging_wrath.up|target.health.pct<35)&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*4)
-//?	0.00	templars_verdict,if=holy_power=3&(buff.avenging_wrath.up|target.health.pct<35)&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*5)
-//@	0.00	crusader_strike,if=holy_power<5&talent.seraphim.enabled
-//.	87.57	crusader_strike,if=holy_power<=3|(holy_power=4&target.health.pct>=35&buff.avenging_wrath.down)
-            await Spell.Cast(S.HammeroftheRighteous, onunit, () => Units.EnemyUnitsSub8.Count() >= 4 && (Me.CurrentHolyPower <= 3 || (Me.CurrentHolyPower == 4 && Me.CurrentTarget.HealthPercent >= 35 && !Me.HasAura(S.AvengingWrath))));
+            //await Spell.Cast(S.HammeroftheRighteous, onunit, () => Units.EnemyUnitsSub8.Count() >= 4 && (Me.CurrentHolyPower <= 3 || (Me.CurrentHolyPower == 4 && Me.CurrentTarget.HealthPercent >= 35 && !Me.HasAura(S.AvengingWrath))));
             await Spell.Cast(S.CrusaderStrike, onunit, () => Me.CurrentHolyPower <= 3 || (Me.CurrentHolyPower == 4 && Me.CurrentTarget.HealthPercent >= 35 && !Me.HasAura(S.AvengingWrath)));
-            //.	0.00	divine_storm,if=buff.divine_crusader.react&(buff.avenging_wrath.up|target.health.pct<35)&!talent.final_verdict.enabled
-//.	62.56	judgment,cycle_targets=1,if=last_judgment_target!=target&glyph.double_jeopardy.enabled&holy_power<5
             await Spell.Cast(S.Judgment, SecTar, () => Me.CurrentHolyPower <= 4 && Units.EnemyUnits(15).Count() >= 2 && Me.HasAura("Glyph of Double Jeopardy"));
             await Spell.Cast(S.Judgment, onunit, () => Me.CurrentHolyPower <= 4);
-//.	0.00	exorcism,if=glyph.mass_exorcism.enabled&active_enemies>=2&holy_power<5&!glyph.double_jeopardy.enabled
             await Spell.Cast(S.Exorcism, onunit, () => TalentManager.HasGlyph("Mass Exorcism") && Me.CurrentHolyPower < 5);
-//.	0.00	judgment,if=holy_power<5&talent.seraphim.enabled
-//.	0.24	judgment,if=holy_power<=3|(holy_power=4&cooldown.crusader_strike.remains>=gcd*2&target.health.pct>35&buff.avenging_wrath.down)
-//.	8.80	divine_storm,if=buff.divine_crusader.react&buff.final_verdict.up
             await Spell.CoCast(S.DivineStorm, onunit, Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict"));
-//.	6.50	divine_storm,if=active_enemies=2&holy_power>=4&buff.final_verdict.up
             await Spell.CoCast(S.DivineStorm, onunit, Me.CurrentHolyPower >=4 && Me.HasAura("Final Verdict"));
-//.	5.62	final_verdict,if=buff.divine_purpose.react
             await Spell.CoCast(S.FinalVerdict, onunit, Me.HasAura("Divine Purpose") || Me.CurrentHolyPower >= 4);
-//.	7.31	final_verdict,if=holy_power>=4
-//.	0.00	divine_storm,if=buff.divine_crusader.react&active_enemies=2&holy_power>=4&!talent.final_verdict.enabled
-//.	0.00	templars_verdict,if=buff.divine_purpose.react
-//.	0.00	divine_storm,if=buff.divine_crusader.react&!talent.final_verdict.enabled
-//.	0.00	templars_verdict,if=holy_power>=4&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*5)
-//.	0.00	seal_of_truth,if=talent.empowered_seals.enabled&buff.maraads_truth.remains<cooldown.judgment.duration
-//.	0.00	seal_of_righteousness,if=talent.empowered_seals.enabled&buff.liadrins_righteousness.remains<cooldown.judgment.duration&!buff.bloodlust.up
-//.	0.00	exorcism,if=holy_power<5&talent.seraphim.enabled
             await Spell.CoCast(S.Exorcism, onunit, Me.CurrentHolyPower <= 4);
-//.	10.89	exorcism,if=holy_power<=3|(holy_power=4&(cooldown.judgment.remains>=gcd*2&cooldown.crusader_strike.remains>=gcd*2&target.health.pct>35&buff.avenging_wrath.down))
-//.	1.00	divine_storm,if=active_enemies=2&holy_power>=3&buff.final_verdict.up
             await Spell.CoCast(S.DivineStorm, onunit, Me.CurrentHolyPower >= 3 && Me.HasAura("Final Verdict"));
-//.	1.29	final_verdict,if=holy_power>=3
             await Spell.CoCast(S.TemplarsVerdict, onunit);
-//.	0.00	templars_verdict,if=holy_power>=3&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*6)
-//.	0.00	holy_prism
             await Spell.Cast(S.HolyPrism, onunit);
 
             return true;
@@ -185,71 +122,22 @@ namespace Axiom.Class.Paladin
         private static async Task<bool> AOE4(WoWUnit onunit, bool reqs)
         {
             if (!reqs) return false;
-            await Spell.Cast(S.SealofRighteousness, onunit, () => Axiom.AOE && !Me.HasAura("Seal of Righteousness") && Units.EnemyUnitsSub8.Count() >= 2);
-            //    5.57	divine_storm,if=buff.divine_crusader.react&(holy_power=5|buff.holy_avenger.up&holy_power>=3)&buff.final_verdict.up
-            await Spell.CoCast(S.DivineStorm, onunit, (Me.HasAura("Final Verdict") || Me.HasAura("Divine Crusader")) && MaxHolyPower);
-            //{	0.00	divine_storm,if=buff.divine_crusader.react&(holy_power=5|buff.holy_avenger.up&holy_power>=3)&active_enemies=2&!talent.final_verdict.enabled
-            //|	10.35	divine_storm,if=(holy_power=5|buff.holy_avenger.up&holy_power>=3)&active_enemies=2&buff.final_verdict.up
-            //}	0.00	divine_storm,if=buff.divine_crusader.react&(holy_power=5|buff.holy_avenger.up&holy_power>=3)&(talent.seraphim.enabled&cooldown.seraphim.remains<gcd*4)
-            //~	0.00	templars_verdict,if=holy_power=5|buff.holy_avenger.up&holy_power>=3&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*4)
-            //!	0.00	templars_verdict,if=buff.divine_purpose.react&buff.divine_purpose.remains<3
-            //"	0.00	divine_storm,if=buff.divine_crusader.react&buff.divine_crusader.remains<3&!talent.final_verdict.enabled
-            //#	19.20	final_verdict,if=holy_power=5|buff.holy_avenger.up&holy_power>=3
-            //$	2.74	final_verdict,if=buff.divine_purpose.react&buff.divine_purpose.remains<3
             await Spell.CoCast(S.TemplarsVerdict, onunit, MaxHolyPower && !Me.HasAura("Final Verdict"));
-            //%	55.44	hammer_of_wrath
+            await Spell.CoCast(S.DivineStorm, onunit, Me.HasAura("Final Verdict") && MaxHolyPower);
             await Spell.Cast(S.HammerofWrath, onunit, () => SpellManager.CanCast(S.HammerofWrath));
-            //&	0.00	judgment,if=talent.empowered_seals.enabled&seal.truth&buff.maraads_truth.remains<cooldown.judgment.duration
-            //'	0.00	judgment,if=talent.empowered_seals.enabled&seal.righteousness&buff.liadrins_righteousness.remains<cooldown.judgment.duration
-            //(	0.00	judgment,if=talent.empowered_seals.enabled&seal.righteousness&cooldown.avenging_wrath.remains<cooldown.judgment.duration
-            //)	0.00	exorcism,if=buff.blazing_contempt.up&holy_power<=2&buff.holy_avenger.down
             await Spell.Cast(S.Exorcism, onunit, () => Me.HasAura("Blazing Contempt") && !MaxHolyPower);
-            //*	0.00	seal_of_truth,if=talent.empowered_seals.enabled&buff.maraads_truth.down
-            //+	0.00	seal_of_truth,if=talent.empowered_seals.enabled&cooldown.avenging_wrath.remains<cooldown.judgment.duration&buff.liadrins_righteousness.remains>cooldown.judgment.duration
-            //,	0.00	seal_of_righteousness,if=talent.empowered_seals.enabled&buff.maraads_truth.remains>cooldown.judgment.duration&buff.liadrins_righteousness.down&!buff.avenging_wrath.up&!buff.bloodlust.up
-            //-	13.68	divine_storm,if=buff.divine_crusader.react&buff.final_verdict.up&(buff.avenging_wrath.up|target.health.pct<35)
-            await Spell.CoCast(S.DivineStorm, onunit, Me.HasAura("Divine Crusader") && (Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35));
-            //:	17.24	divine_storm,if=active_enemies=2&buff.final_verdict.up&(buff.avenging_wrath.up|target.health.pct<35)
-            //;	32.12	final_verdict,if=buff.avenging_wrath.up|target.health.pct<35
+            await Spell.CoCast(S.DivineStorm, onunit, (Me.HasAura("Final Verdict") || Me.HasAura("Divine Crusader")) && (Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35));
             await Spell.CoCast(S.TemplarsVerdict, onunit, (Me.HasAura(S.AvengingWrath) || Me.CurrentTarget.HealthPercent < 35) && !Me.HasAura("Final Verdict"));
-            //<	0.00	divine_storm,if=buff.divine_crusader.react&active_enemies=2&(buff.avenging_wrath.up|target.health.pct<35)&!talent.final_verdict.enabled
-            //=	0.00	templars_verdict,if=holy_power=5&(buff.avenging_wrath.up|target.health.pct<35)&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*3)
-            //>	0.00	templars_verdict,if=holy_power=4&(buff.avenging_wrath.up|target.health.pct<35)&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*4)
-            //?	0.00	templars_verdict,if=holy_power=3&(buff.avenging_wrath.up|target.health.pct<35)&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*5)
-            //@	0.00	crusader_strike,if=holy_power<5&talent.seraphim.enabled
-            //.	87.57	crusader_strike,if=holy_power<=3|(holy_power=4&target.health.pct>=35&buff.avenging_wrath.down)
-            await Spell.Cast(S.HammeroftheRighteous, onunit, () => Units.EnemyUnitsSub8.Count() >= 4 && (Me.CurrentHolyPower <= 3 || (Me.CurrentHolyPower == 4 && Me.CurrentTarget.HealthPercent >= 35 && !Me.HasAura(S.AvengingWrath))));
-            await Spell.Cast(S.CrusaderStrike, onunit, () => Me.CurrentHolyPower <= 3 || (Me.CurrentHolyPower == 4 && Me.CurrentTarget.HealthPercent >= 35 && !Me.HasAura(S.AvengingWrath)));
-            //.	0.00	divine_storm,if=buff.divine_crusader.react&(buff.avenging_wrath.up|target.health.pct<35)&!talent.final_verdict.enabled
-            //.	62.56	judgment,cycle_targets=1,if=last_judgment_target!=target&glyph.double_jeopardy.enabled&holy_power<5
+            await Spell.Cast(S.HammeroftheRighteous, onunit, () => (Me.CurrentHolyPower <= 3 || (Me.CurrentHolyPower == 4 && Me.CurrentTarget.HealthPercent >= 35 && !Me.HasAura(S.AvengingWrath))));
+            await Spell.Cast(S.Exorcism, onunit, () => TalentManager.HasGlyph("Mass Exorcism") && Me.CurrentHolyPower < 5);
             await Spell.Cast(S.Judgment, SecTar, () => Me.CurrentHolyPower <= 4 && Units.EnemyUnits(15).Count() >= 2 && Me.HasAura("Glyph of Double Jeopardy"));
             await Spell.Cast(S.Judgment, onunit, () => Me.CurrentHolyPower <= 4);
-            //.	0.00	exorcism,if=glyph.mass_exorcism.enabled&active_enemies>=2&holy_power<5&!glyph.double_jeopardy.enabled
-            await Spell.Cast(S.Exorcism, onunit, () => TalentManager.HasGlyph("Mass Exorcism") && Me.CurrentHolyPower < 5);
-            //.	0.00	judgment,if=holy_power<5&talent.seraphim.enabled
-            //.	0.24	judgment,if=holy_power<=3|(holy_power=4&cooldown.crusader_strike.remains>=gcd*2&target.health.pct>35&buff.avenging_wrath.down)
-            //.	8.80	divine_storm,if=buff.divine_crusader.react&buff.final_verdict.up
             await Spell.CoCast(S.DivineStorm, onunit, Me.HasAura("Divine Crusader") && Me.HasAura("Final Verdict"));
-            //.	6.50	divine_storm,if=active_enemies=2&holy_power>=4&buff.final_verdict.up
             await Spell.CoCast(S.DivineStorm, onunit, Me.CurrentHolyPower >= 4 && Me.HasAura("Final Verdict"));
-            //.	5.62	final_verdict,if=buff.divine_purpose.react
-            await Spell.CoCast(S.FinalVerdict, onunit, Me.HasAura("Divine Purpose") || Me.CurrentHolyPower >= 4);
-            //.	7.31	final_verdict,if=holy_power>=4
-            //.	0.00	divine_storm,if=buff.divine_crusader.react&active_enemies=2&holy_power>=4&!talent.final_verdict.enabled
-            //.	0.00	templars_verdict,if=buff.divine_purpose.react
-            //.	0.00	divine_storm,if=buff.divine_crusader.react&!talent.final_verdict.enabled
-            //.	0.00	templars_verdict,if=holy_power>=4&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*5)
-            //.	0.00	seal_of_truth,if=talent.empowered_seals.enabled&buff.maraads_truth.remains<cooldown.judgment.duration
-            //.	0.00	seal_of_righteousness,if=talent.empowered_seals.enabled&buff.liadrins_righteousness.remains<cooldown.judgment.duration&!buff.bloodlust.up
-            //.	0.00	exorcism,if=holy_power<5&talent.seraphim.enabled
+            await Spell.CoCast(S.FinalVerdict, onunit, (Me.HasAura("Divine Purpose") || Me.CurrentHolyPower >= 4) && !Me.HasAura("Final Verdict"));
             await Spell.CoCast(S.Exorcism, onunit, Me.CurrentHolyPower <= 4);
-            //.	10.89	exorcism,if=holy_power<=3|(holy_power=4&(cooldown.judgment.remains>=gcd*2&cooldown.crusader_strike.remains>=gcd*2&target.health.pct>35&buff.avenging_wrath.down))
-            //.	1.00	divine_storm,if=active_enemies=2&holy_power>=3&buff.final_verdict.up
             await Spell.CoCast(S.DivineStorm, onunit, Me.CurrentHolyPower >= 3 && Me.HasAura("Final Verdict"));
-            //.	1.29	final_verdict,if=holy_power>=3
-            await Spell.CoCast(S.TemplarsVerdict, onunit);
-            //.	0.00	templars_verdict,if=holy_power>=3&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*6)
-            //.	0.00	holy_prism
+            await Spell.CoCast(S.TemplarsVerdict, onunit, !Me.HasAura("Final Verdict"));
             await Spell.Cast(S.HolyPrism, onunit);
 
             return true;
