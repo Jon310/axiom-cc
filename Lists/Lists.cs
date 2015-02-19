@@ -266,6 +266,7 @@ namespace Axiom.Lists
                           Paralysis = 115078,
                           PurifyingBrew = 119582,
                           RenewingMist = 115151,
+                          RenewingMistBuff = 119611,
                           Revival = 115310,
                           RisingSunKick = 107428,
                           RushingJadeWind = 116847,
