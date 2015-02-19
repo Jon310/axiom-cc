@@ -48,7 +48,7 @@ namespace Axiom.Class.Paladin
             //await Spell.Cast(S.SealofRighteousness, onunit, () => AOE && !Me.HasAura("Seal of Righteousness") && Units.EnemyUnitsSub8.Count() >= 4);
             //await Spell.Cast(S.SealofTruth, onunit, () => !Me.HasAura("Seal of Truth") && Units.EnemyUnitsSub8.Count() < 4);
 
-            await AOE(onunit, Units.EnemyUnitsSub8.Count() >= 2 && Axiom.AOE);
+            await AOE(onunit, Units.EnemyUnitsSub10.Count() >= 2 && Axiom.AOE);
 
             await Spell.Cast(S.ExecutionSentence, onunit, () => Burst);
             await Spell.CastOnGround(S.LightsHammer, Me.Location, onunit.IsBoss && Axiom.AOE);
@@ -102,7 +102,7 @@ namespace Axiom.Class.Paladin
         private static async Task<bool> AOE(WoWUnit onunit, bool reqs)
         {
             if (!reqs) return false;
-
+            await Spell.Cast(S.SealofRighteousness, onunit, () => Axiom.AOE && !Me.HasAura("Seal of Righteousness") && Units.EnemyUnitsSub8.Count() >= 2);
 //    5.57	divine_storm,if=buff.divine_crusader.react&(holy_power=5|buff.holy_avenger.up&holy_power>=3)&buff.final_verdict.up
             await Spell.CoCast(S.DivineStorm, onunit, Me.HasAura("Divine Crusader") && MaxHolyPower);
 //{	0.00	divine_storm,if=buff.divine_crusader.react&(holy_power=5|buff.holy_avenger.up&holy_power>=3)&active_enemies=2&!talent.final_verdict.enabled
@@ -135,7 +135,7 @@ namespace Axiom.Class.Paladin
 //?	0.00	templars_verdict,if=holy_power=3&(buff.avenging_wrath.up|target.health.pct<35)&(!talent.seraphim.enabled|cooldown.seraphim.remains>gcd*5)
 //@	0.00	crusader_strike,if=holy_power<5&talent.seraphim.enabled
 //.	87.57	crusader_strike,if=holy_power<=3|(holy_power=4&target.health.pct>=35&buff.avenging_wrath.down)
-            await Spell.Cast(S.CrusaderStrike, onunit, () => Me.CurrentHolyPower <= 3 || (Me.CurrentHolyPower == 4 && Me.CurrentTarget.HealthPercent >= 35 && !Me.HasAura(S.AvengingWrath)));
+            //await Spell.Cast(S.CrusaderStrike, onunit, () => Me.CurrentHolyPower <= 3 || (Me.CurrentHolyPower == 4 && Me.CurrentTarget.HealthPercent >= 35 && !Me.HasAura(S.AvengingWrath)));
 //.	0.00	divine_storm,if=buff.divine_crusader.react&(buff.avenging_wrath.up|target.health.pct<35)&!talent.final_verdict.enabled
 //.	62.56	judgment,cycle_targets=1,if=last_judgment_target!=target&glyph.double_jeopardy.enabled&holy_power<5
             await Spell.Cast(S.Judgment, SecTar, () => Me.CurrentHolyPower <= 4 && Units.EnemyUnits(15).Count() >= 2 && Me.HasAura("Glyph of Double Jeopardy"));
