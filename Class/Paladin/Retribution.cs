@@ -48,8 +48,15 @@ namespace Axiom.Class.Paladin
             //await Spell.Cast(S.SealofRighteousness, onunit, () => AOE && !Me.HasAura("Seal of Righteousness") && Units.EnemyUnitsSub8.Count() >= 4);
             //await Spell.Cast(S.SealofTruth, onunit, () => !Me.HasAura("Seal of Truth") && Units.EnemyUnitsSub8.Count() < 4);
 
-            await AOE4(onunit, Units.EnemyUnitsSub10.Count() >= 4 && Axiom.AOE);
-            await AOE2(onunit, Units.EnemyUnitsSub10.Count() >= 2 && Axiom.AOE);
+            if (await AOE4(onunit, Units.EnemyUnitsSub10.Count() >= 4 && Axiom.AOE))
+            {
+                return true;
+            }
+
+            if (await AOE2(onunit, Units.EnemyUnitsSub10.Count() >= 2 && Axiom.AOE))
+            {
+                return true;
+            }
 
             await Spell.Cast(S.ExecutionSentence, onunit, () => Burst);
             await Spell.CastOnGround(S.LightsHammer, Me.Location, onunit.IsBoss && Axiom.AOE);
