@@ -185,15 +185,10 @@ namespace Axiom.Class.Monk
                     return false;
 
                 var hasRenew = HealManager.SmartTargets(100).Where(hr => hr.HasAura("Renewing Mist"));
-                var needRenew = HealManager.SmartTargets(MonkSettings.Instance.RenewingMist).Where(r => !r.HasAura(119611) && r.HealthPercent >= 30);
+                //var needRenew = HealManager.SmartTargets(MonkSettings.Instance.RenewingMist).Where(r => !r.HasAura(S.RenewingMistBuff) && r.HealthPercent >= 30);
                 var woWUnits = hasRenew as IList<WoWUnit> ?? hasRenew.ToList();
 
-                if (woWUnits.Count() >= 3 && !SpellManager.Spells["Thunder Focus Tea"].Cooldown && needRenew.Count() >= 3)
-                {
-                    return await Spell.SelfBuff(S.ThunderFocusTea, () => Me.CurrentChi >= 3, "", true) && await Spell.SelfBuff(S.Uplift, () => true);
-                }
-
-                return await Spell.SelfBuff(S.Uplift, () => woWUnits.Count(t => t.HealthPercent() <= healthpct) >= 5);
+                return await Spell.SelfBuff(S.Uplift, () => woWUnits.Count(t => t.HealthPercent() <= healthpct) >= 3);
             }
             #endregion
 
@@ -279,8 +274,17 @@ namespace Axiom.Class.Monk
                 if (SpellManager.Spells["Renewing Mist"].Cooldown)
                     return false;
 
-                var needstoSpread = HealManager.InitialList.Where(hrm => hrm.HasAura("Renewing Mist") && hrm.GetAuraStackCount("Renewing Mist") == 3);
+                var needstoSpread = HealManager.InitialList.Where(hrm => hrm.HasAura("Renewing Mist") && hrm.GetAuraStackCount("Renewing Mist") >= 3);
                 var onunit = HealManager.SmartTargets(MonkSettings.Instance.RenewingMist).FirstOrDefault(st => !st.HasAura("Renewing Mist"));
+                var needRenew = HealManager.SmartTargets(MonkSettings.Instance.RenewingMist).Where(r => !r.HasAura(S.RenewingMistBuff) && r.HealthPercent >= 30);
+                var hasRenew = HealManager.SmartTargets(100).Where(hr => hr.HasAura("Renewing Mist"));
+                var woWUnits = hasRenew as IList<WoWUnit> ?? hasRenew.ToList();
+
+                if (woWUnits.Count() >= 3 && !SpellManager.Spells["Thunder Focus Tea"].Cooldown && needRenew.Count() >= HealManager.GroupCount / 2)
+                {
+                    return await Spell.SelfBuff(S.ThunderFocusTea, () => Me.CurrentChi >= 3, "", true) 
+                        && await Spell.Heal(S.RenewingMist, onunit, () => onunit != null && !onunit.HasAura("Renewing Mist") && !needstoSpread.Any());
+                }
 
                 return await Spell.Heal(S.RenewingMist, onunit, () => onunit != null && !onunit.HasAura("Renewing Mist") && !needstoSpread.Any());
             }
@@ -348,6 +352,14 @@ namespace Axiom.Class.Monk
 
                 if (!SerpentStance || Me.ChannelObject == null || Me.ChanneledCastingSpellId != S.SoothingMist || Me.ChannelObjectGuid != onunit.Guid)
                     return false;
+
+                var emergency = HealManager.SmartTarget(MonkSettings.Instance.HolyShit);
+
+                if (!SpellManager.Spells["Thunder Focus Tea"].Cooldown && emergency != null && emergency.IsValid)
+                {
+                    return await Spell.SelfBuff(S.ThunderFocusTea, () => Me.CurrentChi >= 3, "", true)
+                        && await Spell.Heal(S.SurgingMist, emergency, () => true);
+                }
 
                 return await Spell.Heal(S.SurgingMist, onunit);
             }

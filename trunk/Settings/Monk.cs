@@ -105,6 +105,9 @@ namespace Axiom.Settings
         [Setting, DefaultValue(0), Category("Healing Percentages")]
         public int SurgingMist { get; set; }
 
+        [Setting, DefaultValue(20), Category("Healing Percentages")]
+        public int HolyShit { get; set; }
+
         #endregion
 
         #region AOE Counts
