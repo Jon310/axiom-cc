@@ -96,8 +96,7 @@ namespace Axiom.Class.Monk
                 await Uplift(MonkSettings.Instance.Uplift);
                 await ChiWave(healtarget);
                 await SpinningCraneKick();
-                //await RenewingMist();
-                await Spell.Cast(S.RenewingMist, healtarget, () => !healtarget.HasAura("Renewing Mist", true));
+                await RenewingMist();
                 await ZenSpheres();
                 await ChiBurst(healtarget);
                 await Spell.SelfBuff(S.Revival, () => HealManager.SmartTargets(MonkSettings.Instance.Revival).Count() >= HealManager.GroupCount / 2);
