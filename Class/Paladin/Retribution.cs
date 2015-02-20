@@ -94,7 +94,6 @@ namespace Axiom.Class.Paladin
         private static async Task<bool> AOE2(WoWUnit onunit, bool reqs)
         {
             if (!reqs) return false;
-            await Spell.Cast(S.SealofRighteousness, onunit, () => Axiom.AOE && !Me.HasAura("Seal of Righteousness") && Units.EnemyUnitsSub8.Count() >= 2);
             await Spell.CoCast(S.DivineStorm, onunit, (Me.HasAura("Final Verdict") || Me.HasAura("Divine Crusader")) && MaxHolyPower);
             await Spell.CoCast(S.TemplarsVerdict, onunit, MaxHolyPower || Me.HasAura("Divine Purpose"));
             await Spell.Cast(S.HammerofWrath, onunit, () => SpellManager.CanCast(S.HammerofWrath));
@@ -112,7 +111,7 @@ namespace Axiom.Class.Paladin
             await Spell.CoCast(S.Exorcism, onunit, Me.CurrentHolyPower <= 4);
             await Spell.CoCast(S.DivineStorm, onunit, Me.CurrentHolyPower >= 3 && Me.HasAura("Final Verdict"));
             await Spell.CoCast(S.TemplarsVerdict, onunit);
-            await Spell.Cast(S.HolyPrism, onunit);
+            await Spell.Cast(S.HolyPrism, Me);
 
             return true;
         }
@@ -138,7 +137,7 @@ namespace Axiom.Class.Paladin
             await Spell.CoCast(S.Exorcism, onunit, Me.CurrentHolyPower <= 4);
             await Spell.CoCast(S.DivineStorm, onunit, Me.CurrentHolyPower >= 3 && Me.HasAura("Final Verdict"));
             await Spell.CoCast(S.TemplarsVerdict, onunit, !Me.HasAura("Final Verdict"));
-            await Spell.Cast(S.HolyPrism, onunit);
+            await Spell.Cast(S.HolyPrism, Me);
 
             return true;
         }
