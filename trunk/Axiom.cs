@@ -9,6 +9,7 @@ using Styx.Common;
 using Styx.CommonBot;
 using Styx.CommonBot.Routines;
 using Styx.TreeSharp;
+using Styx.WoWInternals;
 using Styx.WoWInternals.WoWObjects;
 
 namespace Axiom
@@ -52,6 +53,31 @@ namespace Axiom
         {
             try
             {
+                if (Movements)
+                {
+                    StopMoving.Pulse();
+
+                    if (Me.IsDead || Me.IsGhost)
+                    {
+                        StopMoving.Now();
+                        Me.ClearTarget();
+                    }
+
+                    if (Me.Combat && !Me.GotTarget && Me.IsMoving)
+                    {
+                        StopMoving.Now();
+                        // NYI
+                        //TargetPvP.TargetClosest();
+                    }
+
+                    if (Me.CurrentTarget != null && !Me.IsSafelyFacing(Me.CurrentTarget, 40))
+                        WoWMovement.Face(Me.CurrentTargetGuid);
+
+                    Movement.PulseMovement();
+                }
+
+                    
+
                 if (Me.Class == WoWClass.Hunter || Me.Class == WoWClass.DeathKnight || 
                     Me.Class == WoWClass.Warlock || Me.Class == WoWClass.Mage)
                         PetManager.Pulse();
