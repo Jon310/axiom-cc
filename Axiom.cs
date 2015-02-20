@@ -137,6 +137,9 @@ namespace Axiom
                 case "Raid Bot":
                     GeneralSettings.Instance.Movement = false;
                     break;
+                case "RaidBot Improved":
+                    GeneralSettings.Instance.Movement = false;
+                    break;
                 default:
                     GeneralSettings.Instance.Movement = false;
                     GeneralSettings.Instance.Targeting = true;

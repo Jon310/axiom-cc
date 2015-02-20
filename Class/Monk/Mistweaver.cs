@@ -29,7 +29,7 @@ namespace Axiom.Class.Monk
         #region Overrides
         public override WoWClass Class { get { return Me.Specialization == WoWSpec.MonkMistweaver ? WoWClass.Monk : WoWClass.None; } }
         private bool SerpentStance { get { return Me.HasAura("Stance of the Wise Serpent"); } }
-        private bool CraneStance { get { return Me.HasAura("Stance of the Spirited Crane"); } }
+        public static bool CraneStance { get { return Me.HasAura("Stance of the Spirited Crane"); } }
         protected override Composite CreateCombat()
         {
             return new ActionRunCoroutine(ret => CombatCoroutine(Me.CurrentTarget));
