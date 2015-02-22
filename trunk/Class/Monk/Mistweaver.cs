@@ -10,6 +10,7 @@ using Axiom.Managers;
 using Axiom.Settings;
 using Buddy.Coroutines;
 using CommonBehaviors.Actions;
+using JetBrains.Annotations;
 using Styx;
 using Styx.Common;
 using Styx.CommonBot;
@@ -24,11 +25,12 @@ using MonkSettings = Axiom.Settings.Monk;
 
 namespace Axiom.Class.Monk
 {
+    [UsedImplicitly]
     public class Mistweaver : Axiom
     {
         #region Overrides
         public override WoWClass Class { get { return Me.Specialization == WoWSpec.MonkMistweaver ? WoWClass.Monk : WoWClass.None; } }
-        private bool SerpentStance { get { return Me.HasAura("Stance of the Wise Serpent"); } }
+        private static bool SerpentStance { get { return Me.HasAura("Stance of the Wise Serpent"); } }
         public static bool CraneStance { get { return Me.HasAura("Stance of the Spirited Crane"); } }
         protected override Composite CreateCombat()
         {
@@ -64,6 +66,7 @@ namespace Axiom.Class.Monk
         #region BuffsCoroutine
         private async Task<bool> BuffsCoroutine()
         {
+            await Spell.CoCast(S.LegacyoftheEmperor, !Me.HasPartyBuff(Units.Stat.Stats));
             return false;
         }
         #endregion
@@ -113,7 +116,15 @@ namespace Axiom.Class.Monk
         #region RestCoroutine
         private async Task<bool> RestCoroutine()
         {
-            return false;
+            if (Me.IsDead || SpellManager.GlobalCooldown)
+                return false;
+
+            if (!(Me.ManaPercent < 60) || Me.IsMoving || Me.IsCasting || Me.Combat || Me.HasAura("Drink") ||
+                Styx.CommonBot.Inventory.Consumable.GetBestDrink(false) == null) 
+                return false;
+
+            Styx.CommonBot.Rest.DrinkImmediate();
+            return await Coroutine.Wait(1000, () => Me.HasAura("Drink"));
         }
         #endregion
 

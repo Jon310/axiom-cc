@@ -302,5 +302,74 @@ namespace Axiom.Helpers
             }
         }
         #endregion
+
+        #region PartyBuffs
+
+        public static bool HasPartyBuff(this WoWUnit onunit, Stat stat)
+        {
+            if (stat == Stat.AttackPower)
+                return onunit.HasAnyAura("Horn of Winter", "Trueshot Aura", "Battle Shout");
+
+            if (stat == Stat.BurstHaste)
+                return onunit.HasAnyAura("Time Warp", "Ancient Hysteria", "Heroism", "Bloodlust", "Netherwinds", "Drums of Fury");
+
+            if (stat == Stat.CriticalStrike)
+                return onunit.HasAnyAura("Leader of the Pack", "Arcane Brilliance", "Dalaran Brilliance", "Legacy of the White Tiger",
+                    "Lone Wolf: Ferocity of the Raptor", "Terrifying Roar", "Fearless Roar", "Strength of the Pack", "Embrace of the Shale Spider",
+                    "Still Water", "Furious Howl");
+
+            if (stat == Stat.Haste)
+                return onunit.HasAnyAura("Unholy Aura", "Mind Quickening", "Swiftblade's Cunning", "Grace of Air", "Lone Wolf: Haste of the Hyena",
+                    "Cackling Howl", "Savage Vigor", "Energizing Spores", "Speed of the Swarm");
+
+            if (stat == Stat.Mastery)
+                return onunit.HasAnyAura("Power of the Grave", "Moonkin Aura", "Blessing of Might", "Grace of Air", "Lone Wolf: Grace of the Cat",
+                    "Roar of Courage", "Keen Senses", "Spirit Beast Blessing", "Plainswalking");
+
+            if (stat == Stat.MortalWounds)
+                return onunit.HasAnyAura("Mortal Strike", "Wild Strike", "Wound Poison", "Rising Sun Kick", "Mortal Cleave", "Legion Strike",
+                    "Bloody Screech", "Deadly Bite", "Monstrous Bite", "Gruesome Bite", "Deadly Sting");
+
+            if (stat == Stat.Multistrike)
+                return onunit.HasAnyAura("Windflurry", "Mind Quickening", "Swiftblade's Cunning", "Dark Intent", "Lone Wolf: Quickness of the Dragonhawk",
+                    "Sonic Focus", "Wild Strength", "Double Bite", "Spry Attacks", "Breath of the Winds");
+
+            if (stat == Stat.SpellPower)
+                return onunit.HasAnyAura("Arcane Brilliance", "Dalaran Brilliance", "Dark Intent", "Lone Wolf: Wisdom of the Serpent", "Still Water",
+                    "Qiraji Fortitude", "Serpent's Cunning");
+
+            if (stat == Stat.Stamina)
+                return onunit.HasAnyAura("Power Word: Fortitude", "Blood Pact", "Commanding Shout", "Lone Wolf: Fortitude of the Bear",
+                    "Fortitude", "Invigorating Roar", "Sturdiness", "Savage Vigor", "Qiraji Fortitude");
+
+            if (stat == Stat.Stats)
+                return onunit.HasAnyAura("Mark of the Wild", "Legacy of the Emperor", "Legacy of the White Tiger", "Blessing of Kings",
+                    "Lone Wolf: Power of the Primates", "Blessing of Forgotten Kings", "Bark of the Wild", "Blessing of Kongs",
+                    "Embrace of the Shale Spider", "Strength of the Earth");
+
+            if (stat == Stat.Versatility)
+                return onunit.HasAnyAura("Unholy Aura", "Mark of the Wild", "Sanctity Aura", "Inspiring Presence", "Lone Wolf: Versatility of the Ravager",
+                    "Tenacity", "Indomitable", "Wild Strength", "Defensive Quills", "Chitinous Armor", "Grace", "Strength of the Earth");
+
+            return false;
+        }
+
+        public enum Stat
+        {
+            AttackPower,
+            BurstHaste,
+            CriticalStrike,
+            Haste,
+            Mastery,
+            MortalWounds,
+            Multistrike,
+            SpellPower,
+            Stamina,
+            Stats,
+            Versatility
+        }
+
+        #endregion
+
     }
 }

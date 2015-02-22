@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using Axiom.Settings;
 using Styx.Common;
 using Styx.WoWInternals;
@@ -26,7 +21,7 @@ namespace Axiom
 
         public static bool ShowOverlay { get; set; }
 
-        protected virtual void UnregisterHotkeys()
+        private static void UnregisterHotkeys()
         {
             HotkeysManager.Unregister("PvP Toggle");
             HotkeysManager.Unregister("PvE Toggle");
@@ -42,7 +37,7 @@ namespace Axiom
             HotkeysManager.Unregister("Show Overlay");
         }
 
-        protected virtual void RegisterHotkeys()
+        private static void RegisterHotkeys()
         {
             HotkeysManager.Register("PvP Toggle",
             Keys.P,
