@@ -22,7 +22,7 @@ namespace Axiom
         public override string Name { get { return string.Format("Axiom - {0}.", Me.Specialization); } }
         public override WoWClass Class { get { return WoWClass.None; } }
         public override bool WantButton { get { return true; } }
-        public override void OnButtonPress() { AxiomGUI GUI = new AxiomGUI(); GUI.ShowDialog(); }
+        public override void OnButtonPress() { var gui = new AxiomGUI(); gui.ShowDialog(); }
 
         public override Composite HealBehavior
         {
@@ -92,18 +92,18 @@ namespace Axiom
         public override void Initialize()
         {
             GeneralSettings.Instance.Load();
-            BotEvents.OnBotStarted += onBotStartEvent;
-            BotEvents.OnBotStopped += onBotStopEvent;
+            BotEvents.OnBotStarted += OnBotStartEvent;
+            BotEvents.OnBotStopped += OnBotStopEvent;
         }
 
         public override void ShutDown()
         {
-            BotEvents.OnBotStarted -= onBotStartEvent;
-            BotEvents.OnBotStopped -= onBotStopEvent;
+            BotEvents.OnBotStarted -= OnBotStartEvent;
+            BotEvents.OnBotStopped -= OnBotStopEvent;
         }
         #endregion
 
-        private void onBotStartEvent(object o)
+        private static void OnBotStartEvent(object o)
         {
             RegisterHotkeys();
             InitializeOnce();
@@ -111,7 +111,7 @@ namespace Axiom
             
         }
 
-        private void onBotStopEvent(object o)
+        private static void OnBotStopEvent(object o)
         {
             EventLog.DetachCombatLogEvent();
             UnregisterHotkeys();
