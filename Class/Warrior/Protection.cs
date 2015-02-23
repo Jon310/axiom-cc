@@ -68,7 +68,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.EnragedRegeneration, target, () => Me.HealthPercent <= 50);
             await Spell.Cast(S.LastStand, target, () => Me.HealthPercent <= 15 && !Me.HasAura("Shield Wall") && Axiom.AFK);
             await Spell.Cast(S.ShieldWall, target, () => Me.HealthPercent <= 30 && !Me.HasAura("Last Stand") && Axiom.AFK);
-            //await Spell.Cast(S.DemoralizingShout, target, () => Units.EnemyUnitsSub10.Any() && IsCurrentTank() && Me.HealthPercent <= 75);
+            await Spell.Cast(S.DemoralizingShout, target, () => Units.EnemyUnitsSub10.Any() && IsCurrentTank() && Me.HealthPercent <= 75);
             await Spell.Cast(S.ImpendingVictory, target, () => Me.HealthPercent <= 60);
 
             await Spell.Cast(S.ShieldBlock, target, () => !Me.HasAura(S.Ravager) && IsCurrentTank());
@@ -85,7 +85,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.StormBolt, target);            
 
             await Spell.CoCast(S.ShieldSlam, target);
-            await Spell.Cast(S.Revenge, target, () => Me.CurrentRage < 90);
+            await Spell.CoCast(S.Revenge, target, Me.CurrentRage < 90);
 
             await Spell.Cast(S.Execute, target, () => (Me.HasAura("Sudden Death") || target.HealthPercent < 20) && Me.CurrentRage > Me.MaxRage - 30 && SpellManager.CanCast(S.Execute));
             await Spell.Cast(S.Devastate, target, () => Me.HasAuraExpired("Unyielding Strikes", 2) && !Me.HasAura("Unyielding Strikes", 6));
