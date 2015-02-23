@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\Mage\Fire.cs" />
+    <Compile Include="Class\Monk\Brewmaster.cs" />
     <Compile Include="Class\Monk\Mistweaver.cs" />
     <Compile Include="Class\Paladin\Retribution.cs" />
     <Compile Include="Class\Warrior\Arms.cs" />

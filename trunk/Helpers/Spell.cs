@@ -311,6 +311,11 @@ namespace Axiom.Helpers
 
         #region Simplicity Wrappers Int
 
+        public static async Task<bool> CoCast(int spell)
+        {
+            return await CoCast(spell, Me.CurrentTarget, true, false);
+        }
+
         public static async Task<bool> CoCast(int spell, WoWUnit unit)
         {
             return  await CoCast(spell, unit, true, false);
