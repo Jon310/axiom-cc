@@ -49,7 +49,7 @@ namespace Axiom.Class.Monk
         {
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
-            //await ChiBrew();
+            await ChiBrew();
 
             //H	17.63	elusive_brew,if=buff.elusive_brew_stacks.react>=9&(buff.dampen_harm.down|buff.diffuse_magic.down)&buff.elusive_brew_activated.down
             await Spell.Cast(S.ElusiveBrew, onunit, () => Me.HasAura("Elusive Brew", 9) && !Me.HasAura(ElusiveBrew) && IsCurrentTank());
@@ -71,9 +71,9 @@ namespace Axiom.Class.Monk
             //actions.st+=/blackout_kick,if=buff.shuffle.down
             await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Shuffle"));
             //actions.st+=/purifying_brew,if=buff.serenity.up
-            await Spell.CoCast(S.PurifyingBrew, onunit, Me.HasAura("Serenity") && (HasStagger(Stagger.Light) || HasStagger(Stagger.Medium) || HasStagger(Stagger.Heavy)));
+            await Spell.CoCast(S.PurifyingBrew, onunit, Me.HasAura("Serenity") && (HasStagger(Stagger.Light) || HasStagger(Stagger.Moderate) || HasStagger(Stagger.Heavy)));
             //actions.st+=/purifying_brew,if=!talent.chi_explosion.enabled&stagger.moderate&buff.shuffle.remains>=6
-            await Spell.Cast(S.PurifyingBrew, onunit, () => !TalentManager.IsSelected(20) && HasStagger(Stagger.Medium) && HasShuffle());
+            await Spell.Cast(S.PurifyingBrew, onunit, () => !TalentManager.IsSelected(20) && HasStagger(Stagger.Moderate) && HasShuffle());
             //actions.st+=/guard,if=(charges=1&recharge_time<5)|charges=2|target.time_to_die<15
             await Spell.Cast(S.Guard, onunit, () => Me.CurrentChi >= 2 && Me.HealthPercent <= 80 && IsCurrentTank() && !Me.HasAura(S.Guard) && Spell.GetCharges(S.Guard) == 2);
             //actions.st+=/guard,if=incoming_damage_10s>=health.max*0.5
@@ -136,8 +136,8 @@ namespace Axiom.Class.Monk
 
             await Spell.CoCast(S.PurifyingBrew, onunit,  Me.HasAura("Heavy Stagger"));
             await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Shuffle"));
-            await Spell.CoCast(S.PurifyingBrew, onunit, Me.HasAura("Serenity") && (HasStagger(Stagger.Light) || HasStagger(Stagger.Medium) || HasStagger(Stagger.Heavy)));
-            await Spell.Cast(S.PurifyingBrew, onunit, () => !TalentManager.IsSelected(20) && HasStagger(Stagger.Medium) && HasShuffle());
+            await Spell.CoCast(S.PurifyingBrew, onunit, Me.HasAura("Serenity") && (HasStagger(Stagger.Light) || HasStagger(Stagger.Moderate) || HasStagger(Stagger.Heavy)));
+            await Spell.Cast(S.PurifyingBrew, onunit, () => !TalentManager.IsSelected(20) && HasStagger(Stagger.Moderate) && HasShuffle());
             await Spell.Cast(S.Guard, onunit, () => Me.CurrentChi >= 2 && Me.HealthPercent <= 80 && IsCurrentTank() && !Me.HasAura(S.Guard) && Spell.GetCharges(S.Guard) == 2);
             await Spell.CoCast(S.TouchofDeath, onunit, SpellManager.CanCast(S.TouchofDeath) && Axiom.Burst && Me.HasAura("Death Note"));
             await Spell.Cast(S.KegSmash, onunit, () => !Me.HasAura("Serenity") && Me.MaxChi - Me.CurrentChi >= 2);
@@ -186,6 +186,9 @@ namespace Axiom.Class.Monk
 
             private async Task<bool> ChiBrew()
             {
+                if (!SpellManager.HasSpell(S.ChiBrew))
+                    return false;
+
                 if (SpellManager.Spells["Chi Brew"].Cooldown || !TalentManager.IsSelected(9))
                     return false;
                 
@@ -211,9 +214,9 @@ namespace Axiom.Class.Monk
             public static bool HasStagger(Stagger stagger)
             {
                 if (stagger == Stagger.Light)
-                    return Me.HasAura("Light Stagger");
-                if (stagger == Stagger.Medium)
-                    return Me.HasAura("Medium Stagger");
+                    return Me.HasAnyAura("Light Stagger", "Moderate Stagger", "Heavy Stagger");
+                if (stagger == Stagger.Moderate)
+                    return Me.HasAnyAura("Moderate Stagger", "Heavy Stagger");
                 if (stagger == Stagger.Heavy)
                     return Me.HasAura("Heavy Stagger");
 
@@ -223,7 +226,7 @@ namespace Axiom.Class.Monk
             public enum Stagger
             {
                 Light,
-                Medium,
+                Moderate,
                 Heavy
             }
 
