@@ -78,7 +78,7 @@ namespace Axiom.Class.Monk
             //actions.st+=/touch_of_death,if=target.health.percent<10&(buff.shuffle.remains>=6|target.time_to_die<=buff.shuffle.remains)&!glyph.touch_of_death.enabled
             await Spell.CoCast(S.TouchofDeath, onunit, SpellManager.CanCast(S.TouchofDeath) && Axiom.Burst && Me.HasAura("Death Note"));
             //actions.st+=/keg_smash,if=chi.max-chi>=1&!buff.serenity.remains
-            await Spell.Cast(S.KegSmash, onunit, () => !Me.HasAura("Serenity") && Me.MaxChi - Me.CurrentChi >= 1);
+            await Spell.Cast(S.KegSmash, onunit, () => !Me.HasAura("Serenity") && Me.ChiInfo.Max - Me.CurrentChi >= 1);
             //actions.st+=/touch_of_death,if=target.health.percent<10&glyph.touch_of_death.enabled
             //actions.st+=/chi_burst,if=(energy+(energy.regen*gcd))<100
             //actions.st+=/chi_wave,if=(energy+(energy.regen*gcd))<100
@@ -93,12 +93,16 @@ namespace Axiom.Class.Monk
             await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 2 && !HasShuffle() || Me.HasAura("Serenity") && !TalentManager.IsSelected(20));
             //actions.st+=/blackout_kick,if=buff.serenity.up
             //actions.st+=/expel_harm,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
-            await Spell.Cast(S.ExpelHarm, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && Me.HealthPercent <= 90 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1);
+            await Spell.Cast(S.ExpelHarm, onunit, () => Me.ChiInfo.Max - Me.CurrentChi >= 1 && Me.HealthPercent <= 90 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1);
             //actions.st+=/jab,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&cooldown.expel_harm.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
+
+            //await Spell.Cast(S.Jab, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && (Me.CurrentEnergy >= 80 || Spell.GetCooldownLeft("Keg Smash").TotalSeconds >= 3) && !Me.HasAura("Serenity"));
+
             await Spell.CoCast(S.Jab, Me.ChiInfo.Max - Me.CurrentChi >= 1 && SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds >= 1
                     && (Me.CurrentEnergy + (EnergyRegen*(SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds))) >= 80);
             
             //await Spell.Cast(S.Jab, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && Me.CurrentEnergy >= 70 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1 && !Me.HasAura("Serenity"));
+
             //actions.st+=/tiger_palm
             await Spell.Cast(S.TigerPalm, onunit, () => !Me.HasAura("Serenity") || !Me.HasAura("Tiger Power"));
 
@@ -140,7 +144,7 @@ namespace Axiom.Class.Monk
             await Spell.Cast(S.PurifyingBrew, onunit, () => !TalentManager.IsSelected(20) && HasStagger(Stagger.Moderate) && HasShuffle());
             await Spell.Cast(S.Guard, onunit, () => Me.CurrentChi >= 2 && Me.HealthPercent <= 80 && IsCurrentTank() && !Me.HasAura(S.Guard) && Spell.GetCharges(S.Guard) == 2);
             await Spell.CoCast(S.TouchofDeath, onunit, SpellManager.CanCast(S.TouchofDeath) && Axiom.Burst && Me.HasAura("Death Note"));
-            await Spell.Cast(S.KegSmash, onunit, () => !Me.HasAura("Serenity") && Me.MaxChi - Me.CurrentChi >= 2);
+            await Spell.Cast(S.KegSmash, onunit, () => !Me.HasAura("Serenity") && Me.ChiInfo.Max - Me.CurrentChi >= 1);
             await Spell.Cast(S.RushingJadeWind, () => !Me.HasAura("Serenity") && Me.MaxChi - Me.CurrentChi >= 1 && TalentManager.IsSelected(16));
             //actions.st+=/chi_burst,if=(energy+(energy.regen*gcd))<100
             await Spell.Cast(S.ChiWave, onunit);
@@ -148,10 +152,11 @@ namespace Axiom.Class.Monk
             await Spell.Cast(S.ChiExplosion, onunit, () => Me.CurrentChi >= 4);
             await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 4 && !TalentManager.IsSelected(20));
             await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 2 && !HasShuffle() || Me.HasAura("Serenity") && !TalentManager.IsSelected(20));
-            //actions.st+=/expel_harm,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
-            await Spell.Cast(S.ExpelHarm, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && Me.HealthPercent <= 90 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1);
-            //actions.st+=/jab,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&cooldown.expel_harm.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
-            await Spell.Cast(S.Jab, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && Me.CurrentEnergy >= 70 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1 && !Me.HasAura("Serenity"));
+            await Spell.Cast(S.ExpelHarm, onunit, () => Me.ChiInfo.Max - Me.CurrentChi >= 1 && Me.HealthPercent <= 90 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1);
+
+            await Spell.CoCast(S.Jab, Me.ChiInfo.Max - Me.CurrentChi >= 1 && SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds >= 1
+                    && (Me.CurrentEnergy + (EnergyRegen * (SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds))) >= 80);
+
             await Spell.Cast(S.TigerPalm, onunit, () => !Me.HasAura("Serenity") || !Me.HasAura("Tiger Power"));
             //actions.aoe=purifying_brew,if=stagger.heavy
             //actions.aoe+=/blackout_kick,if=buff.shuffle.down

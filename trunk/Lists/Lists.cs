@@ -211,7 +211,8 @@ namespace Axiom.Lists
         #region Druid Spells
         public const int BarkSkin = 22812,
                           BearForm = 5487,
-                          Berserk = 106952,
+                          BerserkBear = 50334,
+                          BerserkCat = 106952,
                           Bloodtalons = 145152,
                           Catform = 768,
                           CenarionWard = 102351,
@@ -222,20 +223,26 @@ namespace Axiom.Lists
                           ForceofNature = 102703,
                           HealingTouch = 5185,
                           Lacerate = 33745,
+                          Mangle = 33917,
                           MarkoftheWild = 1126,
                           Maul = 6807,
                           MightofUrsoc = 106922,
                           NaturesSwiftness = 132158,
+                          Pulverize = 80313,
                           Rake = 1822,
                           Renewal = 108238,
                           Rejuvenation = 774,
                           Rip = 1079,
                           SavageDefense = 62606,
+                          SavageDefenseBuff = 132402,
                           SavageRoar = 127538,
                           Shred = 5221,
                           SkullBash = 106839,
                           SurvivalInstincts = 61336,
-                          TigersFury = 5217;
+                          TigersFury = 5217,
+                          ThrashBear = 77758,
+                          ThrashCat = 106830,
+                          ToothandClaw = 135286;
         #endregion
 
         #region Monk Spells
