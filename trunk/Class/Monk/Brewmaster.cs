@@ -52,18 +52,15 @@ namespace Axiom.Class.Monk
             await ChiBrew();
 
             //H	17.63	elusive_brew,if=buff.elusive_brew_stacks.react>=9&(buff.dampen_harm.down|buff.diffuse_magic.down)&buff.elusive_brew_activated.down
-            await Spell.Cast(S.ElusiveBrew, onunit, () => Me.HasAura("Elusive Brew", 9) && !Me.HasAura(ElusiveBrew) && IsCurrentTank());
+            await Spell.Cast(S.ElusiveBrew, onunit, () => Me.HasAura("Elusive Brew", 9) && !Me.HasAura(S.ElusiveBrew) && IsCurrentTank());
             //I	0.00	invoke_xuen,if=talent.invoke_xuen.enabled&target.time_to_die>15&buff.shuffle.remains>=3&buff.serenity.down
             //J	0.00	serenity,if=talent.serenity.enabled&cooldown.keg_smash.remains>6
             await Spell.CoCast(S.Serenity, onunit, Me.CurrentChi >= 2 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 6 && Axiom.Burst);
             //L	0.67	touch_of_death,if=target.health.percent<10&cooldown.touch_of_death.remains=0&((!glyph.touch_of_death.enabled&chi>=3&target.time_to_die<8)|(glyph.touch_of_death.enabled&target.time_to_die<5))
             //M	0.00	call_action_list,name=st,if=active_enemies<3
             //N	0.00	call_action_list,name=aoe,if=active_enemies>=3
-            
-            if (await AOE(onunit, Units.EnemyUnitsSub10.Count() >= 3 && Axiom.AOE))
-            {
-                return true;
-            }
+
+            await AOE(onunit, Units.EnemyUnitsSub10.Count() >= 3 && Axiom.AOE);
 
             //ST Rot
             //actions.st=purifying_brew,if=!talent.chi_explosion.enabled&stagger.heavy
@@ -98,7 +95,11 @@ namespace Axiom.Class.Monk
             //actions.st+=/expel_harm,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
             await Spell.Cast(S.ExpelHarm, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && Me.HealthPercent <= 90 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1);
             //actions.st+=/jab,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&cooldown.expel_harm.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
-            await Spell.Cast(S.Jab, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && Me.CurrentEnergy >= 70 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1 && !Me.HasAura("Serenity"));
+            await Spell.CoCast(S.Jab, Me.ChiInfo.Max - Me.CurrentChi >= 1 && SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds > 1
+                    && SpellManager.Spells["Expel Harm"].CooldownTimeLeft.TotalSeconds >= 1 &&
+                    (Me.CurrentEnergy + (EnergyRegen*(SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds))) >= 80);
+            
+            //await Spell.Cast(S.Jab, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && Me.CurrentEnergy >= 70 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1 && !Me.HasAura("Serenity"));
             //actions.st+=/tiger_palm
             await Spell.Cast(S.TigerPalm, onunit, () => !Me.HasAura("Serenity") || !Me.HasAura("Tiger Power"));
 
@@ -234,40 +235,30 @@ namespace Axiom.Class.Monk
 
         #endregion
 
-            #region Shuffle
-            static bool HasShuffle()
-            {
-                return Me.HasAura("Shuffle") && Me.GetAuraTimeLeft("Shuffle").TotalSeconds > 3;
-            }
-            #endregion
+        #region Shuffle
+        static bool HasShuffle()
+        {
+            return Me.HasAura("Shuffle") && Me.GetAuraTimeLeft("Shuffle").TotalSeconds > 3;
+        }
+        #endregion
         
-            #region Is Tank
-            static bool IsCurrentTank()
+        #region Is Tank
+        static bool IsCurrentTank()
+        {
+            return StyxWoW.Me.CurrentTarget.CurrentTargetGuid == StyxWoW.Me.Guid;
+        }
+        #endregion
+
+        #region EnergyRegen
+        private static double EnergyRegen
+        {
+            get
             {
-                return StyxWoW.Me.CurrentTarget.CurrentTargetGuid == StyxWoW.Me.Guid;
+                var energyRegen = Lua.GetReturnVal<float>("return GetPowerRegen()", 1);
+                    
+                return energyRegen;
             }
-            #endregion
-
-            #region Monk Spells
-            private const int BlackoutKick = 100784,
-                              BreathofFire = 115181,
-                              ChiWave = 115098,
-                              ElusiveBrew = 115308,
-                              ExpelHarm = 115072,
-                              Guard = 115295,
-                              Jab = 100780,
-                              KegSmash = 121253,
-                              PurifyingBrew = 119582,
-                              RushingJadeWind = 116847,
-                              SpearHandStrike = 116705,
-                              SpinningCraneKick = 101546,
-                              StanceoftheSturdyOx = 115069,
-                              SummonBlackOxStatue = 115315,
-                              TigerPalm = 100787,
-                              TouchofDeath = 115080,
-                              ZenMeditation = 115176,
-                              ZenSphere = 124081;
-            #endregion
-
+        }
+        #endregion
     }
 }
