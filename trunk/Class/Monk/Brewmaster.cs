@@ -254,9 +254,7 @@ namespace Axiom.Class.Monk
         {
             get
             {
-                var energyRegen = Lua.GetReturnVal<float>("return GetPowerRegen()", 1);
-                    
-                return energyRegen;
+                return Lua.GetReturnVal<float>("return GetPowerRegen()", 1);
             }
         }
         #endregion
