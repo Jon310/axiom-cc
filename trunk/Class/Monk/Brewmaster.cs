@@ -96,8 +96,7 @@ namespace Axiom.Class.Monk
             await Spell.Cast(S.ExpelHarm, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && Me.HealthPercent <= 90 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1);
             //actions.st+=/jab,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&cooldown.expel_harm.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
             await Spell.CoCast(S.Jab, Me.ChiInfo.Max - Me.CurrentChi >= 1 && SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds >= 1
-                    && SpellManager.Spells["Expel Harm"].CooldownTimeLeft.TotalSeconds >= 1 &&
-                    (Me.CurrentEnergy + (EnergyRegen*(SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds))) >= 80);
+                    && (Me.CurrentEnergy + (EnergyRegen*(SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds))) >= 80);
             
             //await Spell.Cast(S.Jab, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && Me.CurrentEnergy >= 70 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1 && !Me.HasAura("Serenity"));
             //actions.st+=/tiger_palm
