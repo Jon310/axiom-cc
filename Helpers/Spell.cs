@@ -123,13 +123,15 @@ namespace Axiom.Helpers
 
         #region CastOnGround
 
-        public static async Task<bool> CastOnGround(int spell, WoWPoint onLocation, bool reqs)
+        public static async Task<bool> CastOnGround(int spell, WoWUnit unit, bool reqs)
         {
             var sp = WoWSpell.FromId(spell);
             var sname = sp != null ? sp.Name : "#" + spell;
 
-            if (!reqs || !SpellManager.CanCast(spell))
+            if (!reqs || !SpellManager.CanCast(spell) || unit == null)
                 return false;
+
+            var onLocation = unit.Location;
 
             if (!SpellManager.Cast(spell))
                 return false;

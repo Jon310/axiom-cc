@@ -408,7 +408,7 @@ namespace Axiom.Lists
             HealingStreamTotem = 5394,
             HealingSurge = 8004,
             HealingTideTotem = 108280,
-            HealingWave = 331,
+            HealingWave = 77472,
             Hex = 51514,
             LavaBurst = 51505,
             LavaLash = 60103,
@@ -426,9 +426,11 @@ namespace Axiom.Lists
             StormlashTotem = 120668,
             StormStrike = 17364,
             Thunderstorm = 51490,
+            TidalWaves = 51564,
             TotemicRecall = 36936,
             UnleashedElements = 73680,
             UnleashFlame = 165462,
+            UnleashLife = 73685,
             WaterShield = 52127,
             WindwalkTotem = 108273;
 
