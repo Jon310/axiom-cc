@@ -336,12 +336,7 @@ namespace Axiom.Class.Monk
         {
             get
             {
-                if (!_timeToMax.HasValue)
-                {
-                    _timeToMax = (105 - Me.CurrentEnergy) * (1.0 / EnergyRegen);
-                    return _timeToMax.Value;
-                }
-                return _timeToMax.Value;
+                return (105 - Me.CurrentEnergy) * (1.0 / EnergyRegen);
             }
         }
         #endregion
