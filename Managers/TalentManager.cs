@@ -26,7 +26,7 @@ namespace Axiom.Managers
             Glyphs = new HashSet<string>();
             GlyphId = new int[6];
 
-            Lua.Events.AttachEvent("PLAYER_LEVEL_UP", UpdateTalentManager);
+            //Lua.Events.AttachEvent("PLAYER_LEVEL_UP", UpdateTalentManager);
             Lua.Events.AttachEvent("CHARACTER_POINTS_CHANGED", UpdateTalentManager);
             Lua.Events.AttachEvent("GLYPH_UPDATED", UpdateTalentManager);
             Lua.Events.AttachEvent("ACTIVE_TALENT_GROUP_CHANGED", UpdateTalentManager);
