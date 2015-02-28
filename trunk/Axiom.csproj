@@ -68,6 +68,7 @@
     <Compile Include="Helpers\Log.cs" />
     <Compile Include="Helpers\Movement.cs" />
     <Compile Include="Helpers\Spell.cs" />
+    <Compile Include="Helpers\Totems.cs" />
     <Compile Include="Helpers\Units.cs" />
     <Compile Include="Lists\Lists.cs" />
     <Compile Include="Managers\HealManager.cs" />
