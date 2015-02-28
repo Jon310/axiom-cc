@@ -54,9 +54,9 @@
     <Compile Include="Class\Druid\Guardian.cs" />
     <Compile Include="Class\Mage\Fire.cs" />
     <Compile Include="Class\Monk\Brewmaster.cs" />
+    <Compile Include="Class\Monk\Windwalker.cs" />
     <Compile Include="Class\Monk\Mistweaver.cs" />
     <Compile Include="Class\Paladin\Retribution.cs" />
-    <Compile Include="Class\Shaman\Restoration.cs" />
     <Compile Include="Class\Warrior\Arms.cs" />
     <Compile Include="Class\Warrior\Protection.cs" />
     <Compile Include="Helpers\CombatLog.cs" />
@@ -67,7 +67,6 @@
     <Compile Include="Helpers\Log.cs" />
     <Compile Include="Helpers\Movement.cs" />
     <Compile Include="Helpers\Spell.cs" />
-    <Compile Include="Helpers\Totems.cs" />
     <Compile Include="Helpers\Units.cs" />
     <Compile Include="Lists\Lists.cs" />
     <Compile Include="Managers\HealManager.cs" />
@@ -112,6 +111,7 @@
     <Folder Include="Class\Hunter\" />
     <Folder Include="Class\Priest\" />
     <Folder Include="Class\Rogue\" />
+    <Folder Include="Class\Shaman\" />
     <Folder Include="Class\Warlock\" />
   </ItemGroup>
   <ItemGroup>
