@@ -80,7 +80,7 @@ namespace Axiom.Class.Warrior
             await Spell.Cast(S.HeroicStrike, target, () => Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6));
             //await Spell.Cast(S.HeroicStrike, target, () => (Me.HasAura(S.Ultimatum) || Me.HasAura("Unyielding Strikes", 6) || (Me.CurrentRage > Me.MaxRage - 30 && !IsCurrentTank())) && SpellManager.CanCast("Heroic Strike"));
 
-            await Spell.CastOnGround(S.Ravager, target.Location, Axiom.Burst && target.IsWithinMeleeRange);
+            await Spell.CastOnGround(S.Ravager, target, Axiom.Burst && target.IsWithinMeleeRange);
             await Spell.Cast(S.DragonRoar, target, () => target.IsWithinMeleeRange && Axiom.Burst);
             await Spell.Cast(S.StormBolt, target);            
 
@@ -158,7 +158,7 @@ namespace Axiom.Class.Warrior
 
             await Spell.Cast(S.ShieldSlam, onunit);
             await Spell.Cast(S.Revenge, onunit);
-            await Spell.CastOnGround(S.Ravager, onunit.Location, Burst && Me.CurrentTarget.Distance <= 8);
+            await Spell.CastOnGround(S.Ravager, onunit, Burst && Me.CurrentTarget.Distance <= 8);
             await Spell.Cast(S.DragonRoar, onunit, () => Me.CurrentTarget.Distance <= 8);
             await Spell.Cast(S.Execute, onunit, () => Me.HasAura("Sudden Death"));
             await Spell.Cast(S.ThunderClap, onunit, () => Axiom.AOE && Units.EnemyUnitsSub8.Count(u => !u.HasAura("Deep Wounds")) >= 1 && Units.EnemyUnitsSub8.Count() >= 2);

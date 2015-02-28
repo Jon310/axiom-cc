@@ -40,7 +40,7 @@ namespace Axiom.Class.Mage
 
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
-            await Spell.CastOnGround(S.RuneofPower, Me.Location, !Me.HasAura("Rune of Power"));
+            await Spell.CastOnGround(S.RuneofPower, Me, !Me.HasAura("Rune of Power"));
             await Spell.Cast(S.Pyroblast, onunit, () => Me.HasAura("Pyroblast!") && Me.HasAura("Heating Up"));
             await Spell.Cast(S.LivingBomb, onunit, () => onunit.HasAura("Living Bomb"));
             await Spell.Cast(S.InfernoBlast, onunit, () => Me.HasAura("Heating Up"));
