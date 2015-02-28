@@ -80,6 +80,7 @@ namespace Axiom.Class.Monk
 //U	6.15	energizing_brew,if=cooldown.fists_of_fury.remains>6&(!talent.serenity.enabled|(!buff.serenity.remains&cooldown.serenity.remains>4))&energy+energy.regen<50
             await Spell.Cast(S.EnergizingBrew, onunit, () => Spell.GetCooldownLeft("Fists of Fury").TotalSeconds > 6 && (!TalentManager.IsSelected(21) || !Me.HasAura(S.Serenity) && Spell.GetCooldownLeft("Serenity").TotalSeconds > 4) && Me.CurrentEnergy + EnergyRegen < 50);
 
+            await stchix(onunit, Units.EnemyUnitsSub8.Count() < 3 && !TalentManager.IsSelected(20));
 //W	0.00	call_action_list,name=st_chix,if=active_enemies=1&talent.chi_explosion.enabled
             await stchix(onunit, Units.EnemyUnitsSub8.Count() == 1 && TalentManager.IsSelected(20));
 //X	0.00	call_action_list,name=cleave_chix,if=(active_enemies=2|active_enemies=3)&talent.chi_explosion.enabled
@@ -211,8 +212,9 @@ namespace Axiom.Class.Monk
 //L	7.86	tigereye_brew,if=buff.tigereye_brew_use.down&buff.tigereye_brew.stack>=9&cooldown.fists_of_fury.up&chi>=3&debuff.rising_sun_kick.up&buff.tiger_power.up
 //M	0.00	tigereye_brew,if=talent.hurricane_strike.enabled&buff.tigereye_brew_use.down&buff.tigereye_brew.stack>=9&cooldown.hurricane_strike.up&chi>=3&debuff.rising_sun_kick.up&buff.tiger_power.up
 //N	6.13	tigereye_brew,if=buff.tigereye_brew_use.down&chi>=2&(buff.tigereye_brew.stack>=16|target.time_to_die<40)&debuff.rising_sun_kick.up&buff.tiger_power.up
-                if (!Me.HasAura(S.TigereyeBrew) && (Me.GetAuraStackCount("Tigereye Brew") == 20) ||
-                    )
+                if (!Me.HasAura(S.TigereyeBrew) && (Me.GetAuraStackCount("Tigereye Brew") == 20 ||
+                    Me.GetAuraStackCount("Tigereye Brew") >= 9 && Me.HasAura(S.Serenity) ||
+                    Me.GetAuraStackCount("Tigereye Brew") >= 9 && !SpellManager.Spells["Fists of Fury"].Cooldown ))
                 {
                     await Spell.CoCast(S.ChiBrew);
                 }
