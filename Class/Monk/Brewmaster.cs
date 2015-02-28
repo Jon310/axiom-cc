@@ -86,7 +86,7 @@ namespace Axiom.Class.Monk
             //actions.st+=/zen_sphere,cycle_targets=1,if=talent.zen_sphere.enabled&!dot.zen_sphere.ticking&(energy+(energy.regen*gcd))<100
             await Spell.Cast(S.ZenSphere, Me, () => !Me.HasAura(S.ZenSphere));
             //actions.st+=/chi_explosion,if=chi>=3
-            await Spell.Cast(S.ChiExplosion, onunit, () => Me.CurrentChi >= 3);
+            await Spell.Cast(S.ChiExplosionBM, onunit, () => Me.CurrentChi >= 3);
             //actions.st+=/blackout_kick,if=chi>=4
             await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 4 && !TalentManager.IsSelected(20));
             //actions.st+=/blackout_kick,if=buff.shuffle.remains<=3&cooldown.keg_smash.remains>=gcd
@@ -149,7 +149,7 @@ namespace Axiom.Class.Monk
             //actions.st+=/chi_burst,if=(energy+(energy.regen*gcd))<100
             await Spell.Cast(S.ChiWave, onunit);
             await Spell.Cast(S.ZenSphere, Me, () => !Me.HasAura(S.ZenSphere));
-            await Spell.Cast(S.ChiExplosion, onunit, () => Me.CurrentChi >= 4);
+            await Spell.Cast(S.ChiExplosionBM, onunit, () => Me.CurrentChi >= 4);
             await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 4 && !TalentManager.IsSelected(20));
             await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 2 && !HasShuffle() || Me.HasAura("Serenity") && !TalentManager.IsSelected(20));
             await Spell.Cast(S.ExpelHarm, onunit, () => Me.ChiInfo.Max - Me.CurrentChi >= 1 && Me.HealthPercent <= 90 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1);
