@@ -174,7 +174,7 @@ namespace Axiom.Helpers
 
             return wantedAura != null ? wantedAura.TimeLeft : TimeSpan.Zero;
         }
-        public static uint GetAuraStackCount(this WoWUnit unit, string aura)
+        public static uint GetAuraStackCount(this WoWUnit unit, string aura, bool fromMyAura = true)
         {
             if (unit != null && unit.IsValid)
             {
