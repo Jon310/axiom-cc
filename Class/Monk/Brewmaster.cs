@@ -64,13 +64,13 @@ namespace Axiom.Class.Monk
 
             //ST Rot
             //actions.st=purifying_brew,if=!talent.chi_explosion.enabled&stagger.heavy
-            await Spell.CoCast(S.PurifyingBrew, onunit, !TalentManager.IsSelected(20) && Me.HasAura("Heavy Stagger"));
+            await Spell.CoCast(S.PurifyingBrew, onunit, !Spell.HasSpell("Chi Explosion") && Me.HasAura("Heavy Stagger"));
             //actions.st+=/blackout_kick,if=buff.shuffle.down
             await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Shuffle"));
             //actions.st+=/purifying_brew,if=buff.serenity.up
             await Spell.CoCast(S.PurifyingBrew, onunit, Me.HasAura("Serenity") && (HasStagger(Stagger.Light) || HasStagger(Stagger.Moderate) || HasStagger(Stagger.Heavy)));
             //actions.st+=/purifying_brew,if=!talent.chi_explosion.enabled&stagger.moderate&buff.shuffle.remains>=6
-            await Spell.Cast(S.PurifyingBrew, onunit, () => !TalentManager.IsSelected(20) && HasStagger(Stagger.Moderate) && HasShuffle());
+            await Spell.Cast(S.PurifyingBrew, onunit, () => !Spell.HasSpell("Chi Explosion") && HasStagger(Stagger.Moderate) && HasShuffle());
             //actions.st+=/guard,if=(charges=1&recharge_time<5)|charges=2|target.time_to_die<15
             await Spell.Cast(S.Guard, onunit, () => Me.CurrentChi >= 2 && Me.HealthPercent <= 80 && IsCurrentTank() && !Me.HasAura(S.Guard) && Spell.GetCharges(S.Guard) == 2);
             //actions.st+=/guard,if=incoming_damage_10s>=health.max*0.5
@@ -88,9 +88,9 @@ namespace Axiom.Class.Monk
             //actions.st+=/chi_explosion,if=chi>=3
             await Spell.Cast(S.ChiExplosionBM, onunit, () => Me.CurrentChi >= 3);
             //actions.st+=/blackout_kick,if=chi>=4
-            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 4 && !TalentManager.IsSelected(20));
+            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 4 && !Spell.HasSpell("Chi Explosion"));
             //actions.st+=/blackout_kick,if=buff.shuffle.remains<=3&cooldown.keg_smash.remains>=gcd
-            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 2 && !HasShuffle() || Me.HasAura("Serenity") && !TalentManager.IsSelected(20));
+            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 2 && !HasShuffle() || Me.HasAura("Serenity") && !Spell.HasSpell("Chi Explosion"));
             //actions.st+=/blackout_kick,if=buff.serenity.up
             //actions.st+=/expel_harm,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
             await Spell.Cast(S.ExpelHarm, onunit, () => Me.ChiInfo.Max - Me.CurrentChi >= 1 && Me.HealthPercent <= 90 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1);
@@ -141,17 +141,17 @@ namespace Axiom.Class.Monk
             await Spell.CoCast(S.PurifyingBrew, onunit,  Me.HasAura("Heavy Stagger"));
             await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Shuffle"));
             await Spell.CoCast(S.PurifyingBrew, onunit, Me.HasAura("Serenity") && (HasStagger(Stagger.Light) || HasStagger(Stagger.Moderate) || HasStagger(Stagger.Heavy)));
-            await Spell.Cast(S.PurifyingBrew, onunit, () => !TalentManager.IsSelected(20) && HasStagger(Stagger.Moderate) && HasShuffle());
+            await Spell.Cast(S.PurifyingBrew, onunit, () => !Spell.HasSpell("Chi Explosion") && HasStagger(Stagger.Moderate) && HasShuffle());
             await Spell.Cast(S.Guard, onunit, () => Me.CurrentChi >= 2 && Me.HealthPercent <= 80 && IsCurrentTank() && !Me.HasAura(S.Guard) && Spell.GetCharges(S.Guard) == 2);
             await Spell.CoCast(S.TouchofDeath, onunit, SpellManager.CanCast(S.TouchofDeath) && Axiom.Burst && Me.HasAura("Death Note"));
             await Spell.Cast(S.KegSmash, onunit, () => !Me.HasAura("Serenity") && Me.ChiInfo.Max - Me.CurrentChi >= 1);
-            await Spell.Cast(S.RushingJadeWind, () => !Me.HasAura("Serenity") && Me.MaxChi - Me.CurrentChi >= 1 && TalentManager.IsSelected(16));
+            await Spell.CoCast(S.RushingJadeWind, !Me.HasAura("Serenity") && Me.MaxChi - Me.CurrentChi >= 1 && Spell.HasSpell("Rushing Jade Wind"));
             //actions.st+=/chi_burst,if=(energy+(energy.regen*gcd))<100
             await Spell.Cast(S.ChiWave, onunit);
             await Spell.Cast(S.ZenSphere, Me, () => !Me.HasAura(S.ZenSphere));
             await Spell.Cast(S.ChiExplosionBM, onunit, () => Me.CurrentChi >= 4);
-            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 4 && !TalentManager.IsSelected(20));
-            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 2 && !HasShuffle() || Me.HasAura("Serenity") && !TalentManager.IsSelected(20));
+            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 4 && !Spell.HasSpell("Chi Explosion"));
+            await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 2 && !HasShuffle() || Me.HasAura("Serenity") && !Spell.HasSpell("Chi Explosion"));
             await Spell.Cast(S.ExpelHarm, onunit, () => Me.ChiInfo.Max - Me.CurrentChi >= 1 && Me.HealthPercent <= 90 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1);
 
             await Spell.CoCast(S.Jab, Me.ChiInfo.Max - Me.CurrentChi >= 1 && SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds >= 1
@@ -194,10 +194,10 @@ namespace Axiom.Class.Monk
                 if (!SpellManager.HasSpell(S.ChiBrew))
                     return false;
 
-                if (SpellManager.Spells["Chi Brew"].Cooldown || !TalentManager.IsSelected(9))
+                if (SpellManager.Spells["Chi Brew"].Cooldown)
                     return false;
-                
-                if (TalentManager.IsSelected(9) && Me.ChiInfo.Max - Me.CurrentChi >= 2 && Me.GetAuraStackCount("Elusive Brew") <= 10 &&
+
+                if (SpellManager.HasSpell(S.ChiBrew) && Me.ChiInfo.Max - Me.CurrentChi >= 2 && Me.GetAuraStackCount("Elusive Brew") <= 10 &&
                     (Spell.GetCharges(S.ChiBrew) == 1 && SpellManager.Spells["Chi Brew"].CooldownTimeLeft.TotalSeconds < 5) ||
                     Spell.GetCharges(S.ChiBrew) == 2)
                 {

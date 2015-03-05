@@ -49,56 +49,59 @@ namespace Axiom.Class.Monk
         {
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive || Me.IsCasting || Me.IsChanneling) return true;
 
-//6	3.02	invoke_xuen
-//7	0.00	storm_earth_and_fire,target=2,if=debuff.storm_earth_and_fire_target.down
-//8	0.00	storm_earth_and_fire,target=3,if=debuff.storm_earth_and_fire_target.down
-//9	0.00	call_action_list,name=opener,if=talent.serenity.enabled&talent.chi_brew.enabled&cooldown.fists_of_fury.up&time<20
+            await TestST(onunit, !Spell.HasSpell("Chi Explosion"));
+            await TestChiX(onunit, Spell.HasSpell("Chi Explosion"));
+////6	3.02	invoke_xuen
+////7	0.00	storm_earth_and_fire,target=2,if=debuff.storm_earth_and_fire_target.down
+////8	0.00	storm_earth_and_fire,target=3,if=debuff.storm_earth_and_fire_target.down
+////9	0.00	call_action_list,name=opener,if=talent.serenity.enabled&talent.chi_brew.enabled&cooldown.fists_of_fury.up&time<20
 
-//G	6.97	chi_brew,if=chi.max-chi>=2&((charges=1&recharge_time<=10)|charges=2|target.time_to_die<charges*10)&buff.tigereye_brew.stack<=16
-            await ChiBrew();
-//H	21.18	tiger_palm,if=!talent.chi_explosion.enabled&buff.tiger_power.remains<6.6
-//I	0.00	tiger_palm,if=talent.chi_explosion.enabled&(cooldown.fists_of_fury.remains<5|cooldown.fists_of_fury.up)&buff.tiger_power.remains<5
-            await Spell.CoCast(S.TigerPalm, onunit, (!Spell.HasSpell("Chi Explosion") && Me.GetAuraTimeLeft("Tiger Power").TotalSeconds <= 6.6) || (Spell.HasSpell("Chi Explosion") && (Spell.GetCooldownLeft("Fist of Fury").TotalSeconds < 5 || !SpellManager.Spells["Fists of Fury"].Cooldown) && Me.GetAuraTimeLeft("Tiger Power").TotalSeconds < 5) || !Me.HasAura("Tiger Power"));
-//J	0.02	tigereye_brew,if=buff.tigereye_brew_use.down&buff.tigereye_brew.stack=20
-//K	3.09	tigereye_brew,if=buff.tigereye_brew_use.down&buff.tigereye_brew.stack>=9&buff.serenity.up
-//L	7.86	tigereye_brew,if=buff.tigereye_brew_use.down&buff.tigereye_brew.stack>=9&cooldown.fists_of_fury.up&chi>=3&debuff.rising_sun_kick.up&buff.tiger_power.up
-//M	0.00	tigereye_brew,if=talent.hurricane_strike.enabled&buff.tigereye_brew_use.down&buff.tigereye_brew.stack>=9&cooldown.hurricane_strike.up&chi>=3&debuff.rising_sun_kick.up&buff.tiger_power.up
-//N	6.13	tigereye_brew,if=buff.tigereye_brew_use.down&chi>=2&(buff.tigereye_brew.stack>=16|target.time_to_die<40)&debuff.rising_sun_kick.up&buff.tiger_power.up
-            await TigereyeBrew();
+////G	6.97	chi_brew,if=chi.max-chi>=2&((charges=1&recharge_time<=10)|charges=2|target.time_to_die<charges*10)&buff.tigereye_brew.stack<=16
+//            await ChiBrew();
+////H	21.18	tiger_palm,if=!talent.chi_explosion.enabled&buff.tiger_power.remains<6.6
+////I	0.00	tiger_palm,if=talent.chi_explosion.enabled&(cooldown.fists_of_fury.remains<5|cooldown.fists_of_fury.up)&buff.tiger_power.remains<5
+//            await Spell.CoCast(S.TigerPalm, onunit, (!Spell.HasSpell("Chi Explosion") && Me.GetAuraTimeLeft("Tiger Power").TotalSeconds <= 6.6) || (Spell.HasSpell("Chi Explosion") && (Spell.GetCooldownLeft("Fist of Fury").TotalSeconds < 5 || !SpellManager.Spells["Fists of Fury"].Cooldown) && Me.GetAuraTimeLeft("Tiger Power").TotalSeconds < 5) || !Me.HasAura("Tiger Power"));
+////J	0.02	tigereye_brew,if=buff.tigereye_brew_use.down&buff.tigereye_brew.stack=20
+////K	3.09	tigereye_brew,if=buff.tigereye_brew_use.down&buff.tigereye_brew.stack>=9&buff.serenity.up
+////L	7.86	tigereye_brew,if=buff.tigereye_brew_use.down&buff.tigereye_brew.stack>=9&cooldown.fists_of_fury.up&chi>=3&debuff.rising_sun_kick.up&buff.tiger_power.up
+////M	0.00	tigereye_brew,if=talent.hurricane_strike.enabled&buff.tigereye_brew_use.down&buff.tigereye_brew.stack>=9&cooldown.hurricane_strike.up&chi>=3&debuff.rising_sun_kick.up&buff.tiger_power.up
+////N	6.13	tigereye_brew,if=buff.tigereye_brew_use.down&chi>=2&(buff.tigereye_brew.stack>=16|target.time_to_die<40)&debuff.rising_sun_kick.up&buff.tiger_power.up
+//            await TigereyeBrew();
             
-//O	1.95	rising_sun_kick,if=(debuff.rising_sun_kick.down|debuff.rising_sun_kick.remains<3)
-            await Spell.CoCast(S.RisingSunKick, onunit, Me.CurrentTarget.HasAuraExpired("Rising Sun Kick", 3) || !Me.CurrentTarget.HasAura("Rising Sun Kick", true));
-//P	4.37	serenity,if=chi>=2&buff.tiger_power.up&debuff.rising_sun_kick.up
-            await Spell.Cast(S.Serenity, onunit, () => Me.HasAura("Tiger Power") && onunit.HasAura("Rising Sun Kick") && Axiom.Burst);
-//Q	15.14	fists_of_fury,if=buff.tiger_power.remains>cast_time&debuff.rising_sun_kick.remains>cast_time&energy.time_to_max>cast_time&!buff.serenity.up
-            await Spell.CoCast(S.FistsofFury, onunit, Me.GetAuraTimeLeft("Tiger Power") >= Spell.GetSpellCastTime("Fist of Fury") && Me.CurrentTarget.GetAuraTimeLeft("Rising Sun Kick") >= Spell.GetSpellCastTime("Fist of Fury") && Me.CurrentEnergy + EnergyRegen < 80 && !Me.HasAura(S.Serenity));
-//S	1.00	touch_of_death,if=target.health.percent<10&(glyph.touch_of_death.enabled|chi>=3)
-            await Spell.CoCast(S.TouchofDeath, onunit, SpellManager.CanCast(S.TouchofDeath) && Axiom.Burst && Me.HasAura("Death Note"));
-//T	0.00	hurricane_strike,if=energy.time_to_max>cast_time&buff.tiger_power.remains>cast_time&debuff.rising_sun_kick.remains>cast_time&buff.energizing_brew.down
-//U	6.15	energizing_brew,if=cooldown.fists_of_fury.remains>6&(!talent.serenity.enabled|(!buff.serenity.remains&cooldown.serenity.remains>4))&energy+energy.regen<50
-            await Spell.Cast(S.EnergizingBrew, onunit, () => Spell.GetCooldownLeft("Fists of Fury").TotalSeconds > 6 && (!Spell.HasSpell("Serenity") || !Me.HasAura(S.Serenity) && Spell.GetCooldownLeft("Serenity").TotalSeconds > 4) && Me.CurrentEnergy + EnergyRegen < 50);
+////O	1.95	rising_sun_kick,if=(debuff.rising_sun_kick.down|debuff.rising_sun_kick.remains<3)
+//            await Spell.CoCast(S.RisingSunKick, onunit, Me.CurrentTarget.HasAuraExpired("Rising Sun Kick", 3) || !Me.CurrentTarget.HasAura("Rising Sun Kick", true));
+////P	4.37	serenity,if=chi>=2&buff.tiger_power.up&debuff.rising_sun_kick.up
+//            await Spell.Cast(S.Serenity, onunit, () => Me.CurrentChi >= 2 && Me.HasAura("Tiger Power") && onunit.HasAura("Rising Sun Kick") && Axiom.Burst);
+////Q	15.14	fists_of_fury,if=buff.tiger_power.remains>cast_time&debuff.rising_sun_kick.remains>cast_time&energy.time_to_max>cast_time&!buff.serenity.up
+//            //await Spell.CoCast(S.FistsofFury, onunit, Me.GetAuraTimeLeft("Tiger Power") >= Spell.GetSpellCastTime("Fist of Fury") && Me.CurrentTarget.GetAuraTimeLeft("Rising Sun Kick") >= Spell.GetSpellCastTime("Fist of Fury") && Me.CurrentEnergy + EnergyRegen < 80 && !Me.HasAura(S.Serenity));
+//            await Spell.CoCast(S.FistsofFury, onunit, Me.GetAuraTimeLeft("Tiger Power") >= Spell.GetSpellCastTime("Fist of Fury") && Me.CurrentTarget.GetAuraTimeLeft("Rising Sun Kick") >= Spell.GetSpellCastTime("Fist of Fury") && TimeToMax > Spell.GetSpellCastTime("Fist of Fury").Milliseconds && !Me.HasAura(S.Serenity));
+////S	1.00	touch_of_death,if=target.health.percent<10&(glyph.touch_of_death.enabled|chi>=3)
+//            await Spell.CoCast(S.TouchofDeath, onunit, SpellManager.CanCast(S.TouchofDeath) && Axiom.Burst && Me.HasAura("Death Note"));
+////T	0.00	hurricane_strike,if=energy.time_to_max>cast_time&buff.tiger_power.remains>cast_time&debuff.rising_sun_kick.remains>cast_time&buff.energizing_brew.down
+////U	6.15	energizing_brew,if=cooldown.fists_of_fury.remains>6&(!talent.serenity.enabled|(!buff.serenity.remains&cooldown.serenity.remains>4))&energy+energy.regen<50
+//            await Spell.Cast(S.EnergizingBrew, onunit, () => Spell.GetCooldownLeft("Fists of Fury").TotalSeconds > 6 && (!Spell.HasSpell("Serenity") || !Me.HasAura(S.Serenity) && Spell.GetCooldownLeft("Serenity").TotalSeconds > 4) && Me.CurrentEnergy + EnergyRegen < 50);
 
 
-            await st(onunit, Units.EnemyUnitsSub8.Count() < 3 && !Spell.HasSpell("Chi Explosion"));
+//            await st(onunit, Units.EnemyUnitsSub8.Count() < 3 && !Spell.HasSpell("Chi Explosion"));
 
-//W	0.00	call_action_list,name=st_chix,if=active_enemies=1&talent.chi_explosion.enabled
+////W	0.00	call_action_list,name=st_chix,if=active_enemies=1&talent.chi_explosion.enabled
 
-            await stchix(onunit, Units.EnemyUnitsSub8.Count() == 1 && Spell.HasSpell("Chi Explosion"));
+//            await stchix(onunit, Units.EnemyUnitsSub8.Count() == 1 && Spell.HasSpell("Chi Explosion"));
 
-//X	0.00	call_action_list,name=cleave_chix,if=(active_enemies=2|active_enemies=3)&talent.chi_explosion.enabled
-            await Cleave(onunit, (Units.EnemyUnitsSub8.Count() == 2 || Units.EnemyUnitsSub8.Count() == 3) && Spell.HasSpell("Chi Explosion") && Axiom.AOE);
-
-
-//Y	0.00	call_action_list,name=aoe_norjw,if=active_enemies>=3&!talent.rushing_jade_wind.enabled&!talent.chi_explosion.enabled
-            await AOEnorjw(onunit, Units.EnemyUnitsSub8.Count() >= 3 && !Spell.HasSpell("Rushing Jade Wind") && !Spell.HasSpell("Chi Explosion") && Axiom.AOE);
+////X	0.00	call_action_list,name=cleave_chix,if=(active_enemies=2|active_enemies=3)&talent.chi_explosion.enabled
+//            await Cleave(onunit, (Units.EnemyUnitsSub8.Count() == 2 || Units.EnemyUnitsSub8.Count() == 3) && Spell.HasSpell("Chi Explosion") && Axiom.AOE);
 
 
-//Z	0.00	call_action_list,name=aoe_norjw_chix,if=active_enemies>=4&!talent.rushing_jade_wind.enabled&talent.chi_explosion.enabled
-            await AOErjwchix(onunit, Units.EnemyUnitsSub8.Count() >= 4 && !Spell.HasSpell("Rushing Jade Wind") && Spell.HasSpell("Chi Explosion") && Axiom.AOE);
+////Y	0.00	call_action_list,name=aoe_norjw,if=active_enemies>=3&!talent.rushing_jade_wind.enabled&!talent.chi_explosion.enabled
+//            await AOEnorjw(onunit, Units.EnemyUnitsSub8.Count() >= 3 && !Spell.HasSpell("Rushing Jade Wind") && !Spell.HasSpell("Chi Explosion") && Axiom.AOE);
 
 
-//a	0.00	call_action_list,name=aoe_rjw,if=active_enemies>=3&talent.rushing_jade_wind.enabled
-            await Aoerjw(onunit, Units.EnemyUnitsSub8.Count() >= 3 && Spell.HasSpell("Rushing Jade Wind") && !Spell.HasSpell("Chi Explosion") && Axiom.AOE);
+////Z	0.00	call_action_list,name=aoe_norjw_chix,if=active_enemies>=4&!talent.rushing_jade_wind.enabled&talent.chi_explosion.enabled
+//            await AOErjwchix(onunit, Units.EnemyUnitsSub8.Count() >= 4 && !Spell.HasSpell("Rushing Jade Wind") && Spell.HasSpell("Chi Explosion") && Axiom.AOE);
+
+
+////a	0.00	call_action_list,name=aoe_rjw,if=active_enemies>=3&talent.rushing_jade_wind.enabled
+//            await Aoerjw(onunit, Units.EnemyUnitsSub8.Count() >= 3 && Spell.HasSpell("Rushing Jade Wind") && !Spell.HasSpell("Chi Explosion") && Axiom.AOE);
 
         
             //await Spell.CoCast(S.Jab, Me.ChiInfo.Max - Me.CurrentChi >= 1 && SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds >= 1
@@ -134,6 +137,66 @@ namespace Axiom.Class.Monk
         }
         #endregion
 
+        #region Coroutine TestST
+        private async Task<bool> TestST(WoWUnit onunit, bool reqs)
+        {
+            if (!reqs) return false;
+
+            Log.WriteQuiet("testst");
+            await ChiBrew();
+            await Spell.CoCast(S.TigerPalm, onunit, (!Spell.HasSpell("Chi Explosion") && Me.GetAuraTimeLeft("Tiger Power").TotalSeconds <= 6.6) || (Spell.HasSpell("Chi Explosion") && (Spell.GetCooldownLeft("Fist of Fury").TotalSeconds < 5 || !SpellManager.Spells["Fists of Fury"].Cooldown) && Me.GetAuraTimeLeft("Tiger Power").TotalSeconds < 5) || !Me.HasAura("Tiger Power"));
+            await TigereyeBrew();
+            await Spell.CoCast(S.RisingSunKick, onunit, Me.CurrentTarget.HasAuraExpired("Rising Sun Kick", 3) || !Me.CurrentTarget.HasAura("Rising Sun Kick", true));
+            await Spell.Cast(S.Serenity, onunit, () => Me.CurrentChi >= 2 && Me.HasAura("Tiger Power") && onunit.HasAura("Rising Sun Kick") && !Me.HasAura(S.EnergizingBrew) && Axiom.Burst);
+            await Spell.CoCast(S.FistsofFury, onunit, Me.GetAuraTimeLeft("Tiger Power") >= Spell.GetSpellCastTime("Fist of Fury") && Me.CurrentTarget.GetAuraTimeLeft("Rising Sun Kick") >= Spell.GetSpellCastTime("Fist of Fury") && TimeToMax > Spell.GetSpellCastTime("Fist of Fury").Milliseconds && !Me.HasAura(S.Serenity));
+            await Spell.CoCast(S.TouchofDeath, onunit, SpellManager.CanCast(S.TouchofDeath) && Axiom.Burst && Me.HasAura("Death Note"));
+            await Spell.Cast(S.EnergizingBrew, onunit, () => Spell.GetCooldownLeft("Fists of Fury").TotalSeconds > 6 && (!Spell.HasSpell("Serenity") || !Me.HasAura(S.Serenity) && Spell.GetCooldownLeft("Serenity").TotalSeconds > 4) && Me.CurrentEnergy + EnergyRegen < 50);
+            await Spell.CoCast(S.RisingSunKick, onunit);
+            await Spell.Cast(S.BlackoutKick, onunit, () => Me.HasAura("Combo Breaker: Blackout Kick") || Me.HasAura(S.Serenity));
+            await Spell.CoCast(S.TigerPalm, onunit, Me.HasAura("Combo Breaker: Tiger Palm") && Me.HasAuraExpired("Combo Breaker: Tiger Palm", 2));
+            //Chi Burst
+            await Spell.Cast(S.ChiWave, onunit, () => !Me.HasAura(S.Serenity) && Me.CurrentEnergy < 75);
+            //zen_sphere,cycle_targets=1,if=energy.time_to_max>2&!dot.zen_sphere.ticking&buff.serenity.down
+            //chi_torpedo,if=energy.time_to_max>2&buff.serenity.down
+            await Spell.Cast(S.BlackoutKick, onunit, () => Me.ChiInfo.Max - Me.CurrentChi < 2);
+            await Spell.Cast(S.ExpelHarm, onunit, () => Me.ChiInfo.Max - Me.CurrentChi >= 2 && Me.HealthPercent < 95);
+            await Spell.CoCast(S.SpinningCraneKick, onunit, Units.EnemyUnitsSub8.Count() >= 3 && Me.CurrentChi < Me.ChiInfo.Max && Axiom.AOE && !Me.HasAura(S.Serenity));
+            await Spell.CoCast(S.Jab, onunit, Me.ChiInfo.Max - Me.CurrentChi >= 2 && !Me.HasAura(S.Serenity));
+            await Spell.CoCast(S.TigerPalm, onunit, Me.HasAura("Combo Breaker: Tiger Palm"));
+            return false;
+        }
+        #endregion
+
+        #region Coroutine TestChiX
+        private async Task<bool> TestChiX(WoWUnit onunit, bool reqs)
+        {
+            if (!reqs) return false;
+
+            Log.WriteQuiet("testchix");
+            await ChiBrew();
+            await Spell.CoCast(S.TigerPalm, onunit, (!Spell.HasSpell("Chi Explosion") && Me.GetAuraTimeLeft("Tiger Power").TotalSeconds <= 6.6) || (Spell.HasSpell("Chi Explosion") && (Spell.GetCooldownLeft("Fist of Fury").TotalSeconds < 5 || !SpellManager.Spells["Fists of Fury"].Cooldown) && Me.GetAuraTimeLeft("Tiger Power").TotalSeconds < 5) || !Me.HasAura("Tiger Power"));
+            await TigereyeBrew();
+            await Spell.CoCast(S.RisingSunKick, onunit, Me.CurrentTarget.HasAuraExpired("Rising Sun Kick", 3) || !Me.CurrentTarget.HasAura("Rising Sun Kick", true));
+            await Spell.CoCast(S.FistsofFury, onunit, Me.GetAuraTimeLeft("Tiger Power") >= Spell.GetSpellCastTime("Fist of Fury") && Me.CurrentTarget.GetAuraTimeLeft("Rising Sun Kick") >= Spell.GetSpellCastTime("Fist of Fury") && TimeToMax > Spell.GetSpellCastTime("Fist of Fury").Milliseconds && !Me.HasAura(S.Serenity));
+            await Spell.CoCast(S.TouchofDeath, onunit, SpellManager.CanCast(S.TouchofDeath) && Axiom.Burst && Me.HasAura("Death Note"));
+            await Spell.Cast(S.EnergizingBrew, onunit, () => Spell.GetCooldownLeft("Fists of Fury").TotalSeconds > 6 && (!Spell.HasSpell("Serenity") || !Me.HasAura(S.Serenity) && Spell.GetCooldownLeft("Serenity").TotalSeconds > 4) && Me.CurrentEnergy + EnergyRegen < 50);
+            await Spell.CoCast(S.ChiExplosionWW, Me.CurrentChi >= 2 && Me.HasAura("Combo Breaker: Chi Explosion") && Spell.GetCooldownLeft("Fist of Fury").TotalSeconds > 2 && Units.EnemyUnitsSub8.Count() == 1);
+            await Spell.CoCast(S.RisingSunKick, onunit, Units.EnemyUnitsSub8.Count() == 1);
+            await Spell.CoCast(S.ChiExplosionWW, Spell.GetCooldownLeft("Fist of Fury").TotalSeconds > 4 && ((Me.CurrentChi >= 3 && Units.EnemyUnitsSub8.Count() == 1) || Me.CurrentChi >= 4 && Units.EnemyUnitsSub8.Count() >= 2));
+            await Spell.CoCast(S.TigerPalm, onunit, Me.HasAura("Combo Breaker: Tiger Palm") && Me.HasAuraExpired("Combo Breaker: Tiger Palm", 2));
+            //Chi Burst
+            await Spell.Cast(S.ChiWave, onunit, () => !Me.HasAura(S.Serenity) && Me.CurrentEnergy < 75);
+            //zen_sphere,cycle_targets=1,if=energy.time_to_max>2&!dot.zen_sphere.ticking&buff.serenity.down
+            //chi_torpedo,if=energy.time_to_max>2&buff.serenity.down
+            await Spell.Cast(S.BlackoutKick, onunit, () => Me.ChiInfo.Max - Me.CurrentChi < 2);
+            await Spell.Cast(S.ExpelHarm, onunit, () => Me.ChiInfo.Max - Me.CurrentChi >= 2 && Me.HealthPercent < 95);
+            await Spell.CoCast(S.SpinningCraneKick, onunit, Units.EnemyUnitsSub8.Count() >= 3 && Me.CurrentChi < Me.ChiInfo.Max && Axiom.AOE);
+            await Spell.CoCast(S.Jab, onunit, Me.ChiInfo.Max - Me.CurrentChi >= 2);
+            await Spell.CoCast(S.TigerPalm, onunit, Me.HasAura("Combo Breaker: Tiger Palm"));
+            return false;
+        }
+        #endregion
+
         #region Coroutine ST
         private async Task<bool> st(WoWUnit onunit, bool reqs)
         {
@@ -157,7 +220,7 @@ namespace Axiom.Class.Monk
 //actions.st+=/expel_harm,if=chi.max-chi>=2&health.percent<95
             await Spell.Cast(S.ExpelHarm, onunit, () => Me.ChiInfo.Max - Me.CurrentChi >= 2 && Me.HealthPercent < 95);
 //actions.st+=/jab,if=chi.max-chi>=2
-            await Spell.CoCast(S.Jab, onunit, Me.ChiInfo.Max - Me.CurrentChi >= 2);
+            await Spell.CoCast(S.Jab, onunit, Me.ChiInfo.Max - Me.CurrentChi >= 2 && !Me.HasAura(S.Serenity));
             await Spell.CoCast(S.TigerPalm, onunit, Me.HasAura("Combo Breaker: Tiger Palm"));
             return true;
         }
@@ -289,7 +352,7 @@ namespace Axiom.Class.Monk
             //actions.aoe_rjw+=/expel_harm,if=chi.max-chi>=2&health.percent<95
             await Spell.Cast(S.ExpelHarm, onunit, () => Me.ChiInfo.Max - Me.CurrentChi >= 2 && Me.HealthPercent < 95);
             //actions.aoe_rjw+=/jab,if=chi.max-chi>=2
-            await Spell.CoCast(S.Jab, onunit, Me.ChiInfo.Max - Me.CurrentChi >= 2);
+            await Spell.CoCast(S.Jab, onunit, Me.ChiInfo.Max - Me.CurrentChi >= 2 && !Me.HasAura(S.Serenity));
             await Spell.CoCast(S.TigerPalm, onunit, Me.HasAura("Combo Breaker: Tiger Palm"));
             return true;
         }
@@ -353,7 +416,7 @@ namespace Axiom.Class.Monk
         {
             get
             {
-                return (105 - Me.CurrentEnergy) * (1.0 / EnergyRegen);
+                return (105 - Me.CurrentEnergy) * (1.0 / EnergyRegen) * (1000);
             }
         }
         #endregion

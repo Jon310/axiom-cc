@@ -49,23 +49,29 @@ namespace Axiom.Class.Druid
         {
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
-            await Spell.Cast(S.SavageDefense, onunit, IsCurrentTank);
+            await Spell.Cast(S.BearForm, () => !Me.HasAura(S.BearForm) && Axiom.AFK);
 
-            await Spell.Cast(S.Maul, onunit, () => (Me.HasAura(S.ToothandClaw) && Me.CurrentRage >= 75 && IsCurrentTank()) || Me.CurrentRage >= Me.MaxRage - 15/*Me.HasAura(ToothandClaw) && !IsCurrentTank()*/);
+            await Spell.CoCast(S.SavageDefense, IsCurrentTank());
 
-            await Spell.Cast(S.CenarionWard, onunit, () => Me.HealthPercent <= 75);
+            await Spell.CoCast(S.Maul, onunit, (Me.HasAura(S.ToothandClaw) /*&& Me.CurrentRage >= 75*/ && IsCurrentTank()) || Me.CurrentRage >= Me.MaxRage - 20/*Me.HasAura(ToothandClaw)*/ && !IsCurrentTank());
 
-            await Spell.Cast(S.HealingTouch, Me, () => Me.HasAura(145162) && Me.HealthPercent <= 50);
+            await Spell.Cast(S.BerserkBear, onunit, () => Me.GetAuraTimeLeft("Pulverize").TotalSeconds > 10 && Axiom.Burst);
+
+            await Spell.CoCast(S.FrenziedRegeneration, Me.CurrentRage >= 80 && Me.HealthPercent <= 75 && Axiom.AFK);
+
+            await Spell.Cast(S.CenarionWard, Me, () => Me.HealthPercent <= 65);
+
+            await Spell.CoCast(S.HealingTouch, Me, Me.HasAura(145162) && Me.HealthPercent <= 50);
 
             await Spell.Cast(S.Pulverize, onunit, () => Me.HasAuraExpired("Pulverize", 3));
 
-            await Spell.Cast(S.Mangle, onunit);
+            await Spell.CoCast(S.Mangle);
 
-            await Spell.Cast(S.Lacerate, onunit, () => !Me.HasAura(S.BerserkBear) && ((Me.HasAuraExpired("Pulverize", 4) && Me.CurrentTarget.GetAuraStackCount("Lacerate") < 3) || !Me.CurrentTarget.HasAura(S.Lacerate)));
+            await Spell.Cast(S.Lacerate, onunit, () => !Me.HasAura(S.BerserkBear) && ((Me.GetAuraTimeLeft("Pulverize").TotalSeconds < 3.6 && onunit.GetAuraStackCount("Lacerate") < 3) || !onunit.HasAura(S.Lacerate)));
 
             //await Spell.CoCast("Thrash", !Me.CurrentTarget.HasAura("Thrash"));
 
-            await Spell.Cast(S.ThrashBear, onunit, () => /*AOE && Units.EnemyUnitsSub8.Count() >= 2 ||*/  Units.EnemyUnitsSub8.Count(u => u.HasAuraExpired("Thrash", 4)) >= 1 );
+            await Spell.Cast(S.ThrashBear, onunit, () => onunit.GetAuraTimeLeft("Thrash").TotalSeconds < 4.8 || Units.EnemyUnitsSub8.Count(u => u.HasAuraExpired("Thrash", 4)) >= 1);
 
             await Spell.Cast(S.Lacerate, onunit);
             
