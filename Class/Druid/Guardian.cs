@@ -71,7 +71,7 @@ namespace Axiom.Class.Druid
 
             //await Spell.CoCast("Thrash", !Me.CurrentTarget.HasAura("Thrash"));
 
-            await Spell.Cast(S.ThrashBear, onunit, () => onunit.GetAuraTimeLeft("Thrash").TotalSeconds < 4.8 || Units.EnemyUnitsSub8.Count(u => u.HasAuraExpired("Thrash", 4)) >= 1);
+            await Spell.Cast(S.ThrashBear, onunit, () => onunit.GetAuraTimeLeft("Thrash").TotalSeconds < 4.8 || Units.EnemyUnitsSub8.Count(u => u.HasAuraExpired("Thrash", 4)) >= 1 || Units.EnemyUnitsSub8.Count() >= 3);
 
             await Spell.Cast(S.Lacerate, onunit);
             
