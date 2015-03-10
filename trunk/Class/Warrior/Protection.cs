@@ -177,8 +177,8 @@ namespace Axiom.Class.Warrior
             if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive) return true;
 
             await Spell.Cast(S.MassSpellReflection, () => onunit.IsCasting && onunit.Distance > 10);
-            await Spell.Cast(S.ShieldWall, () => Me.HealthPercent < 40);
-            await Spell.Cast(S.LastStand, () => onunit.HealthPercent > Me.HealthPercent && Me.HealthPercent < 60);
+            //await Spell.Cast(S.ShieldWall, () => Me.HealthPercent < 40);
+            //await Spell.Cast(S.LastStand, () => onunit.HealthPercent > Me.HealthPercent && Me.HealthPercent < 60);
             await Spell.Cast(S.DemoralizingShout, () => Units.EnemyUnitsSub10.Count() >= 3);
             await Spell.Cast(S.ShieldBarrier, onunit, () => Me.HealthPercent < 40 && Me.CurrentRage >= 100);
             await Spell.Cast(S.VictoryRush, onunit, () => Me.HealthPercent <= 90 && Me.HasAura("Victorious"));
