@@ -81,6 +81,13 @@ namespace Axiom.Settings
         [Description("Health % to cast this ability at. Set to 0 to disable.")]
         public int Ascendance { get; set; }
 
+        [Setting]
+        [DefaultValue(95)]
+        [Category("Restoration")]
+        [DisplayName("Ignore above %")]
+        [Description("Health % to Ignore Healing.")]
+        public int IgnoreAbove { get; set; }
+
         #endregion
 
         #region HealingCounts
