@@ -51,60 +51,35 @@ namespace Axiom.Class.Monk
 
             await ChiBrew();
 
-            //H	17.63	elusive_brew,if=buff.elusive_brew_stacks.react>=9&(buff.dampen_harm.down|buff.diffuse_magic.down)&buff.elusive_brew_activated.down
             await Spell.Cast(S.ElusiveBrew, onunit, () => Me.HasAura("Elusive Brew", 9) && !Me.HasAura(S.ElusiveBrew) && IsCurrentTank());
-            //I	0.00	invoke_xuen,if=talent.invoke_xuen.enabled&target.time_to_die>15&buff.shuffle.remains>=3&buff.serenity.down
-            //J	0.00	serenity,if=talent.serenity.enabled&cooldown.keg_smash.remains>6
             await Spell.CoCast(S.Serenity, onunit, Me.CurrentChi >= 2 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 6 && Axiom.Burst);
-            //L	0.67	touch_of_death,if=target.health.percent<10&cooldown.touch_of_death.remains=0&((!glyph.touch_of_death.enabled&chi>=3&target.time_to_die<8)|(glyph.touch_of_death.enabled&target.time_to_die<5))
-            //M	0.00	call_action_list,name=st,if=active_enemies<3
-            //N	0.00	call_action_list,name=aoe,if=active_enemies>=3
-
+            
             await AOE(onunit, Units.EnemyUnitsSub10.Count() >= 3 && Axiom.AOE);
 
             //ST Rot
-            //actions.st=purifying_brew,if=!talent.chi_explosion.enabled&stagger.heavy
             await Spell.CoCast(S.PurifyingBrew, onunit, !Spell.HasSpell("Chi Explosion") && Me.HasAura("Heavy Stagger"));
-            //actions.st+=/blackout_kick,if=buff.shuffle.down
-            await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Shuffle"));
-            //actions.st+=/purifying_brew,if=buff.serenity.up
+            await Spell.Cast(S.BlackoutKick, onunit, () => !Me.HasAura("Shuffle") && Me.CurrentChi >= 2);
             await Spell.CoCast(S.PurifyingBrew, onunit, Me.HasAura("Serenity") && (HasStagger(Stagger.Light) || HasStagger(Stagger.Moderate) || HasStagger(Stagger.Heavy)));
-            //actions.st+=/purifying_brew,if=!talent.chi_explosion.enabled&stagger.moderate&buff.shuffle.remains>=6
             await Spell.Cast(S.PurifyingBrew, onunit, () => !Spell.HasSpell("Chi Explosion") && HasStagger(Stagger.Moderate) && HasShuffle());
-            //actions.st+=/guard,if=(charges=1&recharge_time<5)|charges=2|target.time_to_die<15
-            await Spell.Cast(S.Guard, onunit, () => Me.CurrentChi >= 2 && Me.HealthPercent <= 80 && IsCurrentTank() && !Me.HasAura(S.Guard) && Spell.GetCharges(S.Guard) == 2);
-            //actions.st+=/guard,if=incoming_damage_10s>=health.max*0.5
+            await Spell.Cast(S.Guard, onunit, () => Me.CurrentChi >= 2 && Me.HealthPercent <= 80 && IsCurrentTank() && !Me.HasAura(S.Guard) && Spell.GetCharges(S.Guard) == 2 && Axiom.AFK);
             //actions.st+=/chi_brew,if=target.health.percent<10&cooldown.touch_of_death.remains=0&chi<=3&chi>=1&(buff.shuffle.remains>=6|target.time_to_die<buff.shuffle.remains)&!glyph.touch_of_death.enabled
-            //actions.st+=/touch_of_death,if=target.health.percent<10&(buff.shuffle.remains>=6|target.time_to_die<=buff.shuffle.remains)&!glyph.touch_of_death.enabled
+            
             await Spell.CoCast(S.TouchofDeath, onunit, SpellManager.CanCast(S.TouchofDeath) && Axiom.Burst && Me.HasAura("Death Note"));
-            //actions.st+=/keg_smash,if=chi.max-chi>=1&!buff.serenity.remains
+
             await Spell.Cast(S.KegSmash, onunit, () => !Me.HasAura("Serenity") && Me.ChiInfo.Max - Me.CurrentChi >= 1);
-            //actions.st+=/touch_of_death,if=target.health.percent<10&glyph.touch_of_death.enabled
             //actions.st+=/chi_burst,if=(energy+(energy.regen*gcd))<100
-            //actions.st+=/chi_wave,if=(energy+(energy.regen*gcd))<100
             await Spell.Cast(S.ChiWave, onunit);
-            //actions.st+=/zen_sphere,cycle_targets=1,if=talent.zen_sphere.enabled&!dot.zen_sphere.ticking&(energy+(energy.regen*gcd))<100
             await Spell.Cast(S.ZenSphere, Me, () => !Me.HasAura(S.ZenSphere));
-            //actions.st+=/chi_explosion,if=chi>=3
             await Spell.Cast(S.ChiExplosionBM, onunit, () => Me.CurrentChi >= 3);
-            //actions.st+=/blackout_kick,if=chi>=4
             await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 4 && !Spell.HasSpell("Chi Explosion"));
-            //actions.st+=/blackout_kick,if=buff.shuffle.remains<=3&cooldown.keg_smash.remains>=gcd
             await Spell.Cast(S.BlackoutKick, onunit, () => Me.CurrentChi >= 2 && !HasShuffle() || Me.HasAura("Serenity") && !Spell.HasSpell("Chi Explosion"));
-            //actions.st+=/blackout_kick,if=buff.serenity.up
-            //actions.st+=/expel_harm,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
             await Spell.Cast(S.ExpelHarm, onunit, () => Me.ChiInfo.Max - Me.CurrentChi >= 1 && Me.HealthPercent <= 90 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1);
-            //actions.st+=/jab,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&cooldown.expel_harm.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
-
             //await Spell.Cast(S.Jab, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && (Me.CurrentEnergy >= 80 || Spell.GetCooldownLeft("Keg Smash").TotalSeconds >= 3) && !Me.HasAura("Serenity"));
-
             await Spell.CoCast(S.Jab, Me.ChiInfo.Max - Me.CurrentChi >= 1 && SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds >= 1
                     && (Me.CurrentEnergy + (EnergyRegen*(SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds))) >= 80);
-            
             //await Spell.Cast(S.Jab, onunit, () => Me.MaxChi - Me.CurrentChi >= 1 && Me.CurrentEnergy >= 70 && Spell.GetCooldownLeft("Keg Smash").TotalSeconds > 1 && !Me.HasAura("Serenity"));
 
-            //actions.st+=/tiger_palm
-            await Spell.Cast(S.TigerPalm, onunit, () => !Me.HasAura("Serenity") || !Me.HasAura("Tiger Power"));
+            await Spell.Cast(S.TigerPalm, onunit, () => (!Me.HasAura("Serenity") || !Me.HasAura("Tiger Power")) && !SpellManager.CanCast(S.KegSmash));
 
             return false;
         }
@@ -145,7 +120,7 @@ namespace Axiom.Class.Monk
             await Spell.Cast(S.Guard, onunit, () => Me.CurrentChi >= 2 && Me.HealthPercent <= 80 && IsCurrentTank() && !Me.HasAura(S.Guard) && Spell.GetCharges(S.Guard) == 2);
             await Spell.CoCast(S.TouchofDeath, onunit, SpellManager.CanCast(S.TouchofDeath) && Axiom.Burst && Me.HasAura("Death Note"));
             await Spell.Cast(S.KegSmash, onunit, () => !Me.HasAura("Serenity") && Me.ChiInfo.Max - Me.CurrentChi >= 1);
-            await Spell.CoCast(S.RushingJadeWind, !Me.HasAura("Serenity") && Me.MaxChi - Me.CurrentChi >= 1 && Spell.HasSpell("Rushing Jade Wind"));
+            await Spell.CoCast(S.RushingJadeWind, !Me.HasAura("Serenity") && Me.MaxChi - Me.CurrentChi >= 1 && Spell.HasSpell("Rushing Jade Wind") && !SpellManager.CanCast(S.KegSmash));
             //actions.st+=/chi_burst,if=(energy+(energy.regen*gcd))<100
             await Spell.Cast(S.ChiWave, onunit);
             await Spell.Cast(S.ZenSphere, Me, () => !Me.HasAura(S.ZenSphere));
@@ -157,7 +132,7 @@ namespace Axiom.Class.Monk
             await Spell.CoCast(S.Jab, Me.ChiInfo.Max - Me.CurrentChi >= 1 && SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds >= 1
                     && (Me.CurrentEnergy + (EnergyRegen * (SpellManager.Spells["Keg Smash"].CooldownTimeLeft.TotalSeconds))) >= 80);
 
-            await Spell.Cast(S.TigerPalm, onunit, () => !Me.HasAura("Serenity") || !Me.HasAura("Tiger Power"));
+            await Spell.Cast(S.TigerPalm, onunit, () => (!Me.HasAura("Serenity") || !Me.HasAura("Tiger Power")) && !SpellManager.CanCast(S.KegSmash));
             //actions.aoe=purifying_brew,if=stagger.heavy
             //actions.aoe+=/blackout_kick,if=buff.shuffle.down
             //actions.aoe+=/purifying_brew,if=buff.serenity.up
@@ -181,7 +156,7 @@ namespace Axiom.Class.Monk
             //actions.aoe+=/jab,if=chi.max-chi>=1&cooldown.keg_smash.remains>=gcd&cooldown.expel_harm.remains>=gcd&(energy+(energy.regen*(cooldown.keg_smash.remains)))>=80
             //actions.aoe+=/tiger_palm
 
-            return true;
+            return false;
         }
         #endregion
 

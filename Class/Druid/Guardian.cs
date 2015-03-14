@@ -23,7 +23,6 @@ namespace Axiom.Class.Druid
     [UsedImplicitly]
     class Guardian : Axiom
     {
-
         #region Overrides
         public override WoWClass Class { get { return Me.Specialization == WoWSpec.DruidGuardian ? WoWClass.Druid : WoWClass.None; } }
 

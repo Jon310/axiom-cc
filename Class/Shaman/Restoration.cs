@@ -23,7 +23,12 @@ namespace Axiom.Class.Shaman
     [UsedImplicitly]
     class Restoration : Axiom
     {
-        private readonly int _cancelHeal = Math.Max(95, Math.Max(ShamanSettings.Instance.HealingWave, ShamanSettings.Instance.HealingSurge));
+        #region _cancelHeal
+
+        private readonly int _cancelHeal = Math.Max(ShamanSettings.Instance.IgnoreAbove,
+            Math.Max(ShamanSettings.Instance.HealingWave, ShamanSettings.Instance.HealingSurge));
+
+        #endregion
 
         #region Overrides
         public override WoWClass Class { get { return Me.Specialization == WoWSpec.ShamanRestoration ? WoWClass.Shaman : WoWClass.None; } }
