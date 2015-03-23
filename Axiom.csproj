@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Class\Druid\Feral.cs" />
     <Compile Include="Class\Druid\Guardian.cs" />
+    <Compile Include="Class\Hunter\Marksmanship.cs" />
     <Compile Include="Class\Mage\Fire.cs" />
     <Compile Include="Class\Monk\Brewmaster.cs" />
     <Compile Include="Class\Monk\Windwalker.cs" />
@@ -111,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Class\DeathKnight\" />
-    <Folder Include="Class\Hunter\" />
     <Folder Include="Class\Priest\" />
     <Folder Include="Class\Rogue\" />
     <Folder Include="Class\Warlock\" />

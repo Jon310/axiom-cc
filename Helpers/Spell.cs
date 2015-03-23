@@ -200,8 +200,11 @@ namespace Axiom.Helpers
             if (SpellHistoryContainsKey(strspell, unit.Guid))
                 return CanCastResult.DCP;
 
+            //if (Me.IsMoving && !spell.IsMeleeSpell && spell.CastTime != 0 &&
+            //    (!IsChanneled(strspell) && spell.Name != "Steady Shot"))
+            //    return CanCastResult.Moving;
             if (Me.IsMoving && !spell.IsMeleeSpell && spell.CastTime != 0 &&
-                (!IsChanneled(strspell) && spell.Name != "Cobra Shot"))
+                (!IsChanneled(strspell) && spell.Name != "Cobra Shot") && (!IsChanneled(strspell) && spell.Name != "Aimed Shot") && (!IsChanneled(strspell) && spell.Name != "Steady Shot") && (!IsChanneled(strspell) && spell.Name != "Barrage") && (!IsChanneled(strspell) && spell.Name != "Powershot"))
                 return CanCastResult.Moving;
 
             if (Me.IsCasting && !Me.IsChanneling)

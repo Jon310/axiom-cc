@@ -473,5 +473,67 @@ namespace Axiom.Lists
 
         #endregion
 
+        #region Hunter Spells
+
+        public const int
+            AMurderofCrows = 131894,
+            AimedShot = 19434,
+            ArcaneShot = 3044,
+            AspectoftheCheetah = 5118,
+            AspectoftheFox = 172106,
+            AspectofthePack = 13159,
+            Barrage = 120360,
+            BeastLore = 1462,
+            BlinkStrikes = 130392,
+            Bombardment = 35110,
+            CallPet1 = 883,
+            CallPet2 = 83242,
+            CallPet3 = 83243,
+            CallPet4 = 83244,
+            CallPet5 = 83245,
+            Camouflage = 51753,
+            CarefulAim = 34483,
+            ChimaeraShot = 53209,
+            ConcussiveShot = 5116,
+            CounterShot = 147362,
+            Deterrence = 19263,
+            DireBeast = 120679,
+            Disengage = 781,
+            DismissPet = 2641,
+            DistractingShot = 20736,
+            EagleEye = 6197,
+            EnhancedAimedShot = 157724,
+            EnhancedCamouflage = 157718,
+            ExplosiveTrap = 13813,
+            FeedPet = 6991,
+            FeignDeath = 5384,
+            Fetch = 125050,
+            Flare = 1543,
+            FreezingTrap = 1499,
+            GlaiveToss = 117050,
+            HeavyArtilery = 175687,
+            IceTrap = 13809,
+            ImprovedFocus = 157726,
+            KillShot = 53351,
+            LethalShots = 165378,
+            MastersCall = 53271,
+            MendPet = 136,
+            Misdirection = 34477,
+            MultiShot = 2643,
+            Posthaste = 109215,
+            Powershot = 109259,
+            RapidFire = 3045,
+            RevivePet = 982,
+            SpiritBond = 109212,
+            Stampede = 121818,
+            SteadyShot = 56641,
+            StoppingPower = 175686,
+            TameBeast = 1515,
+            ThrilloftheHunt = 109306,
+            TranquilizingShot = 19801,
+            TrapLauncher = 77769;
+
+        #endregion
+
     }
 }
