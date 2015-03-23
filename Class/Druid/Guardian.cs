@@ -63,11 +63,11 @@ namespace Axiom.Class.Druid
 
             await Spell.CoCast(S.HealingTouch, Me, Me.HasAura(145162) && Me.HealthPercent <= 50);
 
-            await Spell.Cast(S.Pulverize, onunit, () => Me.HasAuraExpired("Pulverize", 3));
+            await Spell.Cast(S.Pulverize, onunit, () => Me.HasAuraExpired("Pulverize", 3) && Spell.HasSpell("Pulverize"));
 
             await Spell.CoCast(S.Mangle);
 
-            await Spell.Cast(S.Lacerate, onunit, () => !Me.HasAura(S.BerserkBear) && ((Me.GetAuraTimeLeft("Pulverize").TotalSeconds < 3.6 && onunit.GetAuraStackCount("Lacerate") < 3) || !onunit.HasAura(S.Lacerate)));
+            await Spell.Cast(S.Lacerate, onunit, () => !Me.HasAura(S.BerserkBear) && ((Me.GetAuraTimeLeft("Pulverize").TotalSeconds < 3.6 && onunit.GetAuraStackCount("Lacerate") < 3) && Spell.HasSpell("Pulverize") || !onunit.HasAura(S.Lacerate)));
 
             //await Spell.CoCast("Thrash", !Me.CurrentTarget.HasAura("Thrash"));
 

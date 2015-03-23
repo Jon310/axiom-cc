@@ -86,7 +86,7 @@ namespace Axiom.Class.Druid
             
             await Spell.CoCast(S.Shred, (Units.EnemyUnitsSub8.Count() < 3 || !Axiom.AOE) && Me.ComboPoints < 5);
             
-            await Spell.CoCast(S.Rejuvenation, HealManager.GetTarget(70), Me.ManaPercent >= 40  && !HealManager.GetTarget(70).HasAura("Rejuvination", true));
+            await Spell.CoCast(S.Rejuvenation, HealManager.SmartTarget(70), Me.ManaPercent >= 40);
             
             return false;            
 
@@ -203,8 +203,7 @@ namespace Axiom.Class.Druid
             }
         }
         #endregion
-
-
+        
         #region Is Tank
         static bool IsCurrentTank()
         {
