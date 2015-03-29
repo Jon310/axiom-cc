@@ -50,6 +50,8 @@ namespace Axiom.Helpers
 
         #endregion
 
+
+
         #region EnemyUnitsSub40
 
         public static IEnumerable<WoWUnit> EnemyUnitsSub40
@@ -93,6 +95,16 @@ namespace Axiom.Helpers
             var curTarLocation = StyxWoW.Me.CurrentTarget.Location;
             return ObjectManager.GetObjectsOfType<WoWUnit>(false, false).Where(
                         p => TargetManager.IsValid(p) && p.IsFriendly && p.Location.DistanceSqr(curTarLocation) <= dist).ToList();
+        }
+        #endregion
+
+        #region EnemyUnitsNearTarget
+        public static IEnumerable<WoWUnit> EnemyUnitsNearTarget(float distance)
+        {
+            var dist = distance * distance;
+            var curTarLocation = StyxWoW.Me.CurrentTarget.Location;
+            return ObjectManager.GetObjectsOfType<WoWUnit>(false, false).Where(
+                        p => TargetManager.IsValid(p) && p.IsHostile && p.Location.DistanceSqr(curTarLocation) <= dist).ToList();
         }
         #endregion
 

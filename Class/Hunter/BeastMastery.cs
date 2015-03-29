@@ -21,12 +21,12 @@ using MonkSettings = Axiom.Settings.Monk;
 namespace Axiom.Class.Hunter
 {
     [UsedImplicitly]
-    class Marksmanship : Axiom
+    class BeastMastery : Axiom
     {
         #region Overrides
         static WoWUnit Pet { get { return StyxWoW.Me.Pet; } }
 
-        public override WoWClass Class { get { return Me.Specialization == WoWSpec.HunterMarksmanship ? WoWClass.Hunter : WoWClass.None; } }
+        public override WoWClass Class { get { return Me.Specialization == WoWSpec.HunterBeastMastery ? WoWClass.Hunter : WoWClass.None; } }
 
         protected override Composite CreateCombat()
         {
@@ -50,21 +50,26 @@ namespace Axiom.Class.Hunter
         private async Task<bool> CombatCoroutine(WoWUnit onunit)
         {
            
-            if (!Me.Combat || Me.Mounted || !Me.GotTarget || !Me.CurrentTarget.IsAlive || Me.IsCasting || Me.IsChanneling) return true;
+            if (!Me.Combat || (Me.Mounted && !Me.HasAura("Telaari Talbuk")) || !Me.GotTarget || !Me.CurrentTarget.IsAlive || Me.IsCasting || Me.IsChanneling) return true;
             //CreateMisdirectionBehavior();
-            await Spell.Cast(S.MendPet, Pet, () => Me.GotAlivePet && Pet.HealthPercent < 60 && !Pet.HasAura("Mend Pet"));
-            await Spell.Cast(S.KillShot, onunit, () => onunit.HealthPercent <= 35);
-            await Spell.Cast(S.ChimaeraShot, onunit);
-            await Spell.CoCast(S.RapidFire,  Axiom.Burst);
+            await Spell.Cast(S.MendPet, Pet, () => Me.GotAlivePet && Pet.HealthPercent < 80 && !Pet.HasAura("Mend Pet"));
+            await Spell.Cast(S.KillShot, onunit, () => Me.CurrentTarget.HealthPercent <= 20);
+            await Spell.CoCast(S.FocusFire, Me.HasAura("Frenzy", 5) && !Me.HasAura(S.BeastialWrath));
+            await Spell.Cast(S.BeastialWrath, onunit, () => Me.CurrentFocus > 30 && Axiom.Burst);
             await Spell.CoCast(S.Stampede, Axiom.Burst);
-            await CarefulAim(onunit, onunit.HealthPercent > 80 || Me.HasAura("Rapid Fire"));
             await Spell.Cast(S.AMurderofCrows, onunit, () => Axiom.Burst);
+            await Spell.Cast(S.KillCommand, onunit, () => Me.GotAlivePet && Pet.GotTarget && Pet.Location.Distance(Pet.CurrentTarget.Location) < 25f);
             await Spell.Cast(S.DireBeast, onunit);
+
+            //await AOE(onunit, Units.EnemyUnitsSub10.Count() >= 3 && Axiom.AOE);
+            await AOE(onunit, Units.EnemyUnitsNearTarget(10).Count() >= 3 && Axiom.AOE);
+
             await Spell.Cast(S.GlaiveToss, onunit);
             await Spell.Cast(S.Powershot, onunit);
             await Spell.Cast(S.Barrage, onunit, () =>  Axiom.Weave);
-            await Spell.Cast(S.AimedShot, onunit);
-            await Spell.Cast(S.SteadyShot, onunit);
+            
+            await Spell.Cast(S.ArcaneShot, onunit, () => Me.CurrentFocus >= 75 || Me.HasAura("Thrill of the Hunt") && Me.CurrentFocus > 35 || Me.HasAura(S.BeastialWrath));
+            await Spell.Cast(S.CobraShot, onunit);
 
             return false;
         }
@@ -97,22 +102,11 @@ namespace Axiom.Class.Hunter
         {
             if (!reqs) return false;
 
-
-
-            return true;
-        }
-        #endregion
-
-        #region Careful Aim
-        private static async Task<bool> CarefulAim(WoWUnit onunit, bool reqs)
-        {
-            if (!reqs)
-                return false;
-            await Spell.Cast(S.Powershot, onunit);
-            await Spell.Cast(S.Barrage, onunit, () => Axiom.Weave);
-            await Spell.Cast(S.AimedShot, onunit);
+            await Spell.Cast(S.MultiShot, onunit);
+            await Spell.Cast(S.KillShot, onunit, () => onunit.HealthPercent <= 20);
             await Spell.Cast(S.GlaiveToss, onunit);
-            await Spell.Cast(S.SteadyShot, onunit);
+            await Spell.Cast(S.Barrage, onunit);
+            await Spell.Cast(S.CobraShot, onunit);
 
             return true;
         }

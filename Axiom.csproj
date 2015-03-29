@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Class\Druid\Feral.cs" />
     <Compile Include="Class\Druid\Guardian.cs" />
+    <Compile Include="Class\Hunter\BeastMastery.cs" />
     <Compile Include="Class\Hunter\Marksmanship.cs" />
     <Compile Include="Class\Mage\Fire.cs" />
     <Compile Include="Class\Monk\Brewmaster.cs" />
