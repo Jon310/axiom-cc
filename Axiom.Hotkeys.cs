@@ -51,12 +51,18 @@ namespace Axiom
             {
                 PvPRotation = !PvPRotation;
                 Logging.Write("PvP enabled: " + PvPRotation);
-                GeneralSettings.Instance.PvP = PvPRotation;
+
 
                 if (PvPRotation)
+                {
                     Log.ToastEnabled("PvP Enabled");
+                    GeneralSettings.Instance.PvP = true;
+                }
                 else
+                {
                     Log.ToastDisabled("PvP Disabled");
+                    GeneralSettings.Instance.PvP = false;
+                }
 
             });
             PvPRotation = false;
@@ -68,13 +74,12 @@ namespace Axiom
             {
                 PvERotation = !PvERotation;
                 Logging.Write("PvE enabled: " + PvERotation);
-                StyxWoW.Overlay.AddToast(() => string.Format("PvE Enabled: " + PvERotation + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('PvE Enabled: " + PvERotation + "')");
+
+                if (PvERotation)
+                    Log.ToastEnabled("PvE Enabled");
+                else
+                    Log.ToastDisabled("PvE Disabled");
+
             });
             PvERotation = false;
 
@@ -85,13 +90,12 @@ namespace Axiom
             {
                 AFK = !AFK;
                 Logging.Write("AFK enabled: " + AFK);
-                StyxWoW.Overlay.AddToast(() => string.Format("AFK Enabled: " + AFK + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('AFK Enabled: " + AFK + "')");
+
+                if (AFK)
+                    Log.ToastEnabled("AFK Enabled");
+                else
+                    Log.ToastDisabled("AFK Disabled");
+
             });
             AFK = false;
 
@@ -102,13 +106,12 @@ namespace Axiom
             {
                 Trace = !Trace;
                 Logging.Write("Trace enabled: " + Trace);
-                StyxWoW.Overlay.AddToast(() => string.Format("Trace Enabled: " + Trace + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('Trace Enabled: " + Trace + "')");
+
+                if (Trace)
+                    Log.ToastEnabled("Trace Enabled");
+                else
+                    Log.ToastDisabled("Trace Disabled");
+
             });
             Trace = false;
 
@@ -118,14 +121,13 @@ namespace Axiom
             o =>
             {
                 Burst = !Burst;
-                Logging.Write("Burst enabled: " + Burst); 
-                StyxWoW.Overlay.AddToast(() => string.Format("Burst Enabled: " + Burst + ""), 
-                                               TimeSpan.FromSeconds(1.5), 
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black, 
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('Burst Enabled: " + Burst + "')");
+                Logging.Write("Burst enabled: " + Burst);
+
+                if (Burst)
+                    Log.ToastEnabled("Burst Enabled");
+                else
+                    Log.ToastDisabled("Burst Disabled");
+
             });
             Burst = true;
 
@@ -136,13 +138,12 @@ namespace Axiom
             {
                 AOE = !AOE;
                 Logging.Write("AOE enabled: " + AOE);
-                StyxWoW.Overlay.AddToast(() => string.Format("AOE Enabled: " + AOE + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('AOE Enabled: " + AOE + "')");
+
+                if (AOE)
+                    Log.ToastEnabled("AOE Enabled");
+                else
+                    Log.ToastDisabled("AOE Disabled");
+
             });
             AOE = true;
 
@@ -153,13 +154,12 @@ namespace Axiom
             {
                 Weave = !Weave;
                 Logging.Write("Weave enabled: " + Weave);
-                StyxWoW.Overlay.AddToast(() => string.Format("Weave Enabled: " + Weave + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('Weave Enabled: " + Weave + "')");
+
+                if (Weave)
+                    Log.ToastEnabled("Weave Enabled");
+                else
+                    Log.ToastDisabled("Weave Disabled");
+
             });
             Weave = true;
 
@@ -170,13 +170,12 @@ namespace Axiom
             {
                 Dispell = !Dispell;
                 Logging.Write("Dispelling enabled: " + Dispell);
-                StyxWoW.Overlay.AddToast(() => string.Format("Dispelling Enabled: " + Dispell + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('Dispelling Enabled: " + Dispell + "')");
+
+                if (Dispell)
+                    Log.ToastEnabled("Dispelling Enabled");
+                else
+                    Log.ToastDisabled("Dispelling Disabled");
+
             });
             Dispell = true;
 
@@ -187,13 +186,12 @@ namespace Axiom
             {
                 HealAll = !HealAll;
                 Logging.Write("Heal All enabled: " + HealAll);
-                StyxWoW.Overlay.AddToast(() => string.Format("Heal All Enabled: " + HealAll + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('Heal All Enabled: " + HealAll + "')");
+
+                if (HealAll)
+                    Log.ToastEnabled("Heal All Enabled");
+                else
+                    Log.ToastDisabled("Heal All Disabled");
+
             });
             HealAll = false;
 
@@ -204,14 +202,18 @@ namespace Axiom
             {
                 Movements = !Movements;
                 Logging.Write("Movement enabled: " + Movements);
-                GeneralSettings.Instance.Movement = Movements;
-                StyxWoW.Overlay.AddToast(() => string.Format("Movement Enabled: " + Movements + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('Movement Enabled: " + Movements + "')");
+
+                if (Movements)
+                {
+                    Log.ToastEnabled("Movement Enabled");
+                    GeneralSettings.Instance.Movement = true;
+                }
+                else
+                {
+                    Log.ToastDisabled("Movement Disabled");
+                    GeneralSettings.Instance.Movement = false;
+                }
+
             });
             Movements = false;
 
@@ -222,14 +224,18 @@ namespace Axiom
             {
                 Targeting = !Targeting;
                 Logging.Write("Targeting enabled: " + Targeting);
-                GeneralSettings.Instance.Targeting = Targeting;
-                StyxWoW.Overlay.AddToast(() => string.Format("Targeting Enabled: " + Targeting + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('Targeting Enabled: " + Targeting + "')");
+                
+                if (Targeting)
+                {
+                    Log.ToastEnabled("Targeting Enabled");
+                    GeneralSettings.Instance.Targeting = true;
+                }
+                else
+                {
+                    Log.ToastDisabled("Targeting Disabled");
+                    GeneralSettings.Instance.Targeting = false;
+                }
+
             });
             Targeting = true;
 
@@ -240,13 +246,12 @@ namespace Axiom
             {
                 ShowOverlay = !ShowOverlay;
                 Logging.Write("Show Overlay enabled: " + ShowOverlay);
-                StyxWoW.Overlay.AddToast(() => string.Format("Show Overlay Enabled: " + ShowOverlay + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('Show Overlay Enabled: " + ShowOverlay + "')");
+
+                if (ShowOverlay)
+                    Log.ToastEnabled("Show Overlay Enabled");
+                else
+                    Log.ToastDisabled("Show Overlay Disabled");
+
             });
             ShowOverlay = false;
         }
