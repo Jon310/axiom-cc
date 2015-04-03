@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Windows.Media;
+using Axiom.Helpers;
 using Axiom.Settings;
 using Styx;
 using Styx.Common;
@@ -51,13 +52,12 @@ namespace Axiom
                 PvPRotation = !PvPRotation;
                 Logging.Write("PvP enabled: " + PvPRotation);
                 GeneralSettings.Instance.PvP = PvPRotation;
-                StyxWoW.Overlay.AddToast(() => string.Format("PvP Enabled: " + PvPRotation + ""),
-                                               TimeSpan.FromSeconds(1.5),
-                                               // Foreground Color, Background Color
-                                               Colors.DarkOrange, Colors.Black,
-                                               new FontFamily("Segoe UI"));
-                // Chat Output a big no no right now. Toast Overlays recomended
-                //Lua.DoString("print('PvP Enabled: " + PvPRotation + "')");
+
+                if (PvPRotation)
+                    Log.ToastEnabled("PvP Enabled");
+                else
+                    Log.ToastDisabled("PvP Disabled");
+
             });
             PvPRotation = false;
 

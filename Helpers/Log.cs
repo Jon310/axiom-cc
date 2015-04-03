@@ -1,4 +1,6 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.Windows.Media;
+using Styx;
 using Styx.Common;
 
 namespace Axiom.Helpers
@@ -49,6 +51,38 @@ namespace Axiom.Helpers
         {
             if (Styx.Helpers.GlobalSettings.Instance.LogLevel >= level)
                 Logging.WriteToFileSync(level, text);
+        }
+
+        public static void Toast(string template, params object[] args)
+        {
+            string msg = string.Format(template, args);
+            
+            StyxWoW.Overlay.AddToast(() => msg,
+                TimeSpan.FromSeconds(1.5),
+                Colors.White,
+                Colors.Black,
+                new FontFamily("Segoe UI"));
+        }
+
+        public static void ToastEnabled(string template, params object[] args)
+        {
+            Toast(template, Colors.SeaGreen, Colors.LightSlateGray, args);
+        }
+
+        public static void ToastDisabled(string template, params object[] args)
+        {
+            Toast(template, Colors.Tomato, Colors.LightSlateGray, args);
+        }
+
+        public static void Toast(string template, Color color1, Color color2, params object[] args)
+        {
+            string msg = string.Format(template, args);
+
+            StyxWoW.Overlay.AddToast(() => msg,
+                TimeSpan.FromSeconds(1.5),
+                color1,
+                color2,
+                new FontFamily("Segoe UI"));
         }
     }
 }
