@@ -43,7 +43,7 @@ namespace Axiom.Helpers
                 if (Me.GotTarget == false) return;
                 if (Me.Mounted) return;
                 if (Me.IsDead) return;
-                if (Me.CurrentTarget.IsPlayer == false) return;
+                //if (Me.CurrentTarget.IsPlayer == false) return;
 
                 // Target Check.
                 _target = Me.CurrentTarget;
@@ -51,17 +51,17 @@ namespace Axiom.Helpers
                 if (_target.IsFriendly) return;
                 if (!_target.Attackable) return;
 
+                // Use Default Navigator if not in line of sight.
+                if (!_target.InLineOfSight)
+                {
+                    Navigator.MoveTo(_target.Location);
+                    return;
+                }
+
                 // Ranged Movement
                 if (IsRanged())
                 {
                     Navigator.MoveTo(_target.Location - 35f);
-                    return;
-                }
-
-                // NPC Melee Movement
-                if (!_target.IsPlayer)
-                {
-                    Navigator.MoveTo(_target.Location);
                     return;
                 }
 
@@ -72,8 +72,8 @@ namespace Axiom.Helpers
                     return;
                 }
 
-                // Use Default Navigator if not in line of sight.
-                if (!_target.InLineOfSight)
+                // NPC Melee Movement
+                if (!_target.IsPlayer)
                 {
                     Navigator.MoveTo(_target.Location);
                     return;
