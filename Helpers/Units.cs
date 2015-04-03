@@ -387,5 +387,70 @@ namespace Axiom.Helpers
 
         #endregion
 
+        #region mechanic
+        public static bool HasAuraWithMechanic(this WoWUnit unit, params WoWSpellMechanic[] mechanics)
+        {
+            var auras = unit.GetAllAuras();
+            return auras.Any(a => mechanics.Contains(a.Spell.Mechanic));
+        }
+
+        public static bool IsStunned(this WoWUnit unit)
+        {
+            return unit.HasAuraWithMechanic(WoWSpellMechanic.Stunned, WoWSpellMechanic.Incapacitated);
+        }
+
+        public static bool IsCrowdControlled(this WoWUnit unit)
+        {
+            Dictionary<string, WoWAura>.ValueCollection auras = unit.Auras.Values;
+
+#if AURAS_HAVE_MECHANICS
+            return auras.Any(
+                a => a.Spell.Mechanic == WoWSpellMechanic.Banished ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Charmed ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Horrified ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Incapacitated ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Polymorphed ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Sapped ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Shackled ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Asleep ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Frozen ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Invulnerable ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Invulnerable2 ||
+                     a.Spell.Mechanic == WoWSpellMechanic.Turned ||
+
+                     // Really want to ignore hexed mobs.
+                     a.Spell.Name == "Hex"
+
+                     );
+#else
+            return unit.Stunned
+                || unit.Rooted
+                || unit.Fleeing
+                || unit.HasAuraWithEffectsing(
+                        WoWApplyAuraType.ModConfuse,
+                        WoWApplyAuraType.ModCharm,
+                        WoWApplyAuraType.ModFear,
+                        WoWApplyAuraType.ModDecreaseSpeed,
+                        WoWApplyAuraType.ModPacify,
+                        WoWApplyAuraType.ModPacifySilence,
+                        WoWApplyAuraType.ModPossess,
+                        WoWApplyAuraType.ModRoot,
+                        WoWApplyAuraType.ModStun);
+#endif
+        }
+
+        public static bool HasAuraWithEffectsing(this WoWUnit unit, params WoWApplyAuraType[] applyType)
+        {
+            var hashes = new HashSet<WoWApplyAuraType>(applyType);
+            return unit.Auras.Values.Any(a => a.Spell != null && a.Spell.SpellEffects.Any(se => hashes.Contains(se.AuraType)));
+        }
+
+        public static bool IsSlowed(this WoWUnit unit)
+        {
+            return unit.GetAllAuras().Any(a => a.Spell.SpellEffects.Any(e => e.AuraType == WoWApplyAuraType.ModDecreaseSpeed));
+        }
+        #endregion
+
+
     }
 }

@@ -66,6 +66,7 @@
     <Compile Include="Helpers\CombatLog.cs" />
     <Compile Include="Helpers\EventLog.cs" />
     <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Helpers\Group.cs" />
     <Compile Include="Helpers\Item.cs" />
     <Compile Include="Helpers\KeyboardPolling.cs" />
     <Compile Include="Helpers\Log.cs" />
